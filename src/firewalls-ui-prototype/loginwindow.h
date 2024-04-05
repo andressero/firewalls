@@ -1,0 +1,29 @@
+#ifndef LOGINWINDOW_H
+#define LOGINWINDOW_H
+
+#include <QMainWindow>
+#include <QRegularExpression>
+#include "mainmenudoctor.h"
+#include "mainmenupatient.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class CCSSApp;
+}
+QT_END_NAMESPACE
+
+class LoginWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    LoginWindow(QWidget *parent = nullptr);
+    ~LoginWindow();
+
+private slots:
+    void on_loginButton_clicked();
+
+private:
+    Ui::CCSSApp *ui;
+};
+#endif // LOGINWINDOW_H

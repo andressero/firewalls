@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainMenuPatient</class>
+ <widget class="QWidget" name="mainMenuPatient">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>480</width>
+    <height>620</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>900</width>
+    <height>1600</height>
+   </size>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>28</red>
+        <green>113</green>
+        <blue>216</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>28</red>
+        <green>113</green>
+        <blue>216</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>28</red>
+        <green>113</green>
+        <blue>216</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>28</red>
+        <green>113</green>
+        <blue>216</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>201</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>John Doe   x-xxxx-xxxx</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="personalDataButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>200</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Datos Personales</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="laboratoryButton">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>270</y>
+     <width>200</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Laboratorio</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="appointmentsButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>270</y>
+     <width>200</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Citas</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pharmacyButton">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>110</y>
+     <width>200</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Farmacia</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="insuranceButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>430</y>
+     <width>200</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Seguro</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="vaccinationCardButton">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>430</y>
+     <width>200</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Carné de Vacunación</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="logoutButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>590</y>
+     <width>101</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cerrar Sesión</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,31 @@
+#if 1
+#include "loginwindow.h"
+
+#include <QApplication>
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    LoginWindow w;
+    w.setWindowTitle("CCSS App");
+    w.show();
+    return a.exec();
+}
+#endif
+
+
+
+#if 0
+#include "loginwindow.h"
+
+#include <QApplication>
+#include "patientlabmenu.h"
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    patientLabMenu l;
+    l.show();
+    return a.exec();
+}
+#endif
