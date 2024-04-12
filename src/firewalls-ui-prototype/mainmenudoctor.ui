@@ -72,18 +72,19 @@
     <rect>
      <x>30</x>
      <y>40</y>
-     <width>281</width>
+     <width>411</width>
      <height>18</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <pointsize>14</pointsize>
+     <weight>75</weight>
      <bold>true</bold>
     </font>
    </property>
    <property name="text">
-    <string>Dr. John Doe (Cirujano) A00000</string>
+    <string>Dr. John Bow (Laboratorista) A00000</string>
    </property>
   </widget>
   <widget class="QPushButton" name="logoutButton">

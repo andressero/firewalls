@@ -37,12 +37,12 @@
      <rect>
       <x>200</x>
       <y>60</y>
-      <width>81</width>
+      <width>101</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>CCSS App</string>
+     <string>Garrobo</string>
     </property>
    </widget>
    <widget class="QLabel" name="userLabel">
@@ -133,7 +133,7 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
-     <string>Cambiar Contraseña</string>
+     <string>¿Olvidó su Contraseña?</string>
     </property>
    </widget>
    <widget class="QPushButton" name="loginButton">
@@ -178,7 +178,7 @@
      <x>0</x>
      <y>0</y>
      <width>480</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
