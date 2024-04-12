@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CCSSApp</class>
- <widget class="QMainWindow" name="CCSSApp">
+ <class>CCSS_Garrobo</class>
+ <widget class="QMainWindow" name="CCSS_Garrobo">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -32,17 +32,23 @@
    <string>LoginWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="titleLabel">
+   <widget class="QLabel" name="logoText">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>140</y>
-      <width>101</width>
-      <height>21</height>
+      <x>90</x>
+      <y>-40</y>
+      <width>291</width>
+      <height>291</height>
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Garrobo&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../resources/logoText.svg</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="userLabel">
@@ -123,8 +129,8 @@
    <widget class="QPushButton" name="changePasswordButton">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>370</y>
+      <x>160</x>
+      <y>360</y>
       <width>161</width>
       <height>26</height>
      </rect>
@@ -614,7 +620,7 @@
    <widget class="QPushButton" name="loginButton">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>160</x>
       <y>330</y>
       <width>161</width>
       <height>26</height>
@@ -646,25 +652,6 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>40</y>
-      <width>101</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>../../../../../Descargas/garrobo-logo.png</pixmap>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -672,7 +659,7 @@
      <x>0</x>
      <y>0</y>
      <width>480</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

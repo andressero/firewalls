@@ -3,7 +3,7 @@
 
 LoginWindow::LoginWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::CCSSApp)
+    , ui(new Ui::CCSS_Garrobo)
 {
     ui->setupUi(this);
 }

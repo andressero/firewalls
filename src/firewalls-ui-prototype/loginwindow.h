@@ -8,7 +8,7 @@
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
-class CCSSApp;
+class CCSS_Garrobo;
 }
 QT_END_NAMESPACE
 
@@ -24,6 +24,6 @@ private slots:
     void on_loginButton_clicked();
 
 private:
-    Ui::CCSSApp *ui;
+    Ui::CCSS_Garrobo *ui;
 };
 #endif // LOGINWINDOW_H
