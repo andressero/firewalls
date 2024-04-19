@@ -17,13 +17,20 @@ void LoginWindow::on_loginButton_clicked()
 {
     QString username = ui->userLine->text();
     // QString password = ui->passwordLine->text();
-    static QRegularExpression doctorID("[A-Z][0-9]{5}");
+    static QRegularExpression doctorID("D[0-9]{5}");
+    static QRegularExpression laboratoristID("L[0-9]{5}");
     static QRegularExpression patientID("[0-9]{9}");
 
     // Doctor login
     if (doctorID.match(username).hasMatch()) {
         mainMenuDoctor* doctorMenu = new mainMenuDoctor(this);
         doctorMenu->show();
+        // delete(doctorMenu);
+
+    }
+    if (laboratoristID.match(username).hasMatch()) {
+        mainMenuLaboratory* laboratoryMenu = new mainMenuLaboratory(this);
+        laboratoryMenu->show();
         // delete(doctorMenu);
 
     }

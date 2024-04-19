@@ -12,6 +12,7 @@ SOURCES += \
     main.cpp \
     loginwindow.cpp \
     mainmenudoctor.cpp \
+    mainmenulaboratory.cpp \
     mainmenupatient.cpp \
     menupersonaldata.cpp \
     patientlabmenu.cpp
@@ -19,6 +20,7 @@ SOURCES += \
 HEADERS += \
     loginwindow.h \
     mainmenudoctor.h \
+    mainmenulaboratory.h \
     mainmenupatient.h \
     menupersonaldata.h \
     patientlabmenu.h
@@ -26,6 +28,7 @@ HEADERS += \
 FORMS += \
     loginwindow.ui \
     mainmenudoctor.ui \
+    mainmenulaboratory.ui \
     mainmenupatient.ui \
     menupersonaldata.ui \
     patientlabmenu.ui

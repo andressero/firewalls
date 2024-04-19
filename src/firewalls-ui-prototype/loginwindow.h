@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include "mainmenudoctor.h"
 #include "mainmenupatient.h"
+#include "mainmenulaboratory.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

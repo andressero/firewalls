@@ -1,0 +1,25 @@
+#ifndef MAINMENULABORATORY_H
+#define MAINMENULABORATORY_H
+
+#include <QWidget>
+
+namespace Ui {
+class mainMenuLaboratory;
+}
+
+class mainMenuLaboratory : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit mainMenuLaboratory(QWidget *parent = nullptr);
+    ~mainMenuLaboratory();
+
+private slots:
+    void on_logoutButton_clicked();
+
+private:
+    Ui::mainMenuLaboratory *ui;
+};
+
+#endif // MAINMENULABORATORY_H
