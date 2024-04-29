@@ -1,18 +1,17 @@
-// Copyright [2024] Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
-// Serrano
+// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
+// Serrano>"
 
 #include "FileSystem.hpp"
 
 // FileSystem
 FileSystem::FileSystem() {
-  this->unit.resize(STORAGE_VOLUME, '\0'); // ! It is still empty but it's reserved for STORATE_VOLUME chars
+  // ! It is still empty but it's reserved for STORATE_VOLUME chars
   for (i64 i = 0; i < BLOCK_COUNT; ++i) {
     this->FAT[i] = UNUSED;
   }
-  assert(this->unit.size() == STORAGE_VOLUME);
 }
 
-FileSystem::~FileSystem() { // Free directory members memory
+FileSystem::~FileSystem() {  // Free directory members memory
 }
 
 BLOCK_POINTER FileSystem::findFirstUnusedBlock() {
@@ -77,7 +76,7 @@ bool FileSystem::create(FileProperties &entry) {
   assert(unusedBlockIndex >= 0);
   this->directory[directoryIndex].setStartingBlock(unusedBlockIndex);
   this->directory[directoryIndex] = entry;
-  this->FAT[unusedBlockIndex] = -1; // Spaced reserved on FAT
+  this->FAT[unusedBlockIndex] = -1;  // Spaced reserved on FAT
   assert(entry.valid());
   return true;
 }
@@ -97,7 +96,7 @@ bool FileSystem::erase(FileProperties &entry) {
 
   for (BLOCK_POINTER i = this->FAT[currentBlock]; i != UNUSED;
        i = this->FAT[i]) {
-    this->FAT[currentBlock] = -1; // No next block
+    this->FAT[currentBlock] = -1;  // No next block
     currentBlock = i;
   }
   this->directory[index].setStartingBlock(-1);
@@ -106,10 +105,14 @@ bool FileSystem::erase(FileProperties &entry) {
 }
 
 bool FileSystem::open(FileProperties &entry) {
-  assert(entry.valid());
+  // assert(entry.valid()); // make release removes this
+  if (!entry.valid()) {
+    ERROR("Unable to open. File does not exist")
+    return false;
+  }
   DIRECTORY_POINTER index = entry.getDirectoryIndex();
   assert(this->directory[index] == entry);
-  // TODO: make file properties remember directory pointer
+  // TODO(any) make file properties remember directory pointer
   // to not having to call search every time
   // this->directory[index].setCursor(OPEN);
   entry.setCursor(OPEN);
@@ -120,7 +123,11 @@ bool FileSystem::open(FileProperties &entry) {
 bool FileSystem::close(FileProperties &entry) {
   DIRECTORY_POINTER index = entry.getDirectoryIndex();
   assert(entry == this->directory[index]);
-  assert(entry.valid());
+  //? assert(entry.valid());
+  if (!entry.valid()) {
+    ERROR("Unable to close. File is not valid!")
+    return false;
+  }
   entry.setCursor(CLOSED);
   this->directory[index] = entry;
   return true;
@@ -145,7 +152,6 @@ i64 FileSystem::getFreeSpace() {
 
 bool FileSystem::write(FileProperties &entry, string &buffer,
                        i64 bufferSize) {
-  assert(this->unit.size() == STORAGE_VOLUME);
   const DIRECTORY_POINTER index = this->search(entry);
   assert(entry == this->directory[index]);
   assert(entry.valid());
@@ -181,14 +187,13 @@ bool FileSystem::write(FileProperties &entry, string &buffer,
   BLOCK_POINTER currentBlock = this->directory[index].getStartingBlock();
   if (currentBlock == UNUSED) {
     currentBlock = findFirstUnusedBlock();
-    this->directory[index].setStartingBlock(currentBlock);
+    entry.setStartingBlock(currentBlock);
+    this->directory[index] = entry;
   }
   BLOCK_POINTER EoFBlock = currentBlock;
   for (BLOCK_POINTER i = 0; i < bufferSize; i += BLOCK_SIZE) {
-    // 4. WRITE IN THE UNIT AT BLOCK
-    //  this->unit[currentBlock * BLOCK_SIZE] = buffer[i];
-    this->unit.replace(currentBlock * BLOCK_SIZE, BLOCK_SIZE,
-                       buffer.substr(i, BLOCK_SIZE));
+    // this->unit.replace(currentBlock * BLOCK_SIZE, BLOCK_SIZE, buffer.substr(i, BLOCK_SIZE));
+    this->replace(currentBlock, buffer.substr(i, BLOCK_SIZE));
     FAT[currentBlock] = LAST_BLOCK;
     BLOCK_POINTER nextBlock = findFirstUnusedBlock();
     FAT[currentBlock] = nextBlock;
@@ -201,7 +206,15 @@ bool FileSystem::write(FileProperties &entry, string &buffer,
 
   FAT[EoFBlock] = LAST_BLOCK;
 
+  // this->print();
+
   return true;
+}
+
+void FileSystem::replace(u64 block, string data) {
+  for (u64 i = 0; i < BLOCK_SIZE || i <= data.size(); ++i) {
+    this->unit[block * BLOCK_SIZE + i] = data[i];
+  }
 }
 
 bool FileSystem::append(FileProperties &entry, string &buffer,
@@ -226,6 +239,7 @@ string FileSystem::read(FileProperties &entry, size_t readSize) {
   assert(entry.valid());
   assert(entry.getCursor() >= OPEN);
   assert(readSize > 0);
+
   std::stringstream buffer;
 
   if (index == NONE) {
@@ -233,23 +247,34 @@ string FileSystem::read(FileProperties &entry, size_t readSize) {
   }
 
   BLOCK_POINTER currentBlock = this->directory[index].getStartingBlock();
+  // BLOCK_POINTER currentBlock = this->directory[index].getLastAccesedBlock();
 
   size_t counter = 0;
-  /* for (BLOCK_POINTER i = this->FAT[currentBlock]; i != UNUSED || i !=
-   * LAST_BLOCK; i = this->FAT[i]) */
   BLOCK_POINTER i = currentBlock;
-  for (;; i = this->FAT[i]) {
+  bool canContinue = true;
+  for (;canContinue; i = this->FAT[i]) {
+    canContinue = (i != UNUSED) && (i != LAST_BLOCK) && (counter <= readSize);
+    for (u64 j = 0; j < BLOCK_SIZE && counter <=readSize; j++) {
+      buffer << this->unit[i * BLOCK_SIZE + j];
+      ++counter;
+    }
+    #if 0
     if (counter < readSize && i != UNUSED && i != LAST_BLOCK) {
-      buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
+      // buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
+      for (u64 j = 0; j < BLOCK_SIZE; ++j) {
+        buffer << this->unit[i * BLOCK_SIZE + j];
+      }
       counter += BLOCK_SIZE;
     } else {
       break;
     }
+    #endif
   }
 
-  entry.setCursor(entry.getCursor() + counter);
-  this->directory[index].setCursor(this->directory[index].getCursor() +
-                                   counter);
+ //! ESTO ESTA EN DUDA SI SE TIENE QUE DEVOLVER A 0 O SI AVANZAR A UN VALOR
+ // entry.getCursor() +  // this->directory[index].getCursor() +
+  entry.setCursor(counter);
+  this->directory[index].setCursor(counter);
   LOG("CURSOR " + std::to_string(this->directory[index].getCursor()))
 
   entry.setLastAccesedBlock(i);
@@ -258,9 +283,6 @@ string FileSystem::read(FileProperties &entry, size_t readSize) {
 }
 
 void FileSystem::print() {
-  // Print formatted FAT table
-  // Print formatted directory
-  // Print formatted Unit
 
   // FAT Table
   i64 width = 5;

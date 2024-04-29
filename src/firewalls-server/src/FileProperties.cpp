@@ -1,5 +1,7 @@
-#include "FileProperties.hpp"
+// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
+// Serrano>"
 
+#include "FileProperties.hpp"
 
 __attribute__((const)) bool FileProperties::valid() const {
   const bool nameNotEmpty = !this->name.empty();
