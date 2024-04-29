@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "sstream": "cpp",
+        "string": "cpp",
+        "algorithm": "cpp",
+        "iostream": "cpp",
+        "cstdlib": "cpp",
+        "iomanip": "cpp",
+        "cstdint": "cpp",
+        "cassert": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp"
+    }
+}
