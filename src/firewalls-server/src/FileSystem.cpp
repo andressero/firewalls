@@ -5,14 +5,13 @@
 
 // FileSystem
 FileSystem::FileSystem() {
-  // ! It is still empty but it's reserved for STORATE_VOLUME chars
+  // ! It is still empty but it's reserved for STORAGE_VOLUME chars
   for (i64 i = 0; i < BLOCK_COUNT; ++i) {
     this->FAT[i] = UNUSED;
   }
 }
 
-FileSystem::~FileSystem() {  // Free directory members memory
-}
+FileSystem::~FileSystem() {}
 
 BLOCK_POINTER FileSystem::findFirstUnusedBlock() {
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
@@ -61,10 +60,9 @@ bool FileSystem::create(FileProperties &entry) {
     ERROR("Unable to create file. There is no space left on directory")
     return false;
   }
-  // ? Always starts at zero when it's created
+
   entry.setDirectoryIndex(directoryIndex);
   this->directory[directoryIndex] = entry;
-  // this->directory[directoryIndex].setCursor(0);
 
   // ? Should it reserve the space for when it has content or now?
   // Stablish where does the file can be stored using FAT.
@@ -76,7 +74,8 @@ bool FileSystem::create(FileProperties &entry) {
   assert(unusedBlockIndex >= 0);
   this->directory[directoryIndex].setStartingBlock(unusedBlockIndex);
   this->directory[directoryIndex] = entry;
-  this->FAT[unusedBlockIndex] = -1;  // Spaced reserved on FAT
+  // Spaced reserved on FAT
+  this->FAT[unusedBlockIndex] = -1;
   assert(entry.valid());
   return true;
 }
@@ -96,7 +95,8 @@ bool FileSystem::erase(FileProperties &entry) {
 
   for (BLOCK_POINTER i = this->FAT[currentBlock]; i != UNUSED;
        i = this->FAT[i]) {
-    this->FAT[currentBlock] = -1;  // No next block
+    // No next block
+    this->FAT[currentBlock] = -1;
     currentBlock = i;
   }
   this->directory[index].setStartingBlock(-1);
@@ -150,8 +150,7 @@ i64 FileSystem::getFreeSpace() {
   return freeSpace;
 }
 
-bool FileSystem::write(FileProperties &entry, string &buffer,
-                       i64 bufferSize) {
+bool FileSystem::write(FileProperties &entry, string &buffer, i64 bufferSize) {
   const DIRECTORY_POINTER index = this->search(entry);
   assert(entry == this->directory[index]);
   assert(entry.valid());
@@ -192,7 +191,8 @@ bool FileSystem::write(FileProperties &entry, string &buffer,
   }
   BLOCK_POINTER EoFBlock = currentBlock;
   for (BLOCK_POINTER i = 0; i < bufferSize; i += BLOCK_SIZE) {
-    // this->unit.replace(currentBlock * BLOCK_SIZE, BLOCK_SIZE, buffer.substr(i, BLOCK_SIZE));
+    // this->unit.replace(currentBlock * BLOCK_SIZE, BLOCK_SIZE,
+    // buffer.substr(i, BLOCK_SIZE));
     this->replace(currentBlock, buffer.substr(i, BLOCK_SIZE));
     FAT[currentBlock] = LAST_BLOCK;
     BLOCK_POINTER nextBlock = findFirstUnusedBlock();
@@ -217,8 +217,7 @@ void FileSystem::replace(u64 block, string data) {
   }
 }
 
-bool FileSystem::append(FileProperties &entry, string &buffer,
-                      i64 bufferSize) {
+bool FileSystem::append(FileProperties &entry, string &buffer, i64 bufferSize) {
   (void)bufferSize;
   (void)entry;
   (void)buffer;
@@ -252,13 +251,13 @@ string FileSystem::read(FileProperties &entry, size_t readSize) {
   size_t counter = 0;
   BLOCK_POINTER i = currentBlock;
   bool canContinue = true;
-  for (;canContinue; i = this->FAT[i]) {
+  for (; canContinue; i = this->FAT[i]) {
     canContinue = (i != UNUSED) && (i != LAST_BLOCK) && (counter <= readSize);
-    for (u64 j = 0; j < BLOCK_SIZE && counter <=readSize; j++) {
+    for (u64 j = 0; j < BLOCK_SIZE && counter <= readSize; j++) {
       buffer << this->unit[i * BLOCK_SIZE + j];
       ++counter;
     }
-    #if 0
+#if 0
     if (counter < readSize && i != UNUSED && i != LAST_BLOCK) {
       // buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
       for (u64 j = 0; j < BLOCK_SIZE; ++j) {
@@ -268,11 +267,11 @@ string FileSystem::read(FileProperties &entry, size_t readSize) {
     } else {
       break;
     }
-    #endif
+#endif
   }
 
- //! ESTO ESTA EN DUDA SI SE TIENE QUE DEVOLVER A 0 O SI AVANZAR A UN VALOR
- // entry.getCursor() +  // this->directory[index].getCursor() +
+  //! ESTO ESTA EN DUDA SI SE TIENE QUE DEVOLVER A 0 O SI AVANZAR A UN VALOR
+  // entry.getCursor() +  // this->directory[index].getCursor() +
   entry.setCursor(counter);
   this->directory[index].setCursor(counter);
   LOG("CURSOR " + std::to_string(this->directory[index].getCursor()))
@@ -283,7 +282,6 @@ string FileSystem::read(FileProperties &entry, size_t readSize) {
 }
 
 void FileSystem::print() {
-
   // FAT Table
   i64 width = 5;
   std::cout << "FAT Table" << std::endl;

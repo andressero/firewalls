@@ -71,5 +71,5 @@ int main() {
   fs5.close(prueba5);
 #endif
 
-return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }

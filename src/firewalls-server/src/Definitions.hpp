@@ -4,7 +4,6 @@
 #ifndef DEFINITIONS_HPP
 #define DEFINITIONS_HPP
 
-#include <stdlib.h>
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -18,16 +17,19 @@
 #define BLOCK_SIZE 256
 #define FILE_COUNT 100
 // Hundred files of 256 bytes each
-#define STORAGE_VOLUME FILE_COUNT * BLOCK_SIZE
+#define STORAGE_VOLUME FILE_COUNT *BLOCK_SIZE
 #define BLOCK_COUNT (STORAGE_VOLUME / BLOCK_SIZE)
 
 #define DEBUG 1
 
-#define ERROR(message) std::cerr << "\033[1;31m" << "ERROR: " << message\
-<< "\033[0m" << std::endl;
+#define ERROR(message)                                                         \
+  std::cerr << "\033[1;31m"                                                    \
+            << "ERROR: " << message << "\033[0m" << std::endl;
 
-#define LOG(message) if (DEBUG) std::cerr << "\033[1;33m" << "LOG: " << message\
-<< "\033[0m" << std::endl;
+#define LOG(message)                                                           \
+  if (DEBUG)                                                                   \
+    std::cerr << "\033[1;33m"                                                  \
+              << "LOG: " << message << "\033[0m" << std::endl;
 
 #define LAST_BLOCK -1
 #define UNUSED -2
@@ -40,6 +42,7 @@ using std::string;
 typedef int64_t i64;
 typedef uint64_t u64;
 typedef uint8_t u8;
+// ? Why "POINTER"?
 typedef int64_t BLOCK_POINTER;
 typedef int64_t DIRECTORY_POINTER;
 typedef int64_t FAT_POINTER;
