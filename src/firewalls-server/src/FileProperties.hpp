@@ -8,19 +8,22 @@
 
 class FileProperties {
  private:
-  string name;
-  string date;
-  string owner;
-  BLOCK_POINTER startingBlock;
-  UNIT_POINTER cursor;
-  BLOCK_POINTER lastAccesedBlock;
-  DIRECTORY_POINTER directoryIndex;
+  std::string name;
+  std::string date;
+  std::string owner;
+  BLOCK_INDEX startingBlock;
+  UNIT_INDEX cursor;
+  BLOCK_INDEX lastAccesedBlock;
+  DIRECTORY_INDEX directoryIndex;
+  // Read is false, Write is true
+  bool ReadWriteMode = false; 
 
  public:
   FileProperties();
-  FileProperties(string name, string date, string owner);
+  FileProperties(std::string name, std::string date, std::string owner);
   explicit FileProperties(const FileProperties &properties);
   __attribute__((const)) bool valid() const;
+
   inline void operator=(const FileProperties &properties) {
     this->name = properties.name;
     this->date = properties.date;
@@ -51,39 +54,52 @@ class FileProperties {
   }
 
   // Gets
-  inline string getName() const { return this->name; }
+  inline const std::string &getName() const { return this->name; }
 
-  inline string getDate() const { return this->date; }
+  inline const std::string &getDate() const { return this->date; }
 
-  inline string getOwner() const { return this->owner; }
+  inline const std::string &getOwner() const { return this->owner; }
 
-  inline BLOCK_POINTER getStartingBlock() const { return this->startingBlock; }
+  inline const BLOCK_INDEX &getStartingBlock() const {
+    return this->startingBlock;
+  }
 
-  inline UNIT_POINTER getCursor() const { return this->cursor; }
+  inline const UNIT_INDEX &getCursor() const { return this->cursor; }
 
-  inline DIRECTORY_POINTER getDirectoryIndex() const {
+  inline const DIRECTORY_INDEX &getDirectoryIndex() const {
     return this->directoryIndex;
   }
 
-  inline BLOCK_POINTER getLastAccesedBlock() const {
+  inline const BLOCK_INDEX &getLastAccesedBlock() const {
     return this->lastAccesedBlock;
   }
 
+  inline const bool &getReadWriteMode() const { return this->ReadWriteMode; }
+
   // Sets
-  inline void setCursor(UNIT_POINTER cursor) { this->cursor = cursor; }
+  inline void seek(UNIT_INDEX cursor) { this->cursor = cursor; }
 
-  inline void setName(string name) { this->name = name; }
+  inline void setName(std::string &name) { this->name = name; }
 
-  inline void setStartingBlock(BLOCK_POINTER startingBlock) {
+  inline void setStartingBlock(BLOCK_INDEX startingBlock) {
     this->startingBlock = startingBlock;
   }
 
-  inline void setLastAccesedBlock(BLOCK_POINTER lastAccesedBlock) {
+  inline void setLastAccesedBlock(BLOCK_INDEX lastAccesedBlock) {
     this->lastAccesedBlock = lastAccesedBlock;
   }
 
-  inline void setDirectoryIndex(DIRECTORY_POINTER directoryIndex) {
+  inline void setDirectoryIndex(DIRECTORY_INDEX directoryIndex) {
     this->directoryIndex = directoryIndex;
+  }
+
+  inline void changeMode(bool mode) {
+    if (mode) {
+      this->ReadWriteMode = true; // Write
+    } else {
+      this->ReadWriteMode = false; // Read
+    }
+    this->seek(0);
   }
 };
 

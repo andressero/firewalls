@@ -3,6 +3,7 @@
 
 #include "FileProperties.hpp"
 
+// ? Is it necessary
 __attribute__((const)) bool FileProperties::valid() const {
   const bool nameNotEmpty = !this->name.empty();
   const bool dateNotEmpty = !this->date.empty();
@@ -16,7 +17,7 @@ __attribute__((const)) bool FileProperties::valid() const {
 
 FileProperties::FileProperties() : startingBlock(UNUSED), cursor(CLOSED) {}
 
-FileProperties::FileProperties(string name, string date, string owner)
+FileProperties::FileProperties(std::string name, std::string date, std::string owner)
     : name(name), date(date), owner(owner), startingBlock(UNUSED),
       cursor(CLOSED) {}
 

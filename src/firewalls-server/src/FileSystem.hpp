@@ -7,31 +7,42 @@
 #include "Definitions.hpp"
 #include "FileProperties.hpp"
 
+#include <string>
+
 class FileSystem {
  private:
-  std::array<u8, STORAGE_VOLUME> unit;
-  // ? Change it to &?
-  std::array<FileProperties, BLOCK_COUNT> directory;
-  std::array<BLOCK_POINTER, BLOCK_COUNT> FAT;
-
-  BLOCK_POINTER findFirstUnusedBlock();
+  u8 *unit;
+  FileProperties *directory;
+  BLOCK_INDEX *FAT;
+ 
+  BLOCK_INDEX findFirstUnusedBlock();
   // Returns index of file in directory or -1 if failed
-  DIRECTORY_POINTER search(FileProperties &entry);
+  DIRECTORY_INDEX search(FileProperties &entry);
+  // ! Check use
+  i64 getFreeSpace();
+  void replace(u64 block, std::string data);
 
  public:
   FileSystem();
   ~FileSystem();
-
-  bool create(FileProperties &entry);
-  bool erase(FileProperties &entry);
-  bool open(FileProperties &entry);
-  bool close(FileProperties &entry);
-  bool write(FileProperties &entry, string &buffer, i64 bufferSize);
-  bool append(FileProperties &entry, string &buffer, i64 bufferSize);
-  string read(FileProperties &entry, size_t readSize);
+  // TODO(Quesada): 
+  bool create(std::string name, std::string date, std::string owner);
+  bool erase(std::string name);
+  // TODO(777XXXDieguitoXXX777)
+  bool open(std::string name);
+  bool close(std::string name);
+  // TODO(Serrano)
+  bool write(std::string name, std::string &buffer, i64 bufferSize);
+  bool append(std::string name, std::string &buffer, i64 bufferSize);
+  std::string read(std::string name, size_t readSize);
+  // No editar
   void print();
-  i64 getFreeSpace();
-  void replace(u64 block, string data);
+  void DumpToFile();
+  void fillWithFile();
+  // TODO(Pablo)
+  void change2ReadMode(std::string name);
+  void chang2WriteMode(std::string name);
+  void changeCursor(std::string name, UNIT_INDEX cursor);
 };
 
 #endif

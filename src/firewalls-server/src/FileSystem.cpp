@@ -1,40 +1,42 @@
 // Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
 // Serrano>"
 
-#include "FileSystem.hpp"
+#include "FileSystem.hpp" 
 
 // FileSystem
-FileSystem::FileSystem() {
-  // ! It is still empty but it's reserved for STORAGE_VOLUME chars
-  for (i64 i = 0; i < BLOCK_COUNT; ++i) {
-    this->FAT[i] = UNUSED;
-  }
+FileSystem::FileSystem(): unit(new u8[STORAGE_VOLUME]()),
+  directory(new FileProperties[BLOCK_COUNT]()),
+  FAT(new BLOCK_INDEX[BLOCK_COUNT]()) {
 }
 
-FileSystem::~FileSystem() {}
+FileSystem::~FileSystem() {
+  delete[] this->unit;
+  delete[] this->directory;
+  delete[] this->FAT;
+}
 
-BLOCK_POINTER FileSystem::findFirstUnusedBlock() {
+BLOCK_INDEX FileSystem::findFirstUnusedBlock() {
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
     if (this->FAT[i] == UNUSED) {
       return i;
     }
   }
   ERROR("Unable to find unused blocks. There's no Blocks available at Unit")
-  return NONE;
+  return ERROR_NO_BLOCKS_AVAILABLE;
 }
 
-DIRECTORY_POINTER FileSystem::search(FileProperties &entry) {
+DIRECTORY_INDEX FileSystem::search(FileProperties &entry) {
   if (entry.getName().empty()) {
     ERROR("Unable to find files. Filename is empty")
-    return ERROR_CODE;
+    return ERROR_EMPTY_FILENAME;
   }
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
-    if (this->directory.at(i).getName() == entry.getName()) {
+    if (this->directory[i].getName() == entry.getName()) {
       return i;
     }
   }
   LOG("No file with that name!")
-  return NONE;
+  return ERROR_NO_FILE_BY_THAT_NAME;
 }
 
 bool FileSystem::create(FileProperties &entry) {
@@ -44,19 +46,19 @@ bool FileSystem::create(FileProperties &entry) {
     return false;
   }
   // Is there a file with the same name already on Directory?
-  if (search(entry) != NONE) {
+  if (search(entry) != ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to create. That file name already exists")
     return false;
   }
   // Look for space on directory
-  int directoryIndex = NONE;
+  DIRECTORY_INDEX directoryIndex = ERROR_NO_DIRECTORY_INDEX;
   for (u64 i = 0; i < BLOCK_COUNT; ++i) {
     if (this->directory[i].getName().empty()) {
       directoryIndex = i;
       break;
     }
   }
-  if (directoryIndex == NONE) {
+  if (directoryIndex == ERROR_NO_DIRECTORY_INDEX) {
     ERROR("Unable to create file. There is no space left on directory")
     return false;
   }
@@ -66,69 +68,75 @@ bool FileSystem::create(FileProperties &entry) {
 
   // ? Should it reserve the space for when it has content or now?
   // Stablish where does the file can be stored using FAT.
-  FAT_POINTER unusedBlockIndex = findFirstUnusedBlock();
-  if (unusedBlockIndex == NONE) {
+  FAT_INDEX unusedBlockIndex = findFirstUnusedBlock();
+  if (unusedBlockIndex == ERROR_NO_BLOCKS_AVAILABLE) {
     ERROR("Unable to create. There's no Blocks available at Unit")
     return false;
   }
-  assert(unusedBlockIndex >= 0);
-  this->directory[directoryIndex].setStartingBlock(unusedBlockIndex);
+
+  if (unusedBlockIndex < 0) {
+    return false;
+  }
+  entry.setStartingBlock(unusedBlockIndex);
   this->directory[directoryIndex] = entry;
+
   // Spaced reserved on FAT
   this->FAT[unusedBlockIndex] = -1;
-  assert(entry.valid());
+  // +
+  ASSERT(entry.valid());
   return true;
 }
 
-// ! It doesn't work, cause the for loop it's finding a -2(UNUSED) and that's
-// not possible if the file is created (exists) on unit then the last block
-// used to store file's data is always -1 (which means used but no next).
+
 bool FileSystem::erase(FileProperties &entry) {
-  // const DIRECTORY_POINTER index = this->search(entry);
-  const DIRECTORY_POINTER index = entry.getDirectoryIndex();
-  assert(entry == this->directory[index]);
-  if (index == NONE) {
+  if (entry.getReadWriteMode() != true) {
+    ERROR("You have to be in write mode to be able to erase!")
+    return false;
+  }
+  // const DIRECTORY_INDEX index = this->search(entry);
+  const DIRECTORY_INDEX index = entry.getDirectoryIndex();
+  ASSERT(entry == this->directory[index]);
+  if (index == ERROR_NO_DIRECTORY_INDEX) {
     ERROR("Could not find file!")
     return false;
   }
-  BLOCK_POINTER currentBlock = this->directory[index].getStartingBlock();
+  BLOCK_INDEX currentBlock = this->directory[index].getStartingBlock();
 
-  for (BLOCK_POINTER i = this->FAT[currentBlock]; i != UNUSED;
+  for (BLOCK_INDEX i = this->FAT[currentBlock]; i != UNUSED;
        i = this->FAT[i]) {
     // No next block
     this->FAT[currentBlock] = -1;
     currentBlock = i;
   }
-  this->directory[index].setStartingBlock(-1);
+  this->directory[index].setStartingBlock(CLOSED);
 
   return true;
 }
 
 bool FileSystem::open(FileProperties &entry) {
-  // assert(entry.valid()); // make release removes this
   if (!entry.valid()) {
     ERROR("Unable to open. File does not exist")
     return false;
   }
-  DIRECTORY_POINTER index = entry.getDirectoryIndex();
-  assert(this->directory[index] == entry);
+  DIRECTORY_INDEX index = entry.getDirectoryIndex();
+  if (this->directory[index] == entry) {}
   // TODO(any) make file properties remember directory pointer
   // to not having to call search every time
-  // this->directory[index].setCursor(OPEN);
-  entry.setCursor(OPEN);
+  // this->directory[index].seek(OPEN);
+  entry.seek(OPEN);
   this->directory[index] = entry;
   return true;
 }
 
 bool FileSystem::close(FileProperties &entry) {
-  DIRECTORY_POINTER index = entry.getDirectoryIndex();
-  assert(entry == this->directory[index]);
-  //? assert(entry.valid());
+  DIRECTORY_INDEX index = entry.getDirectoryIndex();
+  ASSERT(entry == this->directory[index]);
+  //? ASSERT(entry.valid());
   if (!entry.valid()) {
     ERROR("Unable to close. File is not valid!")
     return false;
   }
-  entry.setCursor(CLOSED);
+  entry.seek(CLOSED);
   this->directory[index] = entry;
   return true;
 }
@@ -137,12 +145,12 @@ bool FileSystem::close(FileProperties &entry) {
 // makes no sense, is double work on the same thing.
 i64 FileSystem::getFreeSpace() {
   i64 freeSpace = 0;
-  // BLOCK_POINTER currentBlock = this->findFirstUnusedBlock();
-  // if (currentBlock == NONE) {
+  // BLOCK_INDEX currentBlock = this->findFirstUnusedBlock();
+  // if (currentBlock == ERROR_NO_BLOCKS_AVAILABLE) {
   //   ERROR("Unable to find free space. There's no Blocks available at Unit")
   //   return ERROR_CODE;
   // }
-  for (BLOCK_POINTER i = 0; i < BLOCK_COUNT; ++i) {
+  for (BLOCK_INDEX i = 0; i < BLOCK_COUNT; ++i) {
     if (this->FAT[i] == UNUSED) {
       freeSpace += BLOCK_SIZE;
     }
@@ -150,12 +158,16 @@ i64 FileSystem::getFreeSpace() {
   return freeSpace;
 }
 
-bool FileSystem::write(FileProperties &entry, string &buffer, i64 bufferSize) {
-  const DIRECTORY_POINTER index = this->search(entry);
-  assert(entry == this->directory[index]);
-  assert(entry.valid());
-  assert(entry.getCursor() >= OPEN);
-  assert(bufferSize > 0);
+bool FileSystem::write(FileProperties &entry, std::string &buffer, i64 bufferSize) {
+  if (entry.getReadWriteMode() != true) {
+    ERROR("You have to be in write mode to be able to write!")
+    return false;
+  }
+  const DIRECTORY_INDEX index = this->search(entry);
+  ASSERT(entry == this->directory[index]);
+  ASSERT(entry.valid());
+  ASSERT(entry.getCursor() >= OPEN);
+  ASSERT(bufferSize > 0);
   if (index < 0) {
     ERROR("Unable to write. File does not exist");
     return false;
@@ -183,25 +195,25 @@ bool FileSystem::write(FileProperties &entry, string &buffer, i64 bufferSize) {
   // ! There's no way for this to happen cause "create" comes before write, and
   // it already reserved an starting block. If it wansn't able to, then it
   // would've returned false.
-  BLOCK_POINTER currentBlock = this->directory[index].getStartingBlock();
+  BLOCK_INDEX currentBlock = this->directory[index].getStartingBlock();
   if (currentBlock == UNUSED) {
     currentBlock = findFirstUnusedBlock();
     entry.setStartingBlock(currentBlock);
     this->directory[index] = entry;
   }
-  BLOCK_POINTER EoFBlock = currentBlock;
-  for (BLOCK_POINTER i = 0; i < bufferSize; i += BLOCK_SIZE) {
+  BLOCK_INDEX EoFBlock = currentBlock;
+  for (BLOCK_INDEX i = 0; i < bufferSize; i += BLOCK_SIZE) {
     // this->unit.replace(currentBlock * BLOCK_SIZE, BLOCK_SIZE,
     // buffer.substr(i, BLOCK_SIZE));
     this->replace(currentBlock, buffer.substr(i, BLOCK_SIZE));
     FAT[currentBlock] = LAST_BLOCK;
-    BLOCK_POINTER nextBlock = findFirstUnusedBlock();
+    BLOCK_INDEX nextBlock = findFirstUnusedBlock();
     FAT[currentBlock] = nextBlock;
     EoFBlock = currentBlock;
     currentBlock = nextBlock;
   }
   entry.setLastAccesedBlock(EoFBlock);
-  entry.setCursor(entry.getCursor() + bufferSize);
+  entry.seek(entry.getCursor() + bufferSize);
   this->directory[index] = entry;
 
   FAT[EoFBlock] = LAST_BLOCK;
@@ -211,20 +223,24 @@ bool FileSystem::write(FileProperties &entry, string &buffer, i64 bufferSize) {
   return true;
 }
 
-void FileSystem::replace(u64 block, string data) {
+void FileSystem::replace(u64 block, std::string data) {
   for (u64 i = 0; i < BLOCK_SIZE || i <= data.size(); ++i) {
     this->unit[block * BLOCK_SIZE + i] = data[i];
   }
 }
 
-bool FileSystem::append(FileProperties &entry, string &buffer, i64 bufferSize) {
+bool FileSystem::append(FileProperties &entry, std::string &buffer, i64 bufferSize) {
+  if (entry.getReadWriteMode() != true) {
+    ERROR("You have to be in write mode to be able to append!")
+    return false;
+  }
   (void)bufferSize;
   (void)entry;
   (void)buffer;
 
-  assert(entry == this->directory[entry.getDirectoryIndex()]);
-  assert(entry.valid());
-  assert(entry.getCursor() >= OPEN);
+  ASSERT(entry == this->directory[entry.getDirectoryIndex()]);
+  ASSERT(entry.valid());
+  ASSERT(entry.getCursor() >= OPEN);
   /*
   entry.setLastAccesedBlock(EoFBlock);
   this->directory[index] = entry;
@@ -232,24 +248,28 @@ bool FileSystem::append(FileProperties &entry, string &buffer, i64 bufferSize) {
   return true;
 }
 
-string FileSystem::read(FileProperties &entry, size_t readSize) {
-  const DIRECTORY_POINTER index = entry.getDirectoryIndex();
-  assert(this->directory[index] == entry);
-  assert(entry.valid());
-  assert(entry.getCursor() >= OPEN);
-  assert(readSize > 0);
+std::string FileSystem::read(FileProperties &entry, size_t readSize) {
+  if (entry.getReadWriteMode() != false) {
+    ERROR("You have to be in read mode to be able to read!")
+    return "";
+  }
+  const DIRECTORY_INDEX index = entry.getDirectoryIndex();
+  ASSERT(this->directory[index] == entry);
+  ASSERT(entry.valid());
+  ASSERT(entry.getCursor() >= OPEN);
+  ASSERT(readSize > 0);
 
   std::stringstream buffer;
 
-  if (index == NONE) {
+  if (index == ERROR_NO_DIRECTORY_INDEX) {
     return buffer.str();
   }
 
-  BLOCK_POINTER currentBlock = this->directory[index].getStartingBlock();
-  // BLOCK_POINTER currentBlock = this->directory[index].getLastAccesedBlock();
+  BLOCK_INDEX currentBlock = this->directory[index].getStartingBlock();
+  // BLOCK_INDEX currentBlock = this->directory[index].getLastAccesedBlock();
 
   size_t counter = 0;
-  BLOCK_POINTER i = currentBlock;
+  BLOCK_INDEX i = currentBlock;
   bool canContinue = true;
   for (; canContinue; i = this->FAT[i]) {
     canContinue = (i != UNUSED) && (i != LAST_BLOCK) && (counter <= readSize);
@@ -257,23 +277,22 @@ string FileSystem::read(FileProperties &entry, size_t readSize) {
       buffer << this->unit[i * BLOCK_SIZE + j];
       ++counter;
     }
-#if 0
-    if (counter < readSize && i != UNUSED && i != LAST_BLOCK) {
-      // buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
-      for (u64 j = 0; j < BLOCK_SIZE; ++j) {
-        buffer << this->unit[i * BLOCK_SIZE + j];
-      }
-      counter += BLOCK_SIZE;
-    } else {
-      break;
-    }
-#endif
+// #if 0
+//     if (counter < readSize && i != UNUSED && i != LAST_BLOCK) {
+//       // buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
+//       for (u64 j = 0; j < BLOCK_SIZE; ++j) {
+//         buffer << this->unit[i * BLOCK_SIZE + j];
+//       }
+//       counter += BLOCK_SIZE;
+//     } else {
+//       break;
+//     }
+// #endif
   }
 
   //! ESTO ESTA EN DUDA SI SE TIENE QUE DEVOLVER A 0 O SI AVANZAR A UN VALOR
-  // entry.getCursor() +  // this->directory[index].getCursor() +
-  entry.setCursor(counter);
-  this->directory[index].setCursor(counter);
+  // entry.getCursor() +  // this->directory[index].getCursor() + entry.seek(counter);
+  this->directory[index].seek(counter);
   LOG("CURSOR " + std::to_string(this->directory[index].getCursor()))
 
   entry.setLastAccesedBlock(i);
@@ -285,6 +304,7 @@ void FileSystem::print() {
   // FAT Table
   i64 width = 5;
   std::cout << "FAT Table" << std::endl;
+#if 0
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
     std::cout << "Block " << std::setw(width) << i;
   }
@@ -292,23 +312,32 @@ void FileSystem::print() {
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
     std::cout << std::setw(width) << this->FAT[i];
   }
+#endif
+
+  for (size_t i = 0; i < BLOCK_COUNT; ++i) {
+    std::cout << "Block " << std::setw(width) << i << std::setw(width)
+              << this->FAT[i] << std::endl;
+  }
   std::cout << std::endl
             << "=================================================" << std::endl;
 
   // Directory
   i64 directoryWidth = 25;
   std::cout << "Directory" << std::endl;
-  std::cout << std::setw(directoryWidth) << "Index"
-            << "Name"
-            << "Date"
-            << "Owner"
-            << "StartingBlock"
-            << "Cursor" << std::endl;
+  std::cout << std::setw(directoryWidth)
+            << "Index" << std::setw(directoryWidth)
+            << "Name" << std::setw(directoryWidth) << "Date"
+            << std::setw(directoryWidth) << "Owner" << std::setw(directoryWidth)
+            << "StartingBlock" << std::setw(directoryWidth) << "Cursor"
+            << std::endl;
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
-    std::cout << std::setw(directoryWidth) << i << this->directory[i].getName()
-              << this->directory[i].getDate() << this->directory[i].getOwner()
+    std::cout << std::setw(directoryWidth) << i << std::setw(directoryWidth)
+              << this->directory[i].getName() << std::setw(directoryWidth)
+              << this->directory[i].getDate() << std::setw(directoryWidth)
+              << this->directory[i].getOwner() << std::setw(directoryWidth)
               << this->directory[i].getStartingBlock()
-              << this->directory[i].getCursor() << std::endl;
+              << std::setw(directoryWidth) << this->directory[i].getCursor()
+              << std::endl;
   }
 
   std::cout << std::endl
@@ -320,8 +349,59 @@ void FileSystem::print() {
   for (size_t i = 0; i < BLOCK_SIZE; ++i) {
     for (size_t j = 0; j < BLOCK_COUNT; ++j) {
       std::cout << std::setw(2)
-                << static_cast<int>(this->unit[i * BLOCK_COUNT + j]) << " ";
+                << this->unit[i * BLOCK_COUNT + j] << " ";
     }
     std::cout << std::endl;
   }
+}
+
+void FileSystem::fillWithFile() {
+  std::string filename = "data.txt";
+  std::ifstream file(filename);
+
+  if (file.is_open()) {
+    std::string line;
+    int i = 0;
+    while (std::getline(file, line)) {
+      FileProperties newUser("User" + std::to_string(i), "30-4-2023", "Server");
+      this->create(newUser);
+      this->open(newUser);
+      this->write(newUser, line, line.size());
+      this->close(newUser);
+      ++i;
+    }
+    file.close();
+  } else {
+    ERROR("Unable to open file: " << filename);
+  }
+  return;
+}
+
+void FileSystem::DumpToFile() {
+  std::string filename = "output.txt";
+  std::ofstream file(filename);
+  if (file.is_open()) {
+    int i = 0;
+    std::string data;
+    while (!(this->directory[i].getName().empty())) {
+      data = this->read(this->directory[i], sizeof(this->directory[i])); // This size of is too big
+      file << data << std::endl;
+      ++i;
+    }
+    file.close();
+  } else {
+    ERROR("Unable to open file: " << filename);
+  }
+}
+
+void FileSystem::change2ReadMode(FileProperties &entry) {
+  entry.changeMode(false);
+}
+
+void FileSystem::chang2WriteMode(FileProperties &entry) {
+  entry.changeMode(true);
+}
+
+void FileSystem::changeCursor(FileProperties &entry, UNIT_INDEX cursor) {
+  entry.seek(cursor);
 }
