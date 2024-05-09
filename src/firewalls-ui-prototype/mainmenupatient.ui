@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
+    <width>360</width>
     <height>620</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>480</width>
+    <width>360</width>
     <height>620</height>
    </size>
   </property>
@@ -123,7 +123,7 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>40</y>
+     <y>30</y>
      <width>201</width>
      <height>18</height>
     </rect>
@@ -141,10 +141,10 @@
   <widget class="QPushButton" name="personalDataButton">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>110</y>
-     <width>200</width>
-     <height>150</height>
+     <x>10</x>
+     <y>90</y>
+     <width>161</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
@@ -154,10 +154,10 @@
   <widget class="QPushButton" name="laboratoryButton">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>270</y>
-     <width>200</width>
-     <height>150</height>
+     <x>190</x>
+     <y>250</y>
+     <width>161</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
@@ -167,10 +167,10 @@
   <widget class="QPushButton" name="appointmentsButton">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>270</y>
-     <width>200</width>
-     <height>150</height>
+     <x>10</x>
+     <y>250</y>
+     <width>161</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
@@ -180,10 +180,10 @@
   <widget class="QPushButton" name="pharmacyButton">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>110</y>
-     <width>200</width>
-     <height>150</height>
+     <x>190</x>
+     <y>90</y>
+     <width>161</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
@@ -193,10 +193,10 @@
   <widget class="QPushButton" name="insuranceButton">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>430</y>
-     <width>200</width>
-     <height>150</height>
+     <x>10</x>
+     <y>410</y>
+     <width>161</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
@@ -206,10 +206,10 @@
   <widget class="QPushButton" name="vaccinationCardButton">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>430</y>
-     <width>200</width>
-     <height>150</height>
+     <x>190</x>
+     <y>410</y>
+     <width>161</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
@@ -220,7 +220,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>590</y>
+     <y>560</y>
      <width>101</width>
      <height>26</height>
     </rect>
@@ -233,7 +233,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>30</y>
+     <y>20</y>
      <width>61</width>
      <height>51</height>
     </rect>

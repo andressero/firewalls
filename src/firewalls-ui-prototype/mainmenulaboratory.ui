@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
+    <width>360</width>
     <height>620</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>480</width>
+    <width>360</width>
     <height>620</height>
    </size>
   </property>
@@ -31,7 +31,7 @@
   <widget class="QLabel" name="logo">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>0</x>
      <y>20</y>
      <width>61</width>
      <height>51</height>
@@ -51,7 +51,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>570</y>
+     <y>560</y>
      <width>101</width>
      <height>26</height>
     </rect>
@@ -63,27 +63,27 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>70</x>
      <y>30</y>
      <width>411</width>
-     <height>18</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <pointsize>14</pointsize>
-     <weight>75</weight>
      <bold>true</bold>
     </font>
    </property>
    <property name="text">
-    <string>Lb. John Bow (Laboratorista) L00000</string>
+    <string>Lb. John Bow (Laboratorista)
+ L00000</string>
    </property>
   </widget>
   <widget class="QPushButton" name="appointmentsButton">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>30</x>
      <y>240</y>
      <width>300</width>
      <height>150</height>
@@ -96,7 +96,7 @@
   <widget class="QPushButton" name="personalDataButton">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>30</x>
      <y>80</y>
      <width>300</width>
      <height>150</height>
@@ -109,7 +109,7 @@
   <widget class="QPushButton" name="pharmacyButton">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>30</x>
      <y>400</y>
      <width>300</width>
      <height>150</height>

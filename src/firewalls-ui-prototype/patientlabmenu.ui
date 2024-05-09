@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
+    <width>360</width>
     <height>620</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>480</width>
+    <width>360</width>
     <height>620</height>
    </size>
   </property>
@@ -31,10 +31,10 @@
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>40</y>
-     <width>480</width>
-     <height>541</height>
+     <x>9</x>
+     <y>30</y>
+     <width>341</width>
+     <height>521</height>
     </rect>
    </property>
    <property name="widgetResizable">
@@ -45,8 +45,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>478</width>
-      <height>539</height>
+      <width>339</width>
+      <height>519</height>
      </rect>
     </property>
     <widget class="QListWidget" name="listWidget">
@@ -54,8 +54,8 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>451</width>
-       <height>511</height>
+       <width>311</width>
+       <height>491</height>
       </rect>
      </property>
      <item>
@@ -88,7 +88,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>590</y>
+     <y>560</y>
      <width>87</width>
      <height>26</height>
     </rect>
