@@ -39,7 +39,8 @@ DIRECTORY_INDEX FileSystem::search(const std::string name) {
   return ERROR_NO_FILE_BY_THAT_NAME;
 }
 
-bool FileSystem::create(std::string name, std::string date, std::string owner) {
+bool FileSystem::create(const std::string name, const std::string date,
+                        const std::string owner) {
   // Check if data for the file is valid
   if (name.empty() || date.empty() || owner.empty()) {
     ERROR("Unable to create. Incomplete entry file properties")
@@ -81,28 +82,32 @@ bool FileSystem::create(std::string name, std::string date, std::string owner) {
 
   return true;
 }
-// TODO(Quesada)
-bool FileSystem::erase(FileProperties &entry) {
-  if (entry.getReadWriteMode() != true) {
-    ERROR("You have to be in write mode to be able to erase!")
+
+bool FileSystem::efface(const std::string name) {
+  DIRECTORY_INDEX file_index = this->search(name);
+  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
+    ERROR("Unable to efface. There's no file by that name")
     return false;
   }
-  // const DIRECTORY_INDEX index = this->search(entry);
-  const DIRECTORY_INDEX index = entry.getDirectoryIndex();
-  ASSERT(entry == this->directory[index]);
-  if (index == ERROR_NO_DIRECTORY_INDEX) {
-    ERROR("Could not find file!")
+  ASSERT(this->directory[file_index].getName() == name);
+  // The file can be effaced only if it's closed
+  if (this->directory[file_index].getCursor() != CLOSED) {
+    ERROR("Unable to efface. The file most be closed in order to efface it.")
     return false;
   }
-  BLOCK_INDEX currentBlock = this->directory[index].getStartingBlock();
-
-  for (BLOCK_INDEX i = this->FAT[currentBlock]; i != UNUSED; i = this->FAT[i]) {
-    // No next block
-    this->FAT[currentBlock] = -1;
-    currentBlock = i;
+  for (BLOCK_INDEX i =
+           this->FAT[this->directory[file_index].getStartingBlock()];
+       i != LAST_BLOCK; i = this->FAT[i]) {
+    this->unit[i] = '\0';
+    this->FAT[i] = UNUSED;
   }
-  this->directory[index].setStartingBlock(CLOSED);
-
+  this->directory[file_index].setDirectoryIndex(NOT_ON_DIR);
+  this->directory[file_index].setStartingBlock(UNUSED);
+  this->directory[file_index].setLastAccessedBlock(UNUSED);
+  this->directory[file_index].setName("");
+  this->directory[file_index].setDate("");
+  this->directory[file_index].setOwner("");
+  
   return true;
 }
 

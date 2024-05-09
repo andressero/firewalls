@@ -27,8 +27,8 @@ class FileSystem {
   FileSystem();
   ~FileSystem();
   // TODO(Quesada): 
-  bool create(std::string name, std::string date, std::string owner);
-  bool erase(std::string name);
+  bool create(const std::string name, const std::string date, const std::string owner);
+  bool efface(const std::string name);
   // TODO(777XXXDieguitoXXX777)
   bool open(std::string name);
   bool close(std::string name);

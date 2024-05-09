@@ -45,6 +45,7 @@
 // Files dir. index
 #define NOT_ON_DIR -1
 // Cursor
+// ? Is Open useful?
 #define OPEN 0
 #define CLOSED -1
 // ?
