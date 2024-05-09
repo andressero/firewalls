@@ -6,22 +6,25 @@
 
 #include "Definitions.hpp"
 
+// TODO(any): Doxygen
 class FileProperties {
  private:
   std::string name;
   std::string date;
   std::string owner;
   BLOCK_INDEX startingBlock;
+  BLOCK_INDEX lastAccessedBlock;
   UNIT_INDEX cursor;
-  BLOCK_INDEX lastAccesedBlock;
   DIRECTORY_INDEX directoryIndex;
   // Read is false, Write is true
   bool ReadWriteMode = false; 
 
  public:
   FileProperties();
-  FileProperties(std::string name, std::string date, std::string owner);
+  FileProperties(const std::string name, const std::string date, const std::string owner);
+  // ? Is it necessary?
   explicit FileProperties(const FileProperties &properties);
+  // ? Is it useful now?
   __attribute__((const)) bool valid() const;
 
   inline void operator=(const FileProperties &properties) {
@@ -30,7 +33,7 @@ class FileProperties {
     this->owner = properties.owner;
     this->startingBlock = properties.startingBlock;
     this->cursor = properties.cursor;
-    this->lastAccesedBlock = properties.lastAccesedBlock;
+    this->lastAccessedBlock = properties.lastAccessedBlock;
     this->directoryIndex = properties.directoryIndex;
   }
 
@@ -41,12 +44,12 @@ class FileProperties {
     const bool equalStartingBlock =
         this->startingBlock == properties.startingBlock;
     const bool equalCursor = this->cursor == properties.cursor;
-    const bool equalLastAccesedBlock =
-        this->lastAccesedBlock == properties.lastAccesedBlock;
+    const bool equalLastAccessedBlock =
+        this->lastAccessedBlock == properties.lastAccessedBlock;
     const bool equalDirectoryIndex =
         this->directoryIndex == properties.directoryIndex;
     return equalName && equalDate && equalOwner && equalStartingBlock &&
-           equalCursor && equalLastAccesedBlock && equalDirectoryIndex;
+           equalCursor && equalLastAccessedBlock && equalDirectoryIndex;
   }
 
   bool operator!=(const FileProperties &properties) const {
@@ -70,8 +73,8 @@ class FileProperties {
     return this->directoryIndex;
   }
 
-  inline const BLOCK_INDEX &getLastAccesedBlock() const {
-    return this->lastAccesedBlock;
+  inline const BLOCK_INDEX &getLastAccessedBlock() const {
+    return this->lastAccessedBlock;
   }
 
   inline const bool &getReadWriteMode() const { return this->ReadWriteMode; }
@@ -79,14 +82,14 @@ class FileProperties {
   // Sets
   inline void seek(UNIT_INDEX cursor) { this->cursor = cursor; }
 
-  inline void setName(std::string &name) { this->name = name; }
+  inline void setName(const std::string &name) { this->name = name; }
 
   inline void setStartingBlock(BLOCK_INDEX startingBlock) {
     this->startingBlock = startingBlock;
   }
 
-  inline void setLastAccesedBlock(BLOCK_INDEX lastAccesedBlock) {
-    this->lastAccesedBlock = lastAccesedBlock;
+  inline void setLastAccessedBlock(BLOCK_INDEX lastAccessedBlock) {
+    this->lastAccessedBlock = lastAccessedBlock;
   }
 
   inline void setDirectoryIndex(DIRECTORY_INDEX directoryIndex) {

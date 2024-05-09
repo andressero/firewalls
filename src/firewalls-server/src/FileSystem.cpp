@@ -212,7 +212,7 @@ bool FileSystem::write(FileProperties &entry, std::string &buffer, i64 bufferSiz
     EoFBlock = currentBlock;
     currentBlock = nextBlock;
   }
-  entry.setLastAccesedBlock(EoFBlock);
+  entry.setLastAccessedBlock(EoFBlock);
   entry.seek(entry.getCursor() + bufferSize);
   this->directory[index] = entry;
 
@@ -295,7 +295,7 @@ std::string FileSystem::read(FileProperties &entry, size_t readSize) {
   this->directory[index].seek(counter);
   LOG("CURSOR " + std::to_string(this->directory[index].getCursor()))
 
-  entry.setLastAccesedBlock(i);
+  entry.setLastAccessedBlock(i);
   this->directory[index] = entry;
   return buffer.str();
 }
