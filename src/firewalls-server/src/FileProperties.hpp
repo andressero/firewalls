@@ -8,7 +8,7 @@
 
 // TODO(any): Doxygen
 class FileProperties {
- private:
+private:
   std::string name;
   std::string date;
   std::string owner;
@@ -17,11 +17,12 @@ class FileProperties {
   UNIT_INDEX cursor;
   DIRECTORY_INDEX directoryIndex;
   // Read is false, Write is true
-  bool ReadWriteMode = false; 
+  bool ReadWriteMode = false;
 
- public:
+public:
   FileProperties();
-  FileProperties(const std::string name, const std::string date, const std::string owner);
+  FileProperties(const std::string name, const std::string date,
+                 const std::string owner);
   // ? Is it necessary?
   explicit FileProperties(const FileProperties &properties);
   // ? Is it useful now?
@@ -83,6 +84,10 @@ class FileProperties {
   inline void seek(UNIT_INDEX cursor) { this->cursor = cursor; }
 
   inline void setName(const std::string &name) { this->name = name; }
+
+  inline void setDate(const std::string &date) { this->date = date; }
+  
+  inline void setOwner(const std::string &owner) { this->owner = owner; }
 
   inline void setStartingBlock(BLOCK_INDEX startingBlock) {
     this->startingBlock = startingBlock;

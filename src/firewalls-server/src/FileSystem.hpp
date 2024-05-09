@@ -9,6 +9,7 @@
 
 #include <string>
 
+// TODO(any): Doxygen
 class FileSystem {
  private:
   u8 *unit;
@@ -17,7 +18,7 @@ class FileSystem {
  
   BLOCK_INDEX findFirstUnusedBlock();
   // Returns index of file in directory or -1 if failed
-  DIRECTORY_INDEX search(FileProperties &entry);
+  DIRECTORY_INDEX search(const std::string name);
   // ! Check use
   i64 getFreeSpace();
   void replace(u64 block, std::string data);

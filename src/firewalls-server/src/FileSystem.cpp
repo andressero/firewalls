@@ -1,13 +1,13 @@
 // Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
 // Serrano>"
 
-#include "FileSystem.hpp" 
+#include "FileSystem.hpp"
 
 // FileSystem
-FileSystem::FileSystem(): unit(new u8[STORAGE_VOLUME]()),
-  directory(new FileProperties[BLOCK_COUNT]()),
-  FAT(new BLOCK_INDEX[BLOCK_COUNT]()) {
-}
+FileSystem::FileSystem()
+    : unit(new u8[STORAGE_VOLUME]()),
+      directory(new FileProperties[BLOCK_COUNT]()),
+      FAT(new BLOCK_INDEX[BLOCK_COUNT]()) {}
 
 FileSystem::~FileSystem() {
   delete[] this->unit;
@@ -25,13 +25,13 @@ BLOCK_INDEX FileSystem::findFirstUnusedBlock() {
   return ERROR_NO_BLOCKS_AVAILABLE;
 }
 
-DIRECTORY_INDEX FileSystem::search(FileProperties &entry) {
-  if (entry.getName().empty()) {
+DIRECTORY_INDEX FileSystem::search(const std::string name) {
+  if (name.empty()) {
     ERROR("Unable to find files. Filename is empty")
     return ERROR_EMPTY_FILENAME;
   }
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
-    if (this->directory[i].getName() == entry.getName()) {
+    if (this->directory[i].getName() == name) {
       return i;
     }
   }
@@ -39,14 +39,14 @@ DIRECTORY_INDEX FileSystem::search(FileProperties &entry) {
   return ERROR_NO_FILE_BY_THAT_NAME;
 }
 
-bool FileSystem::create(FileProperties &entry) {
-  // Check if fileproperties is valid
-  if (!entry.valid()) {
+bool FileSystem::create(std::string name, std::string date, std::string owner) {
+  // Check if data for the file is valid
+  if (name.empty() || date.empty() || owner.empty()) {
     ERROR("Unable to create. Incomplete entry file properties")
     return false;
   }
   // Is there a file with the same name already on Directory?
-  if (search(entry) != ERROR_NO_FILE_BY_THAT_NAME) {
+  if (search(name) != ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to create. That file name already exists")
     return false;
   }
@@ -63,31 +63,25 @@ bool FileSystem::create(FileProperties &entry) {
     return false;
   }
 
-  entry.setDirectoryIndex(directoryIndex);
-  this->directory[directoryIndex] = entry;
-
-  // ? Should it reserve the space for when it has content or now?
   // Stablish where does the file can be stored using FAT.
   FAT_INDEX unusedBlockIndex = findFirstUnusedBlock();
   if (unusedBlockIndex == ERROR_NO_BLOCKS_AVAILABLE) {
     ERROR("Unable to create. There's no Blocks available at Unit")
     return false;
   }
-
-  if (unusedBlockIndex < 0) {
-    return false;
-  }
-  entry.setStartingBlock(unusedBlockIndex);
-  this->directory[directoryIndex] = entry;
-
-  // Spaced reserved on FAT
+  // Set all file info to directory.
+  this->directory[directoryIndex].setDirectoryIndex(directoryIndex);
+  this->directory[directoryIndex].setStartingBlock(unusedBlockIndex);
+  this->directory[directoryIndex].setLastAccessedBlock(unusedBlockIndex);
+  this->directory[directoryIndex].setName(name);
+  this->directory[directoryIndex].setDate(date);
+  this->directory[directoryIndex].setOwner(owner);
+  // Reserve space on FAT
   this->FAT[unusedBlockIndex] = -1;
-  // +
-  ASSERT(entry.valid());
+
   return true;
 }
-
-
+// TODO(Quesada)
 bool FileSystem::erase(FileProperties &entry) {
   if (entry.getReadWriteMode() != true) {
     ERROR("You have to be in write mode to be able to erase!")
@@ -102,8 +96,7 @@ bool FileSystem::erase(FileProperties &entry) {
   }
   BLOCK_INDEX currentBlock = this->directory[index].getStartingBlock();
 
-  for (BLOCK_INDEX i = this->FAT[currentBlock]; i != UNUSED;
-       i = this->FAT[i]) {
+  for (BLOCK_INDEX i = this->FAT[currentBlock]; i != UNUSED; i = this->FAT[i]) {
     // No next block
     this->FAT[currentBlock] = -1;
     currentBlock = i;
@@ -119,7 +112,8 @@ bool FileSystem::open(FileProperties &entry) {
     return false;
   }
   DIRECTORY_INDEX index = entry.getDirectoryIndex();
-  if (this->directory[index] == entry) {}
+  if (this->directory[index] == entry) {
+  }
   // TODO(any) make file properties remember directory pointer
   // to not having to call search every time
   // this->directory[index].seek(OPEN);
@@ -158,7 +152,8 @@ i64 FileSystem::getFreeSpace() {
   return freeSpace;
 }
 
-bool FileSystem::write(FileProperties &entry, std::string &buffer, i64 bufferSize) {
+bool FileSystem::write(FileProperties &entry, std::string &buffer,
+                       i64 bufferSize) {
   if (entry.getReadWriteMode() != true) {
     ERROR("You have to be in write mode to be able to write!")
     return false;
@@ -229,7 +224,8 @@ void FileSystem::replace(u64 block, std::string data) {
   }
 }
 
-bool FileSystem::append(FileProperties &entry, std::string &buffer, i64 bufferSize) {
+bool FileSystem::append(FileProperties &entry, std::string &buffer,
+                        i64 bufferSize) {
   if (entry.getReadWriteMode() != true) {
     ERROR("You have to be in write mode to be able to append!")
     return false;
@@ -277,21 +273,22 @@ std::string FileSystem::read(FileProperties &entry, size_t readSize) {
       buffer << this->unit[i * BLOCK_SIZE + j];
       ++counter;
     }
-// #if 0
-//     if (counter < readSize && i != UNUSED && i != LAST_BLOCK) {
-//       // buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
-//       for (u64 j = 0; j < BLOCK_SIZE; ++j) {
-//         buffer << this->unit[i * BLOCK_SIZE + j];
-//       }
-//       counter += BLOCK_SIZE;
-//     } else {
-//       break;
-//     }
-// #endif
+    // #if 0
+    //     if (counter < readSize && i != UNUSED && i != LAST_BLOCK) {
+    //       // buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
+    //       for (u64 j = 0; j < BLOCK_SIZE; ++j) {
+    //         buffer << this->unit[i * BLOCK_SIZE + j];
+    //       }
+    //       counter += BLOCK_SIZE;
+    //     } else {
+    //       break;
+    //     }
+    // #endif
   }
 
   //! ESTO ESTA EN DUDA SI SE TIENE QUE DEVOLVER A 0 O SI AVANZAR A UN VALOR
-  // entry.getCursor() +  // this->directory[index].getCursor() + entry.seek(counter);
+  // entry.getCursor() +  // this->directory[index].getCursor() +
+  // entry.seek(counter);
   this->directory[index].seek(counter);
   LOG("CURSOR " + std::to_string(this->directory[index].getCursor()))
 
@@ -324,8 +321,7 @@ void FileSystem::print() {
   // Directory
   i64 directoryWidth = 25;
   std::cout << "Directory" << std::endl;
-  std::cout << std::setw(directoryWidth)
-            << "Index" << std::setw(directoryWidth)
+  std::cout << std::setw(directoryWidth) << "Index" << std::setw(directoryWidth)
             << "Name" << std::setw(directoryWidth) << "Date"
             << std::setw(directoryWidth) << "Owner" << std::setw(directoryWidth)
             << "StartingBlock" << std::setw(directoryWidth) << "Cursor"
@@ -348,8 +344,7 @@ void FileSystem::print() {
 
   for (size_t i = 0; i < BLOCK_SIZE; ++i) {
     for (size_t j = 0; j < BLOCK_COUNT; ++j) {
-      std::cout << std::setw(2)
-                << this->unit[i * BLOCK_COUNT + j] << " ";
+      std::cout << std::setw(2) << this->unit[i * BLOCK_COUNT + j] << " ";
     }
     std::cout << std::endl;
   }
@@ -384,7 +379,8 @@ void FileSystem::DumpToFile() {
     int i = 0;
     std::string data;
     while (!(this->directory[i].getName().empty())) {
-      data = this->read(this->directory[i], sizeof(this->directory[i])); // This size of is too big
+      data = this->read(this->directory[i],
+                        sizeof(this->directory[i])); // This size of is too big
       file << data << std::endl;
       ++i;
     }
