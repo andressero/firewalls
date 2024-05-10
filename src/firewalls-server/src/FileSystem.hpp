@@ -26,24 +26,20 @@ class FileSystem {
  public:
   FileSystem();
   ~FileSystem();
-  // TODO(Quesada): 
   bool create(const std::string name, const std::string date, const std::string owner);
   bool efface(const std::string name);
-  // TODO(777XXXDieguitoXXX777)
-  bool open(std::string name);
-  bool close(std::string name);
+  bool open(const std::string name);
+  bool close(const std::string name);
   // TODO(Serrano)
-  bool write(std::string name, std::string &buffer, i64 bufferSize);
-  bool append(std::string name, std::string &buffer, i64 bufferSize);
-  std::string read(std::string name, size_t readSize);
-  // No editar
+  bool write(const std::string name, std::string &buffer, i64 bufferSize);
+  bool append(const std::string name, std::string &buffer, i64 bufferSize);
+  std::string read(const std::string name, size_t readSize);
   void print();
   void DumpToFile();
   void fillWithFile();
-  // TODO(Pablo)
-  void change2ReadMode(std::string name);
-  void chang2WriteMode(std::string name);
-  void changeCursor(std::string name, UNIT_INDEX cursor);
+  void change2ReadMode(const std::string name);
+  void chang2WriteMode(const std::string name);
+  void changeCursor(const std::string name, UNIT_INDEX cursor);
 };
 
 #endif

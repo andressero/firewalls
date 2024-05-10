@@ -111,32 +111,23 @@ bool FileSystem::efface(const std::string name) {
   return true;
 }
 
-bool FileSystem::open(FileProperties &entry) {
-  if (!entry.valid()) {
+bool FileSystem::open(const std::string name) {
+  DIRECTORY_INDEX file_index = this->search(name);
+  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to open. File does not exist")
     return false;
   }
-  DIRECTORY_INDEX index = entry.getDirectoryIndex();
-  if (this->directory[index] == entry) {
-  }
-  // TODO(any) make file properties remember directory pointer
-  // to not having to call search every time
-  // this->directory[index].seek(OPEN);
-  entry.seek(OPEN);
-  this->directory[index] = entry;
+  this->directory[file_index].seek(OPEN);
   return true;
 }
 
-bool FileSystem::close(FileProperties &entry) {
-  DIRECTORY_INDEX index = entry.getDirectoryIndex();
-  ASSERT(entry == this->directory[index]);
-  //? ASSERT(entry.valid());
-  if (!entry.valid()) {
+bool FileSystem::close(const std::string name) {
+  DIRECTORY_INDEX file_index = this->search(name);
+  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to close. File is not valid!")
     return false;
   }
-  entry.seek(CLOSED);
-  this->directory[index] = entry;
+  this->directory[file_index].seek(CLOSED);
   return true;
 }
 
@@ -364,10 +355,10 @@ void FileSystem::fillWithFile() {
     int i = 0;
     while (std::getline(file, line)) {
       FileProperties newUser("User" + std::to_string(i), "30-4-2023", "Server");
-      this->create(newUser);
-      this->open(newUser);
-      this->write(newUser, line, line.size());
-      this->close(newUser);
+      this->create(newUser.getName(), newUser.getDate(), newUser.getOwner());
+      this->open(newUser.getName());
+      this->write(newUser.getName(), line, line.size());
+      this->close(newUser.getName());
       ++i;
     }
     file.close();
@@ -384,7 +375,7 @@ void FileSystem::DumpToFile() {
     int i = 0;
     std::string data;
     while (!(this->directory[i].getName().empty())) {
-      data = this->read(this->directory[i],
+      data = this->read(this->directory[i].getName(),
                         sizeof(this->directory[i])); // This size of is too big
       file << data << std::endl;
       ++i;
@@ -395,17 +386,17 @@ void FileSystem::DumpToFile() {
   }
 }
 
-void FileSystem::change2ReadMode(std::string name) {
+void FileSystem::change2ReadMode(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
   this->directory[file_index].changeMode(false);
 }
 
-void FileSystem::chang2WriteMode(std::string name) {
+void FileSystem::chang2WriteMode(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
   this->directory[file_index].changeMode(true);
 }
 
-void FileSystem::changeCursor(std::string name, UNIT_INDEX cursor) {
+void FileSystem::changeCursor(const std::string name, UNIT_INDEX cursor) {
   DIRECTORY_INDEX file_index = this->search(name);
   this->directory[file_index].seek(cursor);
 }
