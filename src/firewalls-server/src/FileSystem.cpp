@@ -131,15 +131,8 @@ bool FileSystem::close(const std::string name) {
   return true;
 }
 
-// ! Is looking for an unused block and then for various unused blocks. That
-// makes no sense, is double work on the same thing.
 i64 FileSystem::getFreeSpace() {
   i64 freeSpace = 0;
-  // BLOCK_INDEX currentBlock = this->findFirstUnusedBlock();
-  // if (currentBlock == ERROR_NO_BLOCKS_AVAILABLE) {
-  //   ERROR("Unable to find free space. There's no Blocks available at Unit")
-  //   return ERROR_CODE;
-  // }
   for (BLOCK_INDEX i = 0; i < BLOCK_COUNT; ++i) {
     if (this->FAT[i] == UNUSED) {
       freeSpace += BLOCK_SIZE;
@@ -148,18 +141,19 @@ i64 FileSystem::getFreeSpace() {
   return freeSpace;
 }
 
-bool FileSystem::write(FileProperties &entry, std::string &buffer,
+bool FileSystem::write(const std::string name, std::string &buffer,
                        i64 bufferSize) {
-  if (entry.getReadWriteMode() != true) {
-    ERROR("You have to be in write mode to be able to write!")
+  DIRECTORY_INDEX file_index = this->search(name);
+  if (this->directory[file_index].getReadWriteMode() == false) {
+    ERROR("Unable to write. You have to be in write mode to be able to write!")
     return false;
   }
-  const DIRECTORY_INDEX index = this->search(entry);
-  ASSERT(entry == this->directory[index]);
-  ASSERT(entry.valid());
-  ASSERT(entry.getCursor() >= OPEN);
+  if (this->directory[file_index].getCursor() >= OPEN) {
+    ERROR("Unable to write. The file has to be open to be able to write!")
+    return false;
+  }
   ASSERT(bufferSize > 0);
-  if (index < 0) {
+  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to write. File does not exist");
     return false;
   }
@@ -170,9 +164,13 @@ bool FileSystem::write(FileProperties &entry, std::string &buffer,
   // already have form those previous calls. Remember that write can overwrite a
   // file. If the file contains "Hello World!" and we write "Bye" then it must
   // contain: "Byelo World!" not just "Bye".
+
+  // TODO(Any): make a change to make sure that if changing a part you have
+  // already reserved you don't have to check for frre space
   if (this->getFreeSpace() < bufferSize) {
     ERROR("Unable to write file. There is no enough space left on unit to "
           "store this buffer");
+    return false;
   }
 
   /*
@@ -186,11 +184,10 @@ bool FileSystem::write(FileProperties &entry, std::string &buffer,
   // ! There's no way for this to happen cause "create" comes before write, and
   // it already reserved an starting block. If it wansn't able to, then it
   // would've returned false.
-  BLOCK_INDEX currentBlock = this->directory[index].getStartingBlock();
+  BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock();
   if (currentBlock == UNUSED) {
     currentBlock = findFirstUnusedBlock();
-    entry.setStartingBlock(currentBlock);
-    this->directory[index] = entry;
+    this->directory[file_index].setStartingBlock(currentBlock);
   }
   BLOCK_INDEX EoFBlock = currentBlock;
   for (BLOCK_INDEX i = 0; i < bufferSize; i += BLOCK_SIZE) {
@@ -203,13 +200,11 @@ bool FileSystem::write(FileProperties &entry, std::string &buffer,
     EoFBlock = currentBlock;
     currentBlock = nextBlock;
   }
-  entry.setLastAccessedBlock(EoFBlock);
-  entry.seek(entry.getCursor() + bufferSize);
-  this->directory[index] = entry;
+  this->directory[file_index].setLastAccessedBlock(EoFBlock);
+  this->directory[file_index].seek(this->directory[file_index].getCursor()
+  + bufferSize);
 
   FAT[EoFBlock] = LAST_BLOCK;
-
-  // this->print();
 
   return true;
 }
@@ -220,15 +215,17 @@ void FileSystem::replace(u64 block, std::string data) {
   }
 }
 
-bool FileSystem::append(FileProperties &entry, std::string &buffer,
+// TODO(any): Implement, remove (void) casts
+bool FileSystem::append(const std::string name, std::string &buffer,
                         i64 bufferSize) {
-  if (entry.getReadWriteMode() != true) {
-    ERROR("You have to be in write mode to be able to append!")
+  DIRECTORY_INDEX file_index = this->search(name);
+  if (this->directory[file_index].getReadWriteMode() != true) {
+    ERROR("Unable to write file. You have to be in write mode to be able to append!")
     return false;
   }
-  (void)bufferSize;
-  (void)entry;
-  (void)buffer;
+  // (void)bufferSize;
+  // (void)entry;
+  // (void)buffer;
 
   ASSERT(entry == this->directory[entry.getDirectoryIndex()]);
   ASSERT(entry.valid());
@@ -240,24 +237,26 @@ bool FileSystem::append(FileProperties &entry, std::string &buffer,
   return true;
 }
 
-std::string FileSystem::read(FileProperties &entry, size_t readSize) {
-  if (entry.getReadWriteMode() != false) {
-    ERROR("You have to be in read mode to be able to read!")
-    return "";
-  }
-  const DIRECTORY_INDEX index = entry.getDirectoryIndex();
-  ASSERT(this->directory[index] == entry);
-  ASSERT(entry.valid());
-  ASSERT(entry.getCursor() >= OPEN);
-  ASSERT(readSize > 0);
-
+std::string FileSystem::read(const std::string name, size_t readSize) {
+  DIRECTORY_INDEX file_index = this->search(name);
   std::stringstream buffer;
-
-  if (index == ERROR_NO_DIRECTORY_INDEX) {
+    if (file_index == ERROR_NO_DIRECTORY_INDEX) {
+      ERROR("Unable to read file. Could not find a file by that name");
     return buffer.str();
   }
 
-  BLOCK_INDEX currentBlock = this->directory[index].getStartingBlock();
+  if (this->directory[file_index].getReadWriteMode() != false) {
+    ERROR("Unable to read file. You have to be in read mode to be able to read!")
+    return "";
+  }
+  ASSERT(this->directory[file_index].getCursor() >= OPEN);
+  ASSERT(readSize > 0);
+
+  if (file_index == ERROR_NO_DIRECTORY_INDEX) {
+    return buffer.str();
+  }
+
+  BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock();
   // BLOCK_INDEX currentBlock = this->directory[index].getLastAccesedBlock();
 
   size_t counter = 0;
@@ -269,27 +268,12 @@ std::string FileSystem::read(FileProperties &entry, size_t readSize) {
       buffer << this->unit[i * BLOCK_SIZE + j];
       ++counter;
     }
-    // #if 0
-    //     if (counter < readSize && i != UNUSED && i != LAST_BLOCK) {
-    //       // buffer << this->unit.substr(i * BLOCK_SIZE, BLOCK_SIZE);
-    //       for (u64 j = 0; j < BLOCK_SIZE; ++j) {
-    //         buffer << this->unit[i * BLOCK_SIZE + j];
-    //       }
-    //       counter += BLOCK_SIZE;
-    //     } else {
-    //       break;
-    //     }
-    // #endif
   }
 
-  //! ESTO ESTA EN DUDA SI SE TIENE QUE DEVOLVER A 0 O SI AVANZAR A UN VALOR
-  // entry.getCursor() +  // this->directory[index].getCursor() +
-  // entry.seek(counter);
-  this->directory[index].seek(counter);
-  LOG("CURSOR " + std::to_string(this->directory[index].getCursor()))
+  this->directory[file_index].seek(counter);
+  LOG("CURSOR " + std::to_string(this->directory[file_index].getCursor()))
 
-  entry.setLastAccessedBlock(i);
-  this->directory[index] = entry;
+  this->directory[file_index].setLastAccessedBlock(i);
   return buffer.str();
 }
 
