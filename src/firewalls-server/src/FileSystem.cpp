@@ -395,14 +395,17 @@ void FileSystem::DumpToFile() {
   }
 }
 
-void FileSystem::change2ReadMode(FileProperties &entry) {
-  entry.changeMode(false);
+void FileSystem::change2ReadMode(std::string name) {
+  DIRECTORY_INDEX file_index = this->search(name);
+  this->directory[file_index].changeMode(false);
 }
 
-void FileSystem::chang2WriteMode(FileProperties &entry) {
-  entry.changeMode(true);
+void FileSystem::chang2WriteMode(std::string name) {
+  DIRECTORY_INDEX file_index = this->search(name);
+  this->directory[file_index].changeMode(true);
 }
 
-void FileSystem::changeCursor(FileProperties &entry, UNIT_INDEX cursor) {
-  entry.seek(cursor);
+void FileSystem::changeCursor(std::string name, UNIT_INDEX cursor) {
+  DIRECTORY_INDEX file_index = this->search(name);
+  this->directory[file_index].seek(cursor);
 }
