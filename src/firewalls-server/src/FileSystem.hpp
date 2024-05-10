@@ -22,6 +22,7 @@ class FileSystem {
   // ! Check use
   i64 getFreeSpace();
   void replace(u64 block, std::string data);
+  i64 findEOF(const std::string name);
 
  public:
   FileSystem();
@@ -30,7 +31,6 @@ class FileSystem {
   bool efface(const std::string name);
   bool open(const std::string name);
   bool close(const std::string name);
-  // TODO(Serrano)
   bool write(const std::string name, std::string &buffer, i64 bufferSize);
   bool append(const std::string name, std::string &buffer, i64 bufferSize);
   std::string read(const std::string name, size_t readSize);

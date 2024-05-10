@@ -4,13 +4,13 @@
 #include "FileProperties.hpp"
 
 FileProperties::FileProperties()
-    : startingBlock(UNUSED), lastAccessedBlock(UNUSED), cursor(CLOSED),
+    : startingBlock(UNUSED), lastBlock(UNUSED), cursor(CLOSED),
       directoryIndex(NOT_ON_DIR) {}
 
 FileProperties::FileProperties(const std::string name, const std::string date,
                                const std::string owner)
     : name(name), date(date), owner(owner), startingBlock(UNUSED),
-      lastAccessedBlock(UNUSED), cursor(CLOSED), directoryIndex(NOT_ON_DIR) {}
+      lastBlock(UNUSED), cursor(CLOSED), directoryIndex(NOT_ON_DIR) {}
 
 inline FileProperties::FileProperties(const FileProperties &properties) {
   this->name = properties.name;
@@ -18,7 +18,7 @@ inline FileProperties::FileProperties(const FileProperties &properties) {
   this->owner = properties.owner;
   this->startingBlock = properties.startingBlock;
   this->cursor = properties.cursor;
-  this->lastAccessedBlock = properties.lastAccessedBlock;
+  this->lastBlock = properties.lastBlock;
   this->directoryIndex = properties.directoryIndex;
 }
 

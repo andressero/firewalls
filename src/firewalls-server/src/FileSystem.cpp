@@ -73,7 +73,7 @@ bool FileSystem::create(const std::string name, const std::string date,
   // Set all file info to directory.
   this->directory[directoryIndex].setDirectoryIndex(directoryIndex);
   this->directory[directoryIndex].setStartingBlock(unusedBlockIndex);
-  this->directory[directoryIndex].setLastAccessedBlock(unusedBlockIndex);
+  this->directory[directoryIndex].setLastBlock(unusedBlockIndex);
   this->directory[directoryIndex].setName(name);
   this->directory[directoryIndex].setDate(date);
   this->directory[directoryIndex].setOwner(owner);
@@ -103,7 +103,7 @@ bool FileSystem::efface(const std::string name) {
   }
   this->directory[file_index].setDirectoryIndex(NOT_ON_DIR);
   this->directory[file_index].setStartingBlock(UNUSED);
-  this->directory[file_index].setLastAccessedBlock(UNUSED);
+  this->directory[file_index].setLastBlock(UNUSED);
   this->directory[file_index].setName("");
   this->directory[file_index].setDate("");
   this->directory[file_index].setOwner("");
@@ -181,13 +181,13 @@ bool FileSystem::write(const std::string name, std::string &buffer,
       4 | -1 | Hermoso
       5 | -2 |lastblock
     */
-  // ! There's no way for this to happen cause "create" comes before write, and
-  // it already reserved an starting block. If it wansn't able to, then it
-  // would've returned false.
-  BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock();
+ // ! Implement taking the current cursor into account
+  bool LastBlockChanged = false;
+  BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock(); // !rm
   if (currentBlock == UNUSED) {
     currentBlock = findFirstUnusedBlock();
     this->directory[file_index].setStartingBlock(currentBlock);
+    LastBlockChanged = true;
   }
   BLOCK_INDEX EoFBlock = currentBlock;
   for (BLOCK_INDEX i = 0; i < bufferSize; i += BLOCK_SIZE) {
@@ -200,11 +200,14 @@ bool FileSystem::write(const std::string name, std::string &buffer,
     EoFBlock = currentBlock;
     currentBlock = nextBlock;
   }
-  this->directory[file_index].setLastAccessedBlock(EoFBlock);
+  // ! Dudar de esta implementación
+  if (LastBlockChanged) {
+    this->directory[file_index].setLastBlock(EoFBlock);
+  }
   this->directory[file_index].seek(this->directory[file_index].getCursor()
   + bufferSize);
 
-  FAT[EoFBlock] = LAST_BLOCK;
+  FAT[EoFBlock] = LAST_BLOCK; //?
 
   return true;
 }
@@ -215,26 +218,42 @@ void FileSystem::replace(u64 block, std::string data) {
   }
 }
 
+i64 FileSystem::findEOF(const std::string name) {
+  DIRECTORY_INDEX file_index = this->search(name);
+  // Doubt about the functionality of lastBlock()
+  BLOCK_INDEX lastBlock = this->directory[file_index].getLastBlock();
+  i64 counter = 0;
+  for (u64 j = 0; j < BLOCK_SIZE; j++) {
+      if (this->unit[lastBlock * BLOCK_SIZE + j] == 0) {
+        return counter;
+      }
+      ++counter;
+  }
+}
+
 // TODO(any): Implement, remove (void) casts
 bool FileSystem::append(const std::string name, std::string &buffer,
                         i64 bufferSize) {
+  this->changeCursor(name, this->findEOF(name));
+  return this->write(name, buffer, bufferSize);
+  
+  /*
   DIRECTORY_INDEX file_index = this->search(name);
   if (this->directory[file_index].getReadWriteMode() != true) {
     ERROR("Unable to write file. You have to be in write mode to be able to append!")
     return false;
   }
-  // (void)bufferSize;
-  // (void)entry;
-  // (void)buffer;
+  (void)bufferSize;
+  (void)entry;
+  (void)buffer;
 
   ASSERT(entry == this->directory[entry.getDirectoryIndex()]);
   ASSERT(entry.valid());
   ASSERT(entry.getCursor() >= OPEN);
-  /*
+
   entry.setLastAccesedBlock(EoFBlock);
   this->directory[index] = entry;
   */
-  return true;
 }
 
 std::string FileSystem::read(const std::string name, size_t readSize) {
@@ -273,7 +292,7 @@ std::string FileSystem::read(const std::string name, size_t readSize) {
   this->directory[file_index].seek(counter);
   LOG("CURSOR " + std::to_string(this->directory[file_index].getCursor()))
 
-  this->directory[file_index].setLastAccessedBlock(i);
+  // this->directory[file_index].setLastBlock(i);
   return buffer.str();
 }
 

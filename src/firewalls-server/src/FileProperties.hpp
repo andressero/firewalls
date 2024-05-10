@@ -13,7 +13,7 @@ private:
   std::string date;
   std::string owner;
   BLOCK_INDEX startingBlock;
-  BLOCK_INDEX lastAccessedBlock;
+  BLOCK_INDEX lastBlock;
   UNIT_INDEX cursor;
   DIRECTORY_INDEX directoryIndex;
   // Read is false, Write is true
@@ -34,7 +34,7 @@ public:
     this->owner = properties.owner;
     this->startingBlock = properties.startingBlock;
     this->cursor = properties.cursor;
-    this->lastAccessedBlock = properties.lastAccessedBlock;
+    this->lastBlock = properties.lastBlock;
     this->directoryIndex = properties.directoryIndex;
   }
 
@@ -45,12 +45,12 @@ public:
     const bool equalStartingBlock =
         this->startingBlock == properties.startingBlock;
     const bool equalCursor = this->cursor == properties.cursor;
-    const bool equalLastAccessedBlock =
-        this->lastAccessedBlock == properties.lastAccessedBlock;
+    const bool equallastBlock =
+        this->lastBlock == properties.lastBlock;
     const bool equalDirectoryIndex =
         this->directoryIndex == properties.directoryIndex;
     return equalName && equalDate && equalOwner && equalStartingBlock &&
-           equalCursor && equalLastAccessedBlock && equalDirectoryIndex;
+           equalCursor && equallastBlock && equalDirectoryIndex;
   }
 
   bool operator!=(const FileProperties &properties) const {
@@ -74,8 +74,8 @@ public:
     return this->directoryIndex;
   }
 
-  inline const BLOCK_INDEX &getLastAccessedBlock() const {
-    return this->lastAccessedBlock;
+  inline const BLOCK_INDEX &getLastBlock() const {
+    return this->lastBlock;
   }
 
   inline const bool &getReadWriteMode() const { return this->ReadWriteMode; }
@@ -93,8 +93,8 @@ public:
     this->startingBlock = startingBlock;
   }
 
-  inline void setLastAccessedBlock(BLOCK_INDEX lastAccessedBlock) {
-    this->lastAccessedBlock = lastAccessedBlock;
+  inline void setLastBlock(BLOCK_INDEX lastBlock) {
+    this->lastBlock = lastBlock;
   }
 
   inline void setDirectoryIndex(DIRECTORY_INDEX directoryIndex) {
