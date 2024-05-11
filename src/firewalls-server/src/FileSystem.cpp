@@ -100,7 +100,9 @@ bool FileSystem::efface(const std::string name) {
   for (BLOCK_INDEX i =
            this->FAT[this->directory[file_index].getStartingBlock()];
        i != LAST_BLOCK;) {
-    this->unit[i] = '\0';
+    for (UNIT_INDEX j = 0; j < BLOCK_SIZE; ++j) {
+      this->unit[i * BLOCK_SIZE + j] = '\0';
+    }
     i = this->FAT[i];
     this->FAT[i] = UNUSED;
   }
@@ -251,7 +253,13 @@ i64 FileSystem::findEOF(const std::string name) {
 
 bool FileSystem::append(const std::string name, std::string &buffer,
                         i64 bufferSize) {
-  this->changeCursor(name, this->findEOF(name));
+  UNIT_INDEX eofIndex = this->findEOF(name);
+  if (eofIndex == -1) {
+    ERROR("Unable to append. The EOF not found.")
+    return false;
+  }
+  // Set the cursor position at the end of the file and write from there
+  this->changeCursor(name, eofIndex);
   return this->write(name, buffer, bufferSize);
 }
 

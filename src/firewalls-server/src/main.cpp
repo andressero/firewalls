@@ -84,48 +84,48 @@ int main() {
   std::string dataUser2 = "Sebastian, Doctor, 6a5ab3ae8c5e24fad62c99fd365cbbd6, Yes";
   std::string dataUser3 = "Juan, Patient, 5f796416742dacd2b5e9e673, No";
 
-  fileSystem.create(user1);
-  fileSystem.create(user2);
-  fileSystem.create(user3);
+  fileSystem.create(user1.getName(), user1.getDate(), user1.getOwner());
+  fileSystem.create(user2.getName(), user2.getDate(), user2.getOwner());
+  fileSystem.create(user3.getName(), user3.getDate(), user3.getOwner());
 
-  fileSystem.open(user1);
-  fileSystem.open(user2);
-  fileSystem.open(user3);
+  fileSystem.open(user1.getName());
+  fileSystem.open(user2.getName());
+  fileSystem.open(user3.getName());
 
-  fileSystem.chang2WriteMode(user1);
-  fileSystem.chang2WriteMode(user2);
-  fileSystem.chang2WriteMode(user3);
+  fileSystem.chang2WriteMode(user1.getName());
+  fileSystem.chang2WriteMode(user2.getName());
+  fileSystem.chang2WriteMode(user3.getName());
 
-  fileSystem.write(user1, dataUser1, dataUser1.size());
-  fileSystem.write(user2, dataUser2, dataUser2.size());
-  fileSystem.write(user3, dataUser3, dataUser3.size());
+  fileSystem.write(user1.getName(), dataUser1, dataUser1.size());
+  fileSystem.write(user2.getName(), dataUser2, dataUser2.size());
+  fileSystem.write(user3.getName(), dataUser3, dataUser3.size());
 
-  fileSystem.close(user1);
-  fileSystem.close(user2);
-  fileSystem.close(user3);
+  fileSystem.close(user1.getName());
+  fileSystem.close(user2.getName());
+  fileSystem.close(user3.getName());
 
-  fileSystem.open(user1);
-  fileSystem.open(user2);
-  fileSystem.open(user3);
+  fileSystem.open(user1.getName());
+  fileSystem.open(user2.getName());
+  fileSystem.open(user3.getName());
 
   // fileSystem.print();
 
-  fileSystem.change2ReadMode(user1);
-  fileSystem.change2ReadMode(user2);
-  fileSystem.change2ReadMode(user3);
+  fileSystem.change2ReadMode(user1.getName());
+  fileSystem.change2ReadMode(user2.getName());
+  fileSystem.change2ReadMode(user3.getName());
 
-  std::string buffer = fileSystem.read(user1, dataUser1.size());
+  std::string buffer = fileSystem.read(user1.getName(), dataUser1.size());
   std::cout << buffer << std::endl;
 
-  buffer = fileSystem.read(user2, dataUser2.size());
+  buffer = fileSystem.read(user2.getName(), dataUser2.size());
   std::cout << buffer << std::endl;
 
-  buffer = fileSystem.read(user3, dataUser3.size());
+  buffer = fileSystem.read(user3.getName(), dataUser3.size());
   std::cout << buffer << std::endl;
 
-  fileSystem.close(user1);
-  fileSystem.close(user2);
-  fileSystem.close(user3);
+  fileSystem.close(user1.getName());
+  fileSystem.close(user2.getName());
+  fileSystem.close(user3.getName());
 
 #endif
 
