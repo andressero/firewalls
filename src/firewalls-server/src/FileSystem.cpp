@@ -142,6 +142,81 @@ i64 FileSystem::getFreeSpace() {
   return freeSpace;
 }
 
+bool FileSystem::canWrite(const std::string& name, const i64& bufferSize) {
+  if (this->getFreeSpace() < bufferSize) {
+    ERROR("Unable to write. There is not enough space");
+    return false;
+  }
+
+  DIRECTORY_INDEX fileIndex = this->search(name);
+
+  if (fileIndex == ERROR_NO_FILE_BY_THAT_NAME) {
+    ERROR("Unable to write. File does not exist");
+    return false;
+  }
+
+  if (this->directory[fileIndex].getCursor() < OPEN) {
+    ERROR("Unable to write. File is not open");
+    return false;
+  }
+
+  if (this->directory[fileIndex].getReadWriteMode() == false) {
+    ERROR("Unable to write. File is not in write mode");
+    return false;
+  }
+}
+
+bool FileSystem::write(const std::string name, std::string &buffer,
+                        i64 bufferSize) {
+  if (!canWrite(name, bufferSize)) {
+    return false;
+  }
+
+  // Get file
+  FileProperties& file = this->directory[this->search(name)];
+
+  UNIT_INDEX cursor = file.getCursor();
+  BLOCK_INDEX currentBlock = file.getStartingBlock();
+
+  // Go to the block that cursor is referring to
+  i64 blocksToJump = cursor / BLOCK_SIZE;
+  for (;blocksToJump > 0; --blocksToJump) {
+    currentBlock = this->FAT[currentBlock];
+  }
+
+  UNIT_INDEX blockOffset = (cursor + 1) % BLOCK_SIZE;
+  i64 lastBlockIndex = BLOCK_SIZE - 1;
+  bool lastBlockChanged = false;
+
+  // Write
+  for (int i = 0; i < bufferSize; ++i) {
+    if (blockOffset == BLOCK_SIZE) {
+      blockOffset = 0;
+      if (this->FAT[currentBlock] == LAST_BLOCK) {
+        // Find a new block and update FAT table
+        BLOCK_INDEX previousBlock = currentBlock;
+        currentBlock = findFirstUnusedBlock();
+        this->FAT[previousBlock] = currentBlock;
+        lastBlockChanged = true;
+      } else {
+        // Go to next block (cursor is not at the end of the file)
+        currentBlock = FAT[currentBlock];
+      }
+    }
+    // Write a character
+    this->unit[currentBlock * BLOCK_SIZE + blockOffset] = buffer[i];
+    ++blockOffset;
+    ++cursor;
+  }
+
+  // Update file's cursor after writing
+  file.seek(cursor);
+
+  if (lastBlockChanged) {
+    file.setLastBlock(currentBlock);
+  }
+}
+
 bool FileSystem::write(const std::string name, std::string &buffer,
                        i64 bufferSize) {
   DIRECTORY_INDEX file_index = this->search(name);

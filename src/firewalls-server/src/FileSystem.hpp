@@ -77,6 +77,16 @@ private:
    */
   i64 findEOF(const std::string name);
 
+  /**
+   * @brief Look for file 'name' and check if writing of 'size' bytes is
+   * possible
+   * 
+   * @param name The name of the file
+   * @param size Size of the data that wants to be written
+   * @return bool
+  */
+  bool canWrite(const std::string &name, const i64& size);
+
 public:
   FileSystem();
   ~FileSystem();
