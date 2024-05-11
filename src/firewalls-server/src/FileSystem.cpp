@@ -26,9 +26,8 @@ BLOCK_INDEX FileSystem::findFirstUnusedBlock() {
 }
 
 DIRECTORY_INDEX FileSystem::search(const std::string name) {
-  // ? Should it be an ASSERT instead of an if statement?.
   if (name.empty()) {
-    ERROR("Unable to find files. Filename is empty")
+    ERROR("Unable to find files. Filename cannot be empty.")
     return ERROR_EMPTY_FILENAME;
   }
   for (size_t i = 0; i < BLOCK_COUNT; ++i) {
@@ -44,12 +43,12 @@ bool FileSystem::create(const std::string name, const std::string date,
                         const std::string owner) {
   // Check if data for the file is valid
   if (name.empty() || date.empty() || owner.empty()) {
-    ERROR("Unable to create. Incomplete entry file properties")
+    ERROR("Unable to create. Incomplete entry file properties.")
     return false;
   }
   // Is there a file with the same name already on Directory?
   if (search(name) != ERROR_NO_FILE_BY_THAT_NAME) {
-    ERROR("Unable to create. That file name already exists")
+    ERROR("Unable to create. That file name already exists.")
     return false;
   }
   // Look for space on directory
@@ -71,7 +70,7 @@ bool FileSystem::create(const std::string name, const std::string date,
     ERROR("Unable to create. There's no Blocks available at Unit")
     return false;
   }
-  // Set all file info to directory.
+  // Set all file info to directory entry.
   this->directory[directoryIndex].setDirectoryIndex(directoryIndex);
   this->directory[directoryIndex].setStartingBlock(unusedBlockIndex);
   this->directory[directoryIndex].setLastBlock(unusedBlockIndex);
@@ -86,20 +85,23 @@ bool FileSystem::create(const std::string name, const std::string date,
 
 bool FileSystem::efface(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
-  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
+  if (file_index == ERROR_EMPTY_FILENAME) {
+    ERROR("Unable to efface. The file name cannot be empty.");
+  } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to efface. There's no file by that name")
     return false;
   }
   ASSERT(this->directory[file_index].getName() == name);
   // The file can be effaced only if it's closed
   if (this->directory[file_index].getCursor() != CLOSED) {
-    ERROR("Unable to efface. The file most be closed in order to efface it.")
+    ERROR("Unable to efface. The file MUST be closed in order to efface it.")
     return false;
   }
   for (BLOCK_INDEX i =
            this->FAT[this->directory[file_index].getStartingBlock()];
-       i != LAST_BLOCK; i = this->FAT[i]) {
+       i != LAST_BLOCK;) {
     this->unit[i] = '\0';
+    i = this->FAT[i];
     this->FAT[i] = UNUSED;
   }
   this->directory[file_index].setDirectoryIndex(NOT_ON_DIR);
@@ -108,14 +110,17 @@ bool FileSystem::efface(const std::string name) {
   this->directory[file_index].setName("");
   this->directory[file_index].setDate("");
   this->directory[file_index].setOwner("");
-  
+
   return true;
 }
 
 bool FileSystem::open(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
-  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
-    ERROR("Unable to open. File does not exist")
+  if(file_index == ERROR_EMPTY_FILENAME) {
+    ERROR("Unable to open. The filename cannot be empty.");
+    return false;
+  } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
+    ERROR("Unable to open. There's no file by that name.")
     return false;
   }
   this->directory[file_index].seek(OPEN);
@@ -124,8 +129,11 @@ bool FileSystem::open(const std::string name) {
 
 bool FileSystem::close(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
-  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
-    ERROR("Unable to close. File is not valid!")
+  if(file_index == ERROR_EMPTY_FILENAME) {
+    ERROR("Unable to close. The filename cannot be empty.");
+    return false;
+  } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
+    ERROR("Unable to close. There's no file by that name.")
     return false;
   }
   this->directory[file_index].seek(CLOSED);
@@ -257,9 +265,10 @@ bool FileSystem::write(const std::string name, std::string &buffer,
       4 | -1 | Hermoso
       5 | -2 |lastblock
     */
- // ! Implement taking the current cursor into account
+  // ! Implement taking the current cursor into account
   bool LastBlockChanged = false;
-  BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock(); // !rm
+  BLOCK_INDEX currentBlock =
+      this->directory[file_index].getStartingBlock(); // !rm
   if (currentBlock == UNUSED) {
     currentBlock = findFirstUnusedBlock();
     this->directory[file_index].setStartingBlock(currentBlock);
@@ -280,8 +289,8 @@ bool FileSystem::write(const std::string name, std::string &buffer,
   if (LastBlockChanged) {
     this->directory[file_index].setLastBlock(EoFBlock);
   }
-  this->directory[file_index].seek(this->directory[file_index].getCursor()
-  + bufferSize);
+  this->directory[file_index].seek(this->directory[file_index].getCursor() +
+                                   bufferSize);
 
   FAT[EoFBlock] = LAST_BLOCK; //?
 
@@ -301,10 +310,10 @@ i64 FileSystem::findEOF(const std::string name) {
   BLOCK_INDEX lastBlock = this->directory[file_index].getLastBlock();
   i64 counter = 0;
   for (u64 j = 0; j < BLOCK_SIZE; j++) {
-      if (this->unit[lastBlock * BLOCK_SIZE + j] == 0) {
-        return counter;
-      }
-      ++counter;
+    if (this->unit[lastBlock * BLOCK_SIZE + j] == 0) {
+      return counter;
+    }
+    ++counter;
   }
   // ! There's no return.
 }
@@ -314,12 +323,12 @@ bool FileSystem::append(const std::string name, std::string &buffer,
                         i64 bufferSize) {
   this->changeCursor(name, this->findEOF(name));
   return this->write(name, buffer, bufferSize);
-  
+
   /*
   DIRECTORY_INDEX file_index = this->search(name);
   if (this->directory[file_index].getReadWriteMode() != true) {
-    ERROR("Unable to write file. You have to be in write mode to be able to append!")
-    return false;
+    ERROR("Unable to write file. You have to be in write mode to be able to
+  append!") return false;
   }
   (void)bufferSize;
   (void)entry;
@@ -335,26 +344,27 @@ bool FileSystem::append(const std::string name, std::string &buffer,
 }
 
 std::string FileSystem::read(const std::string name, size_t readSize) {
+  ASSERT(readSize > 0);
   DIRECTORY_INDEX file_index = this->search(name);
-  std::stringstream buffer;
-    if (file_index == ERROR_NO_DIRECTORY_INDEX) {
-      ERROR("Unable to read file. Could not find a file by that name");
-    return buffer.str();
+  if(file_index == ERROR_EMPTY_FILENAME){
+    ERROR("Unable to read. File name cannot be empty.")
+  } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
+    ERROR("Unable to read. There's no file by that name");
+    return "";
   }
 
   if (this->directory[file_index].getReadWriteMode() != false) {
-    ERROR("Unable to read file. You have to be in read mode to be able to read!")
+    ERROR(
+        "Unable to read. The File MUST be on read mode in order to read it!")
     return "";
   }
-  ASSERT(this->directory[file_index].getCursor() >= OPEN);
-  ASSERT(readSize > 0);
-
-  if (file_index == ERROR_NO_DIRECTORY_INDEX) {
-    return buffer.str();
+  if(this->directory[file_index].getCursor() >= OPEN) {
+    ERROR("Unable to read. The File must be opened in order to read.");
+    return "";
   }
+  std::stringstream buffer;// !
 
   BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock();
-  // BLOCK_INDEX currentBlock = this->directory[index].getLastAccesedBlock();
 
   size_t counter = 0;
   BLOCK_INDEX i = currentBlock;

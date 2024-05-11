@@ -88,8 +88,8 @@
  *
  */
 #define NOT_ON_DIR -1
-// Cursor
 
+// Cursor
 /**
  * @brief Initial value that indicates, via cursor, that a file on the
  * FileSystem is opened.

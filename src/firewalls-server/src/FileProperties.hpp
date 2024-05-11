@@ -58,6 +58,10 @@ public:
   /**
    * @brief Default constructor. It gives initial values to every member.
    *
+   * @details Initial values on FileProperties: startingBlock(UNUSED),
+   * lastBlock(UNUSED),cursor(CLOSED) and directoryIndex(NOT_ON_DIR).
+   * String members start as an empty string.
+   *
    * @see FileProperties(const std::string name, const std::string date,
    * std::string owner)
    * @see FileProperties(FileProperties &properties)
@@ -215,7 +219,10 @@ public:
    * @param cursor index in which the cursor will be positioned on Files
    * content.
    */
-  inline void seek(UNIT_INDEX cursor) { this->cursor = cursor; }
+  inline void seek(UNIT_INDEX cursor) {
+    ASSERT(cursor >= 0 || cursor == CLOSED);
+    this->cursor = cursor;
+  }
   /**
    * @brief Set the name of the File to be a certain one.
    *
@@ -244,6 +251,7 @@ public:
    * stored.
    */
   inline void setStartingBlock(BLOCK_INDEX startingBlock) {
+    ASSERT(startingBlock >= 0 || startingBlock == UNUSED);
     this->startingBlock = startingBlock;
   }
   /**
@@ -252,6 +260,7 @@ public:
    * @param lastBlock last block in which the File is supposed to be stored.
    */
   inline void setLastBlock(BLOCK_INDEX lastBlock) {
+    ASSERT(lastBlock >= 0 || lastBlock == UNUSED);
     this->lastBlock = lastBlock;
   }
   /**
@@ -261,6 +270,7 @@ public:
    * @param directoryIndex entry index to set the File.
    */
   inline void setDirectoryIndex(DIRECTORY_INDEX directoryIndex) {
+    ASSERT(directoryIndex >= 0 || directoryIndex == NOT_ON_DIR);
     this->directoryIndex = directoryIndex;
   }
   /**
