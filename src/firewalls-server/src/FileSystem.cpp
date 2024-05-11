@@ -7,7 +7,11 @@
 FileSystem::FileSystem()
     : unit(new u8[STORAGE_VOLUME]()),
       directory(new FileProperties[BLOCK_COUNT]()),
-      FAT(new BLOCK_INDEX[BLOCK_COUNT]()) {}
+      FAT(new BLOCK_INDEX[BLOCK_COUNT]()) {
+  for (size_t i = 0; i < BLOCK_COUNT; ++i) {
+    this->FAT[i] = UNUSED;
+  }
+}
 
 FileSystem::~FileSystem() {
   delete[] this->unit;
@@ -54,7 +58,7 @@ bool FileSystem::create(const std::string name, const std::string date,
   // Look for space on directory
   DIRECTORY_INDEX directoryIndex = ERROR_NO_DIRECTORY_INDEX;
   for (u64 i = 0; i < BLOCK_COUNT; ++i) {
-    if (this->directory[i].getName().empty()) {
+    if (this->directory[i].getDirectoryIndex() == NOT_ON_DIR) {
       directoryIndex = i;
       break;
     }
@@ -273,12 +277,12 @@ std::string FileSystem::read(const std::string name, size_t readSize) {
     return "";
   }
 
-  if (this->directory[file_index].getReadWriteMode() != false) {
-    ERROR("Unable to read. The File MUST be on read mode in order to read it!")
+  if (this->directory[file_index].getCursor() == CLOSED) {
+    ERROR("Unable to read. The File must be opened in order to read.");
     return "";
   }
-  if (this->directory[file_index].getCursor() >= OPEN) {
-    ERROR("Unable to read. The File must be opened in order to read.");
+  if (this->directory[file_index].getReadWriteMode() != false) {
+    ERROR("Unable to read. The File MUST be on read mode in order to read it!")
     return "";
   }
   std::stringstream buffer;
@@ -289,7 +293,8 @@ std::string FileSystem::read(const std::string name, size_t readSize) {
   BLOCK_INDEX i = currentBlock;
   bool canContinue = true;
   for (; canContinue; i = this->FAT[i]) {
-    canContinue = (i != UNUSED) && (i != LAST_BLOCK) && (counter <= readSize);
+    canContinue = (i < BLOCK_COUNT) && (i != LAST_BLOCK) && (counter <= readSize);
+    if(!canContinue){break;}
     for (u64 j = 0; j < BLOCK_SIZE && counter <= readSize; j++) {
       buffer << this->unit[i * BLOCK_SIZE + j];
       ++counter;
