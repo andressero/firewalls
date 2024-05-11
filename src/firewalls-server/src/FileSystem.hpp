@@ -70,10 +70,10 @@ private:
    */
   void replace(u64 block, std::string data);
   /**
-   * @brief
+   * @brief Finds the EOF of a file by that name.
    *
-   * @param name Files name
-   * @return i64
+   * @param name Name of the file.
+   * @return The position of the EOF in within the last block of a file. -1 Otherwise.
    */
   i64 findEOF(const std::string name);
 

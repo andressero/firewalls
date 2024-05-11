@@ -116,7 +116,7 @@ bool FileSystem::efface(const std::string name) {
 
 bool FileSystem::open(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
-  if(file_index == ERROR_EMPTY_FILENAME) {
+  if (file_index == ERROR_EMPTY_FILENAME) {
     ERROR("Unable to open. The filename cannot be empty.");
     return false;
   } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
@@ -129,7 +129,7 @@ bool FileSystem::open(const std::string name) {
 
 bool FileSystem::close(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
-  if(file_index == ERROR_EMPTY_FILENAME) {
+  if (file_index == ERROR_EMPTY_FILENAME) {
     ERROR("Unable to close. The filename cannot be empty.");
     return false;
   } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
@@ -150,7 +150,7 @@ i64 FileSystem::getFreeSpace() {
   return freeSpace;
 }
 
-bool FileSystem::canWrite(const std::string& name, const i64& bufferSize) {
+bool FileSystem::canWrite(const std::string &name, const i64 &bufferSize) {
   if (this->getFreeSpace() < bufferSize) {
     ERROR("Unable to write. There is not enough space");
     return false;
@@ -158,37 +158,40 @@ bool FileSystem::canWrite(const std::string& name, const i64& bufferSize) {
 
   DIRECTORY_INDEX fileIndex = this->search(name);
 
+  if (fileIndex == ERROR_EMPTY_FILENAME) {
+    ERROR("Unable to write. Filename cannot be empty.");
+    return false;
+  }
   if (fileIndex == ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to write. File does not exist");
     return false;
   }
-
   if (this->directory[fileIndex].getCursor() < OPEN) {
     ERROR("Unable to write. File is not open");
     return false;
   }
-
   if (this->directory[fileIndex].getReadWriteMode() == false) {
     ERROR("Unable to write. File is not in write mode");
     return false;
   }
+  return true;
 }
 
 bool FileSystem::write(const std::string name, std::string &buffer,
-                        i64 bufferSize) {
+                       i64 bufferSize) {
   if (!canWrite(name, bufferSize)) {
     return false;
   }
 
   // Get file
-  FileProperties& file = this->directory[this->search(name)];
+  FileProperties &file = this->directory[this->search(name)];
 
   UNIT_INDEX cursor = file.getCursor();
   BLOCK_INDEX currentBlock = file.getStartingBlock();
 
   // Go to the block that cursor is referring to
   i64 blocksToJump = cursor / BLOCK_SIZE;
-  for (;blocksToJump > 0; --blocksToJump) {
+  for (; blocksToJump > 1; --blocksToJump) {
     currentBlock = this->FAT[currentBlock];
   }
 
@@ -223,90 +226,27 @@ bool FileSystem::write(const std::string name, std::string &buffer,
   if (lastBlockChanged) {
     file.setLastBlock(currentBlock);
   }
-}
-
-bool FileSystem::write(const std::string name, std::string &buffer,
-                       i64 bufferSize) {
-  DIRECTORY_INDEX file_index = this->search(name);
-  if (this->directory[file_index].getReadWriteMode() == false) {
-    ERROR("Unable to write. You have to be in write mode to be able to write!")
-    return false;
-  }
-  if (this->directory[file_index].getCursor() >= OPEN) {
-    ERROR("Unable to write. The file has to be open to be able to write!")
-    return false;
-  }
-  ASSERT(bufferSize > 0);
-  if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
-    ERROR("Unable to write. File does not exist");
-    return false;
-  }
-  // 1. CHECK IF THERE IS ENOUGH SPACE
-  // ! It didn't take the consideration about what was used before by the same
-  // file. So if we already reserved some space when it was created or if we
-  // wrote something before this won't take into consideration the space we
-  // already have form those previous calls. Remember that write can overwrite a
-  // file. If the file contains "Hello World!" and we write "Bye" then it must
-  // contain: "Byelo World!" not just "Bye".
-
-  // TODO(Any): make a change to make sure that if changing a part you have
-  // already reserved you don't have to check for frre space
-  if (this->getFreeSpace() < bufferSize) {
-    ERROR("Unable to write file. There is no enough space left on unit to "
-          "store this buffer");
-    return false;
-  }
-
-  /*
-      startingBlock = 5 nextBlock = 5 LastBlock = 4
-      1 | 3  | Hola
-      2 | 9  |
-      3 | 4  | Mundo
-      4 | -1 | Hermoso
-      5 | -2 |lastblock
-    */
-  // ! Implement taking the current cursor into account
-  bool LastBlockChanged = false;
-  BLOCK_INDEX currentBlock =
-      this->directory[file_index].getStartingBlock(); // !rm
-  if (currentBlock == UNUSED) {
-    currentBlock = findFirstUnusedBlock();
-    this->directory[file_index].setStartingBlock(currentBlock);
-    LastBlockChanged = true;
-  }
-  BLOCK_INDEX EoFBlock = currentBlock;
-  for (BLOCK_INDEX i = 0; i < bufferSize; i += BLOCK_SIZE) {
-    // this->unit.replace(currentBlock * BLOCK_SIZE, BLOCK_SIZE,
-    // buffer.substr(i, BLOCK_SIZE));
-    this->replace(currentBlock, buffer.substr(i, BLOCK_SIZE));
-    FAT[currentBlock] = LAST_BLOCK;
-    BLOCK_INDEX nextBlock = findFirstUnusedBlock();
-    FAT[currentBlock] = nextBlock;
-    EoFBlock = currentBlock;
-    currentBlock = nextBlock;
-  }
-  // ! Dudar de esta implementación
-  if (LastBlockChanged) {
-    this->directory[file_index].setLastBlock(EoFBlock);
-  }
-  this->directory[file_index].seek(this->directory[file_index].getCursor() +
-                                   bufferSize);
-
-  FAT[EoFBlock] = LAST_BLOCK; //?
-
   return true;
 }
 
+/*
 void FileSystem::replace(u64 block, std::string data) {
   // ! When i is equals to datas size is this is out of bounds.
   for (u64 i = 0; i < BLOCK_SIZE || i <= data.size(); ++i) {
     this->unit[block * BLOCK_SIZE + i] = data[i];
   }
 }
+*/
 
 i64 FileSystem::findEOF(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
-  // Doubt about the functionality of lastBlock()
+  if (file_index == ERROR_EMPTY_FILENAME) {
+    ERROR("Unable to find EOF. FIlename cannot be empty.");
+    return -1;
+  } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
+    ERROR("Unable to find EOF. There's no file by that name");
+    return -1;
+  }
   BLOCK_INDEX lastBlock = this->directory[file_index].getLastBlock();
   i64 counter = 0;
   for (u64 j = 0; j < BLOCK_SIZE; j++) {
@@ -315,38 +255,19 @@ i64 FileSystem::findEOF(const std::string name) {
     }
     ++counter;
   }
-  // ! There's no return.
+  return -1;
 }
 
-// TODO(any): Implement, remove (void) casts
 bool FileSystem::append(const std::string name, std::string &buffer,
                         i64 bufferSize) {
   this->changeCursor(name, this->findEOF(name));
   return this->write(name, buffer, bufferSize);
-
-  /*
-  DIRECTORY_INDEX file_index = this->search(name);
-  if (this->directory[file_index].getReadWriteMode() != true) {
-    ERROR("Unable to write file. You have to be in write mode to be able to
-  append!") return false;
-  }
-  (void)bufferSize;
-  (void)entry;
-  (void)buffer;
-
-  ASSERT(entry == this->directory[entry.getDirectoryIndex()]);
-  ASSERT(entry.valid());
-  ASSERT(entry.getCursor() >= OPEN);
-
-  entry.setLastAccesedBlock(EoFBlock);
-  this->directory[index] = entry;
-  */
 }
 
 std::string FileSystem::read(const std::string name, size_t readSize) {
   ASSERT(readSize > 0);
   DIRECTORY_INDEX file_index = this->search(name);
-  if(file_index == ERROR_EMPTY_FILENAME){
+  if (file_index == ERROR_EMPTY_FILENAME) {
     ERROR("Unable to read. File name cannot be empty.")
   } else if (file_index == ERROR_NO_FILE_BY_THAT_NAME) {
     ERROR("Unable to read. There's no file by that name");
@@ -354,17 +275,16 @@ std::string FileSystem::read(const std::string name, size_t readSize) {
   }
 
   if (this->directory[file_index].getReadWriteMode() != false) {
-    ERROR(
-        "Unable to read. The File MUST be on read mode in order to read it!")
+    ERROR("Unable to read. The File MUST be on read mode in order to read it!")
     return "";
   }
-  if(this->directory[file_index].getCursor() >= OPEN) {
+  if (this->directory[file_index].getCursor() >= OPEN) {
     ERROR("Unable to read. The File must be opened in order to read.");
     return "";
   }
-  std::stringstream buffer;// !
+  std::stringstream buffer; // !
 
-  BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock();
+  BLOCK_INDEX currentBlock = this->directory[file_index].getCursor() / BLOCK_SIZE;
 
   size_t counter = 0;
   BLOCK_INDEX i = currentBlock;
@@ -380,7 +300,6 @@ std::string FileSystem::read(const std::string name, size_t readSize) {
   this->directory[file_index].seek(counter);
   LOG("CURSOR " + std::to_string(this->directory[file_index].getCursor()))
 
-  // this->directory[file_index].setLastBlock(i);
   return buffer.str();
 }
 
