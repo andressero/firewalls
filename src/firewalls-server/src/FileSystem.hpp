@@ -63,13 +63,6 @@ private:
   // ! Check use
   i64 getFreeSpace();
   /**
-   * @brief
-   *
-   * @param block
-   * @param data
-   */
-  void replace(u64 block, std::string data);
-  /**
    * @brief Finds the EOF of a file by that name.
    *
    * @param name Name of the file.
@@ -112,47 +105,50 @@ public:
    */
   bool efface(const std::string name);
   /**
-   * @brief 
+   * @brief Set the cursor of the file to Open
    * 
-   * @param name 
-   * @return true 
-   * @return false 
+   * @param name Name of the file
+   * @return true Able to find the file and change its state
+   * @return false Otherwise.
    */
   bool open(const std::string name);
   /**
-   * @brief 
+   * @brief Set the cursor of the file to Close
    * 
-   * @param name 
-   * @return true 
-   * @return false 
+   * @param name Name of the file
+   * @return true Able to find the file and change its state
+   * @return false Otherwise.
    */
   bool close(const std::string name);
   /**
-   * @brief 
+   * @brief Writes the buffer on unit
    * 
-   * @param name 
-   * @param buffer 
-   * @param bufferSize 
-   * @return true 
-   * @return false 
+   * @param name File name
+   * @param buffer content to write
+   * @param bufferSize byte size of the content to write
+   * @return true If it was able to write onto unit.
+   * @return false Otherwise
    */
   bool write(const std::string name, std::string &buffer, i64 bufferSize);
   /**
-   * @brief 
+   * @brief Writes at the end of the file.
    * 
-   * @param name 
-   * @param buffer 
-   * @param bufferSize 
-   * @return true 
-   * @return false 
+   * @param name File name
+   * @param buffer content to write
+   * @param bufferSize byte size of the content to write
+   * @return true If it was able to write onto unit.
+   * @return false otherwise
+   * 
+   * @see write(const std::string name, std::string &buffer, i64 bufferSize)
+   * 
    */
   bool append(const std::string name, std::string &buffer, i64 bufferSize);
   /**
-   * @brief 
+   * @brief Reads from unit and retrieves what was on unit to an str.
    * 
-   * @param name 
-   * @param readSize 
-   * @return std::string 
+   * @param name File name
+   * @param readSize Bytes to read on unit
+   * @return content read from unit.
    */
   std::string read(const std::string name, size_t readSize);
   /**

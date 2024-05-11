@@ -229,15 +229,6 @@ bool FileSystem::write(const std::string name, std::string &buffer,
   return true;
 }
 
-/*
-void FileSystem::replace(u64 block, std::string data) {
-  // ! When i is equals to datas size is this is out of bounds.
-  for (u64 i = 0; i < BLOCK_SIZE || i <= data.size(); ++i) {
-    this->unit[block * BLOCK_SIZE + i] = data[i];
-  }
-}
-*/
-
 i64 FileSystem::findEOF(const std::string name) {
   DIRECTORY_INDEX file_index = this->search(name);
   if (file_index == ERROR_EMPTY_FILENAME) {
@@ -282,9 +273,9 @@ std::string FileSystem::read(const std::string name, size_t readSize) {
     ERROR("Unable to read. The File must be opened in order to read.");
     return "";
   }
-  std::stringstream buffer; // !
+  std::stringstream buffer;
 
-  BLOCK_INDEX currentBlock = this->directory[file_index].getCursor() / BLOCK_SIZE;
+  BLOCK_INDEX currentBlock = this->directory[file_index].getStartingBlock();
 
   size_t counter = 0;
   BLOCK_INDEX i = currentBlock;
