@@ -26,6 +26,7 @@ BLOCK_INDEX FileSystem::findFirstUnusedBlock() {
 }
 
 DIRECTORY_INDEX FileSystem::search(const std::string name) {
+  // ? Should it be an ASSERT instead of an if statement?.
   if (name.empty()) {
     ERROR("Unable to find files. Filename is empty")
     return ERROR_EMPTY_FILENAME;
@@ -213,6 +214,7 @@ bool FileSystem::write(const std::string name, std::string &buffer,
 }
 
 void FileSystem::replace(u64 block, std::string data) {
+  // ! When i is equals to datas size is this is out of bounds.
   for (u64 i = 0; i < BLOCK_SIZE || i <= data.size(); ++i) {
     this->unit[block * BLOCK_SIZE + i] = data[i];
   }
@@ -229,6 +231,7 @@ i64 FileSystem::findEOF(const std::string name) {
       }
       ++counter;
   }
+  // ! There's no return.
 }
 
 // TODO(any): Implement, remove (void) casts

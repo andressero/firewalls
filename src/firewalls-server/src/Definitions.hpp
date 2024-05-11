@@ -8,11 +8,16 @@
 #include <cstdlib>
 #include <fstream>
 // ! Check
-#include <iomanip> 
+#include <iomanip>
 //
 #include <iostream>
 #include <string>
 
+/**
+ * @brief asserts that a certain condition is true, else it gives an error
+ * message to stderr
+ *
+ */
 #define ASSERT(condition)                                                      \
   do {                                                                         \
     if (!(condition)) {                                                        \
@@ -22,14 +27,36 @@
     }                                                                          \
   } while (0)
 
+/**
+ * @brief Byte size of a block on FileSystems unit
+ *
+ */
 #define BLOCK_SIZE 256
+/**
+ * @brief Count of files the FileSystems unit can handle.
+ *
+ */
 #define FILE_COUNT 100
-// Hundred files of 256 bytes each
+/**
+ * @brief FileSystems Unit can support a storage volume of a hundred files of
+ * 256 bytes each
+ *
+ */
 #define STORAGE_VOLUME FILE_COUNT *BLOCK_SIZE
+/**
+ * @brief FileSystems unit block count
+ *
+ */
 #define BLOCK_COUNT (STORAGE_VOLUME / BLOCK_SIZE)
-
+/**
+ * @brief
+ *
+ */
 #define DEBUG 1
-
+/**
+ * @brief General output format to convey errors to stderr
+ *
+ */
 #define ERROR(message)                                                         \
   std::cerr << "\033[1;31m"                                                    \
             << "ERROR: " << message << "\033[0m" << std::endl;
@@ -40,19 +67,48 @@
               << "LOG: " << message << "\033[0m" << std::endl;
 
 // FAT table
+
+/**
+ * @brief Value that FAT stores to indicate that a block is the last block a
+ * file used.
+ *
+ */
 #define LAST_BLOCK -1
+/**
+ * @brief Value that FAT stores to indicate that a block has not been used by
+ * any file on the FileSystem
+ *
+ */
 #define UNUSED -2
 // Files dir. index
+
+/**
+ * @brief Value that the FileSystems directory uses to indicate that an entry is
+ * empty.
+ *
+ */
 #define NOT_ON_DIR -1
 // Cursor
-// ? Is Open useful?
+
+/**
+ * @brief Initial value that indicates, via cursor, that a file on the
+ * FileSystem is opened.
+ *
+ */
 #define OPEN 0
+/**
+ * @brief Value that indicates, via cursor, that a file on the
+ * FileSystem is closed
+ *
+ */
 #define CLOSED -1
 // ?
 #define NOT_FOUND -5
 
-// TODO(all): Add error values to here
+// TODO(all): Add error values to here, document the digit syntax rules.
 /**
+ * @brief Error codes to some FileSystem methods.
+ * 
  * @details This codes syntax is according with the next digit specification:
  *  * 1x: blah blah
  *  * 2x: blah blah
