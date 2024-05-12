@@ -9,6 +9,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    fileproperties.cpp \
+    filesystem.cpp \
     main.cpp \
     loginwindow.cpp \
     mainmenudoctor.cpp \
@@ -18,12 +20,16 @@ SOURCES += \
     patientlabmenu.cpp
 
 HEADERS += \
+    Definitions.h \
+    fileproperties.h \
+    filesystem.h \
     loginwindow.h \
     mainmenudoctor.h \
     mainmenulaboratory.h \
     mainmenupatient.h \
     menupersonaldata.h \
-    patientlabmenu.h
+    patientlabmenu.h \
+    userValidation.h
 
 FORMS += \
     loginwindow.ui \
@@ -47,3 +53,6 @@ contains(ANDROID_TARGET_ARCH,x86_64) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
+
+INCLUDEPATH += /usr/include/
+LIBS += -L/usr/include/argon2.h -largon2 
