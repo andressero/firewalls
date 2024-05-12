@@ -201,8 +201,7 @@ bool FileSystem::write(const std::string name, std::string &buffer,
     currentBlock = this->FAT[currentBlock];
   }
 
-  UNIT_INDEX blockOffset = (cursor + 1) % BLOCK_SIZE;
-  i64 lastBlockIndex = BLOCK_SIZE - 1;
+  UNIT_INDEX blockOffset = (cursor) % BLOCK_SIZE;
   bool lastBlockChanged = false;
 
   // Write
