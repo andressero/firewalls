@@ -188,7 +188,6 @@ bool FileSystem::write(const std::string name, std::string &buffer,
   if (!canWrite(name, bufferSize)) {
     return false;
   }
-
   // Get file
   FileProperties &file = this->directory[this->search(name)];
 
@@ -197,7 +196,7 @@ bool FileSystem::write(const std::string name, std::string &buffer,
 
   // Go to the block that cursor is referring to
   i64 blocksToJump = cursor / BLOCK_SIZE;
-  for (; blocksToJump > 1; --blocksToJump) {
+  for (; blocksToJump > 0; --blocksToJump) {
     currentBlock = this->FAT[currentBlock];
   }
 
@@ -217,6 +216,7 @@ bool FileSystem::write(const std::string name, std::string &buffer,
       } else {
         // Go to next block (cursor is not at the end of the file)
         currentBlock = FAT[currentBlock];
+
       }
     }
     // Write a character
@@ -230,6 +230,7 @@ bool FileSystem::write(const std::string name, std::string &buffer,
 
   if (lastBlockChanged) {
     file.setLastBlock(currentBlock);
+    this->FAT[currentBlock] = LAST_BLOCK;
   }
   return true;
 }
