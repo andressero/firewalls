@@ -1,6 +1,6 @@
 #include "loginwindow.h"
 #include "ui_loginwindow.h"
-#include "userValidation.h"
+#include "uservalidation.h"
 #include <QDebug>
 
 LoginWindow::LoginWindow(QWidget *parent)
@@ -57,7 +57,7 @@ void LoginWindow::on_loginButton_clicked()
         qInfo() << "LoginWindow: Valid patient\n";
         if (validateLogin(this->fileSystem, username, password)) {
             qInfo() << "LoginWindow: Successful login\n";
-            mainMenuPatient* patientMenu = new mainMenuPatient(this);
+            mainMenuPatient* patientMenu = new mainMenuPatient(this, this->fileSystem);
             patientMenu->show();
         }
     }

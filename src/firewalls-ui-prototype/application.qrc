@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>logo.svg</file>
+        <file>users.txt</file>
+    </qresource>
+</RCC>

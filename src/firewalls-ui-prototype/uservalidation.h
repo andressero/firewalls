@@ -8,6 +8,8 @@
 #include "filesystem.h"
 #include "userdata.h"
 
+#include <QDebug>
+
 
 QString myHash(const std::string& password, const std::string& salt);
 
@@ -16,15 +18,17 @@ UserData* tokenizer(QString usersFile, int* size) {
     UserData* users = new UserData[lines.size()];
     int i = 0;
     for (QString& line: lines) {
+        qInfo() << "Creating user: " << line << "\n";
         QStringList userData = line.split(",");
-        if (line.size() == 4) {
+        qInfo() << "Line size: " << line.size() << "\n";
+        if (userData.size() == 5) {
             int state = (int) userData[3].toStdString()[0] - '0';
 
             users[i].userID = userData[0];
             users[i].passwordHash = userData[1];
             users[i].salt = userData[2];
             users[i].rightState = state;
-
+            qInfo() << "User " << i << " hash: " << users[i].passwordHash << "\n";
             ++i;
         }
     }
@@ -36,19 +40,27 @@ UserData* tokenizer(QString usersFile, int* size) {
 bool validateLogin(FileSystem* fs, const QString& username, const QString& password) {
     fs->open("Users");
     fs->change2ReadMode("Users");
-    QString file(fs->read("Users", 1593).c_str());
+    QString file(fs->read("Users", 279).c_str());
+    fs->close("Users");
+
+    qInfo() << "Read from file: "<< file << "\n";
 
     int usersSize = -1;
     UserData* users = tokenizer(file, &usersSize);
 
     for (int i = 0; i < usersSize; ++i) {
+        qInfo() << "Users: " << users[i].userID << " == " << username << "?\n";
         if (users[i].userID == username) {
-            if (users[i].passwordHash == myHash(password.toStdString(), users[i].salt.toStdString())) {
+            QString hash = myHash(password.toStdString(), users[i].salt.toStdString());
+            qInfo() << "password: " << password << "\t salt: " << users[i].salt << "\n";
+            qInfo() << "Hash: " << hash << " == " << users[i].passwordHash << "?\n";
+            if (users[i].passwordHash == hash) {
                 return true;
             }
         }
     }
 
+    delete[] users;
     // for (UserData& user: users) {
     //     if (user.userID == username) {
     //         if (user.passwordHash == myHash(password.toStdString(), salt.toStdString())) {
