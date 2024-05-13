@@ -6,6 +6,7 @@
 #include "mainmenudoctor.h"
 #include "mainmenupatient.h"
 #include "mainmenulaboratory.h"
+#include "filesystem.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,6 +20,7 @@ class LoginWindow : public QMainWindow
 
 public:
     LoginWindow(QWidget *parent = nullptr);
+    LoginWindow(QWidget *parent = nullptr, FileSystem* fs = nullptr);
     ~LoginWindow();
 
 private slots:
@@ -26,5 +28,6 @@ private slots:
 
 private:
     Ui::CCSS_Garrobo *ui;
+    FileSystem* fileSystem;
 };
 #endif // LOGINWINDOW_H
