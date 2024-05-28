@@ -3,17 +3,24 @@
 .**Session example**
 
 ```.
-INICIO
+INICIO // 0 - 1
    OK/NOT_OK: Server is busy or under maintenance
-LOGIN <USER> PASS
+LOGIN <USER> <HASH> // 1 - 1
    OK/NOT_OK: Incorrect password
-REQUEST INSURANCE_STATUS
+REQUEST USER_DATA <id>    // 2 - n
+   OK/NOT_OK
+REQUEST INSURANCE_STATUS <id>    // 2 - n
    OK/NOT_OK
    ...
-REQUEST LAB_RESULTS
+REQUEST LAB_LIST    // 2 - n
+   OK/NOT_OK
+REQUEST LAB_RESULT <labId>    // 2 - n
    OK/NOT_OK
    ...
-QUIT
+
+LOGOUT // 2 - 1 
+   OK
+QUIT // 1 - 1, 2 - 1 (+LOGOUT)
    OK
    ...
 ```
