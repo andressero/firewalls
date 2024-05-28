@@ -1,7 +1,8 @@
 # Descripción de protocolo
 
-**Session example**
-```
+.**Session example**
+
+```.
 INICIO
    OK/NOT_OK: Server is busy or under maintenance
 LOGIN <USER> PASS

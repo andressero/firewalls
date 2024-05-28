@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-void protocolGarrobo(char* command);
+int protocolGarrobo(char* command);
 
 int main() {
   // std::map<std::string, int> traductor= {};
@@ -39,16 +39,18 @@ int main() {
   // recieving data
   char buffer[1024] = {0};
   recv(clientSocket, buffer, sizeof(buffer), 0);
-  protocolGarrobo(buffer);
+  int answer = protocolGarrobo(buffer);
+  char respuesta[128] = {0};
+  sprintf(respuesta, "%d", answer);
   std::cout << "Message from client: " << buffer << std::endl;
-
+  send(clientSocket, respuesta, sizeof(answer), 0);
   // closing the socket.
   close(serverSocket);
 
   return 0;
 }
 
-void protocolGarrobo(char* command) {
+int protocolGarrobo(char* command) {
   char* token = strtok(command, " \n");
   // while( token != NULL ) {
   //   printf( " %s\n", token ); //printing each token
@@ -57,6 +59,7 @@ void protocolGarrobo(char* command) {
 
   if (strncmp(token, "INICIO", 7) == 0) {
     std::cout << "OK\n";
+    return 1;
   } else if (strncmp(token, "LOGIN", 6) == 0) {
 
   } else if (strncmp(token, "REQUEST", 8) == 0) {
@@ -66,4 +69,5 @@ void protocolGarrobo(char* command) {
   } else {
     std::cerr << "Error: "<< token << " is an unknown command\n";
   }
+  return -1;
 }

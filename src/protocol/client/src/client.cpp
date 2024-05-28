@@ -26,6 +26,10 @@ int main() {
   // sending data
   const char* message = "INICIO\n";
   send(clientSocket, message, strlen(message), 0);
+  
+  char buffer[1024] = {0};
+  recv(clientSocket, buffer, sizeof(buffer), 0);
+  std::cout << "Message from server: " << buffer << std::endl;
 
   // closing socket
   close(clientSocket);
