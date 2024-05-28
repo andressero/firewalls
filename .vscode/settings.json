@@ -54,7 +54,8 @@
     "ratio": "cpp",
     "semaphore": "cpp",
     "stop_token": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "map": "cpp"
   },
   "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }
