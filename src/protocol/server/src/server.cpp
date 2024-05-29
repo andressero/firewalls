@@ -7,6 +7,21 @@
 int protocolGarrobo(char* command);
 
 int main() {
+  Socket socket;
+
+  socket.listen();
+
+  socket.accept();
+
+  std::string mensaje = socket.receive();
+  std::cout << mensaje << std::endl;
+
+  int answer = protocolGarrobo(&mensaje[0]);
+  std::string response(std::to_string(answer));
+  socket.send(response);
+
+  socket.close();
+  /*
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   // specifying the address
@@ -27,7 +42,6 @@ int main() {
   timeval val;
   val.tv_sec = 60;
   setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, &val, sizeof(val));
-  
 
   while(true) {
     char buffer[1024] = {0};
@@ -42,6 +56,7 @@ int main() {
   // recieving data
   // closing the socket.
   close(serverSocket);
+  */
 
   return 0;
 }
@@ -70,7 +85,7 @@ int protocolGarrobo(char* command) {
       //TODO(Any): There must be a way to allowed the user to only see themselves
     } else if (strncmp(requestToken, "INSURANCE_STATUS", 17) == 0) {
       char* idToken = strtok(NULL, " \n");
-      return insuranceStatusRequest();
+      // return insuranceStatusRequest();
     } else if (strncmp(requestToken, "LAB_LIST", 9) == 0) {
       //TODO(Any): There must be a way to allowed the user to only see themselves
 
@@ -95,16 +110,4 @@ int handleLogin(char* userToken, char* hashToken) {
   //TODO(Any): implement user verification the same way as was done previously
   // return 2 : if Login Succesful
   // return -2 : if login Unsuccessful
-}
-
-int insuranceStatusRequest() {
-  //TODO(Any): Make a request to the db for the insurance bit of the user
-  // return 3 : if data was obtained
-  // return -3 : if unable to get the data
-}
-
-int labListRequest() {
-  //TODO(Any): Make a request to the db for the lab list of the user
-  // return 4 : if data was obtained
-  // return -4 : if unable to get the data
 }
