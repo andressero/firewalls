@@ -74,7 +74,7 @@ int protocolGarrobo(char* command) {
   } else if (strncmp(commandToken, "LOGIN", 6) == 0) {
     char* userToken = strtok(NULL, " \n");
     char* hashToken = strtok(NULL, " \n");
-    return handleLogin(userToken, hashToken);
+    // return handleLogin(userToken, hashToken);
     //TODO(Any): Change into an object (session) so you can access the requests for requests
     //TODO(Any): Add flag to give the user logged permissions
   } else if (strncmp(commandToken, "REQUEST", 8) == 0) {

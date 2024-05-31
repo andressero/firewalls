@@ -23,15 +23,16 @@ Socket::Socket() {
 Socket::~Socket() {}
 
 int Socket::listen() {
-  ::listen(this->socketDescriptor, 5); // the 5 means the amount of request it'll allow
+  return ::listen(this->socketDescriptor, 5); // the 5 means the amount of request it'll allow
 }
 
 int Socket::accept() {
   this->connectionDescriptor = ::accept(this->socketDescriptor, nullptr, nullptr);
+  return 0;
 }
 
 int Socket::send(std::string message) {
-  ::send(this->connectionDescriptor, message.c_str(), message.size(), 0);
+  return ::send(this->connectionDescriptor, message.c_str(), message.size(), 0);
 }
 
 std::string Socket::receive() {
@@ -42,5 +43,5 @@ std::string Socket::receive() {
 }
 
 int Socket::close() {
-  ::close(this->socketDescriptor);
+  return ::close(this->socketDescriptor);
 }
