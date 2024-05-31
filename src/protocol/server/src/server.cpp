@@ -7,56 +7,17 @@
 int protocolGarrobo(char* command);
 
 int main() {
-  Socket socket;
+  Socket server(8080, "0.0.0.0");
+  server.bind();
+  server.listen(5);
+  server.accept();
 
-  socket.listen();
-
-  socket.accept();
-
-  std::string mensaje = socket.receive();
+  std::string mensaje = server.receive(server.getClientFileDescriptor());
   std::cout << mensaje << std::endl;
 
   int answer = protocolGarrobo(&mensaje[0]);
   std::string response(std::to_string(answer));
-  socket.send(response);
-
-  socket.close();
-  /*
-  int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-
-  // specifying the address
-  sockaddr_in serverAddress;
-  serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(8080);
-  serverAddress.sin_addr.s_addr = INADDR_ANY;
-  
-  // binding socket.
-  bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
-
-  // listening to the assigned socket
-  listen(serverSocket, 5);
-
-  // accepting connection request
-  int clientSocket = accept(serverSocket, nullptr, nullptr);
-
-  timeval val;
-  val.tv_sec = 60;
-  setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, &val, sizeof(val));
-
-  while(true) {
-    char buffer[1024] = {0};
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    std::cout << "Message from client: " << buffer << std::endl;
-
-    int answer = protocolGarrobo(buffer);
-    char respuesta[128] = {0};
-    sprintf(respuesta, "%d", answer);
-    send(clientSocket, respuesta, sizeof(answer), 0);
-  }
-  // recieving data
-  // closing the socket.
-  close(serverSocket);
-  */
+  server.send(server.getClientFileDescriptor(), response);
 
   return 0;
 }

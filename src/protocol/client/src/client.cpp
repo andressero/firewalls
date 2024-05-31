@@ -8,31 +8,19 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include "../../server/src/Socket.hpp"
+
 
 int main() {
-  // creating socket
-  int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+  Socket client(8080, "127.0.0.1");
+  Socket server(8080, "0.0.0.0");
 
-  // specifying address
-  sockaddr_in serverAddress;
-  serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(8080);
-  serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1"); // Cambiar aqui la ip
+  client.connect(server.getServerAddress());
 
-  // sending connection request
-  connect(clientSocket, (struct sockaddr*)&serverAddress,
-          sizeof(serverAddress));
+  client.send(client.getServerFileDescriptor(), "INICIO");
 
-  // sending data
-  const char* message = "INICIO\n";
-  send(clientSocket, message, strlen(message), 0);
-  
-  char buffer[1024] = {0};
-  recv(clientSocket, buffer, sizeof(buffer), 0);
-  std::cout << "Message from server: " << buffer << std::endl;
+  std::string answer = client.receive(client.getServerFileDescriptor());
 
-  // closing socket
-  close(clientSocket);
+  std::cout << "Message from server: " << answer << std::endl;
 
-  return 0; // Pablo sersi
 }

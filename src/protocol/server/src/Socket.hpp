@@ -9,20 +9,34 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 class Socket {
  private:
-  int socketDescriptor;
-  int connectionDescriptor;
+  int serverFileDescriptor;
+  int clientFileDescriptor;
+
+  sockaddr_in serverAddress;
+  sockaddr_in clientAddress;
 
  public:
-  Socket();
+  Socket(short port, std::string address);
+  Socket(int fileDescriptor/*, sockaddr_in address*/);
   ~Socket();
-  int listen();
+
+  int bind();
+  int listen(int requests);
   int accept();
-  int send(std::string message);
-  std::string receive();
+  int connect(sockaddr_in address);
+  int send(int fileDescriptor, std::string message);
+  std::string receive(int fileDescriptor);
   int close();
+
+  int getServerFileDescriptor();
+  int getClientFileDescriptor();
+  sockaddr_in getServerAddress();
+
+  std::string getIPAddress();
 };
 
 #endif
