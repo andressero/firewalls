@@ -48,27 +48,6 @@ void loadUsers(FileSystem& fs, const std::string& usersFilename,
 
 #endif
 
-void loadUsers(FileSystem& fs, const std::string& usersFilename,
-               const std::string& filePath) {
-
-
-    std::ifstream file(filePath, std::ifstream::in);
-    QString currentDir = QDir::currentPath();
-    qInfo() << "Current dir: " << currentDir << "\n";
-    if (!file.fail()) {
-        qInfo() << "============== File open ==============";
-        std::string line;
-        std::cout << line;
-        // std::getline(file, line);
-        while(std::getline(file, line)) {
-            line.append("\n");
-            fs.write(usersFilename, line, line.size());
-        }
-    } else {
-        qInfo() << "File" << filePath << "didn't open\n";
-    }
-}
-
 #if 0
 #include "loginwindow.h"
 

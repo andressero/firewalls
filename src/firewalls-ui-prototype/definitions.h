@@ -106,22 +106,22 @@ if (DEBUG)                                                                   \
 // ?
 #define NOT_FOUND -5
 
-// TODO(all): Add error values to here, document the digit syntax rules.
-/**
- * @brief Error codes to some FileSystem methods.
- *
- * @details This codes syntax is according with the next digit specification:
- *  * 1x: blah blah
- *  * 2x: blah blah
- *
- */
-enum error_code {
-    ERROR_NO_BLOCKS_AVAILABLE = -10,
-    ERROR_EMPTY_FILENAME = -11,
-    ERROR_NO_FILE_BY_THAT_NAME = -12,
-    ERROR_FAILED_SEARCH = -13,
-    ERROR_NO_DIRECTORY_INDEX = -14
-};
+// // TODO(all): Add error values to here, document the digit syntax rules.
+// /**
+//  * @brief Error codes to some FileSystem methods.
+//  *
+//  * @details This codes syntax is according with the next digit specification:
+//  *  * 1x: blah blah
+//  *  * 2x: blah blah
+//  *
+//  */
+// enum error_code {
+//     ERROR_NO_BLOCKS_AVAILABLE = -10,
+//     ERROR_EMPTY_FILENAME = -11,
+//     ERROR_NO_FILE_BY_THAT_NAME = -12,
+//     ERROR_FAILED_SEARCH = -13,
+//     ERROR_NO_DIRECTORY_INDEX = -14
+// };
 
 // Type Definitions
 typedef int64_t i64;
