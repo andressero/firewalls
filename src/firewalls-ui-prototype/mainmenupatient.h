@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "patientlabmenu.h"
 #include "menupersonaldata.h"
+#include "filesystem.h"
 
 namespace Ui {
 class mainMenuPatient;
@@ -15,6 +16,7 @@ class mainMenuPatient : public QWidget
 
 public:
     explicit mainMenuPatient(QWidget *parent = nullptr);
+    mainMenuPatient(QWidget *parent = nullptr, FileSystem* fs = nullptr);
     ~mainMenuPatient();
 
 private slots:
@@ -24,8 +26,11 @@ private slots:
 
     void on_personalDataButton_clicked();
 
+    void on_insuranceButton_clicked();
+
 private:
     Ui::mainMenuPatient *ui;
+    FileSystem* fs;
 };
 
 #endif // MAINMENUPATIENT_H

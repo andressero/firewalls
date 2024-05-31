@@ -11,32 +11,43 @@ CONFIG += c++17
 SOURCES += \
     fileproperties.cpp \
     filesystem.cpp \
+    insurancenegative.cpp \
+    insurancepositive.cpp \
     main.cpp \
     loginwindow.cpp \
     mainmenudoctor.cpp \
     mainmenulaboratory.cpp \
     mainmenupatient.cpp \
     menupersonaldata.cpp \
-    patientlabmenu.cpp
+    patientinsurancemenu.cpp \
+    patientlabmenu.cpp \
+    userdata.cpp
 
 HEADERS += \
-    Definitions.h \
+    definitions.h \
     fileproperties.h \
     filesystem.h \
+    insurancenegative.h \
+    insurancepositive.h \
     loginwindow.h \
     mainmenudoctor.h \
     mainmenulaboratory.h \
     mainmenupatient.h \
     menupersonaldata.h \
+    patientinsurancemenu.h \
     patientlabmenu.h \
-    userValidation.h
+    userdata.h \
+    uservalidation.h
 
 FORMS += \
+    insurancenegative.ui \
+    insurancepositive.ui \
     loginwindow.ui \
     mainmenudoctor.ui \
     mainmenulaboratory.ui \
     mainmenupatient.ui \
     menupersonaldata.ui \
+    patientinsurancemenu.ui \
     patientlabmenu.ui
 
 # Default rules for deployment.
@@ -54,5 +65,15 @@ contains(ANDROID_TARGET_ARCH,x86_64) {
         $$PWD/android
 }
 
-INCLUDEPATH += /usr/include/
-LIBS += -L/usr/include/argon2.h -largon2 
+DISTFILES += \
+    users.txt
+    data.txt
+
+
+OTHER_FILES += \
+    data.txt
+    users.txt
+
+RESOURCES += \
+    application.qrc
+

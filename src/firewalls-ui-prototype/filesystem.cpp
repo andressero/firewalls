@@ -3,6 +3,7 @@
 
 #include "filesystem.h"
 #include <sstream>
+#include <QDebug>
 
 // FileSystem
 FileSystem::FileSystem()
@@ -190,6 +191,8 @@ bool FileSystem::write(const std::string name, std::string &buffer,
         return false;
     }
 
+    qInfo() << "Write: Writing" << buffer << "\n";
+
     // Get file
     FileProperties &file = this->directory[this->search(name)];
 
@@ -221,6 +224,7 @@ bool FileSystem::write(const std::string name, std::string &buffer,
             }
         }
         // Write a character
+        qInfo() << "Write: Writing character " << buffer[i] << "\n";
         this->unit[currentBlock * BLOCK_SIZE + blockOffset] = buffer[i];
         ++blockOffset;
         ++cursor;

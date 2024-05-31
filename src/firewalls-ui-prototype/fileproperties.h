@@ -1,10 +1,10 @@
 // Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
 // Serrano>"
 
-#ifndef FILEPROPERTIES_HPP
-#define FILEPROPERTIES_HPP
+#ifndef FILEPROPERTIES_H
+#define FILEPROPERTIES_H
 
-#include "Definitions.h"
+#include "definitions.h"
 
 /**
  * @brief Properties every file on FileSystem MUST have.

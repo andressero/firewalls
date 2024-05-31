@@ -21,6 +21,7 @@ class LoginWindow : public QMainWindow
 public:
     // LoginWindow(QWidget *parent = nullptr, FileSystem& fs);
     LoginWindow(QWidget *parent = nullptr);
+    LoginWindow(QWidget *parent = nullptr, FileSystem* fs = nullptr);
     ~LoginWindow();
 
 private slots:
@@ -28,6 +29,6 @@ private slots:
 
 private:
     Ui::CCSS_Garrobo *ui;
-    // FileSystem& fileSystem;
+    FileSystem* fileSystem;
 };
 #endif // LOGINWINDOW_H
