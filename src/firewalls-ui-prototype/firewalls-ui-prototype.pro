@@ -21,6 +21,7 @@ SOURCES += \
     menupersonaldata.cpp \
     patientinsurancemenu.cpp \
     patientlabmenu.cpp \
+    patientselectionmenu.cpp \
     userdata.cpp
 
 HEADERS += \
@@ -36,6 +37,7 @@ HEADERS += \
     menupersonaldata.h \
     patientinsurancemenu.h \
     patientlabmenu.h \
+    patientselectionmenu.h \
     userdata.h \
     uservalidation.h
 
@@ -48,7 +50,8 @@ FORMS += \
     mainmenupatient.ui \
     menupersonaldata.ui \
     patientinsurancemenu.ui \
-    patientlabmenu.ui
+    patientlabmenu.ui \
+    patientselectionmenu.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

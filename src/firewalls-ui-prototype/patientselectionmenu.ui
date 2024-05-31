@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>patientLabMenu</class>
- <widget class="QWidget" name="patientLabMenu">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>360</width>
-    <height>620</height>
-   </rect>
-  </property>
+ <class>PatientSelectionMenu</class>
+ <widget class="QWidget" name="PatientSelectionMenu">
   <property name="minimumSize">
    <size>
     <width>360</width>
@@ -25,9 +17,32 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="autoFillBackground">
-   <bool>true</bool>
-  </property>
+  <widget class="QPushButton" name="backButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>560</y>
+     <width>87</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Atrás</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>141</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Control de pacientes</string>
+   </property>
+  </widget>
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
@@ -65,37 +80,11 @@
      </item>
      <item>
       <property name="text">
-       <string>Mario Barrantes Hernandez - 122446688</string>
+       <string>Mario Hernandez Villa - 122446688</string>
       </property>
      </item>
     </widget>
    </widget>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>81</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Laboratorio</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="backButton">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>560</y>
-     <width>87</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Atrás</string>
-   </property>
   </widget>
  </widget>
  <resources/>

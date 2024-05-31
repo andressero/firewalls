@@ -2,6 +2,8 @@
 #define MAINMENULABORATORY_H
 
 #include <QWidget>
+#include "menupersonaldata.h"
+#include "patientselectionmenu.h"
 
 namespace Ui {
 class mainMenuLaboratory;
@@ -17,6 +19,12 @@ public:
 
 private slots:
     void on_logoutButton_clicked();
+
+    void on_personalDataButton_clicked();
+
+    void on_patientButton_clicked();
+
+    void on_appointmentsButton_clicked();
 
 private:
     Ui::mainMenuLaboratory *ui;

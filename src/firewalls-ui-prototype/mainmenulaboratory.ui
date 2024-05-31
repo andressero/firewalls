@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>mainMenuLaboratory</class>
  <widget class="QWidget" name="mainMenuLaboratory">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>360</width>
-    <height>620</height>
-   </rect>
-  </property>
   <property name="minimumSize">
    <size>
     <width>360</width>
@@ -72,6 +64,7 @@
    <property name="font">
     <font>
      <pointsize>14</pointsize>
+     <weight>75</weight>
      <bold>true</bold>
     </font>
    </property>
@@ -106,7 +99,7 @@
     <string>Datos Personales</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pharmacyButton">
+  <widget class="QPushButton" name="patientButton">
    <property name="geometry">
     <rect>
      <x>30</x>
