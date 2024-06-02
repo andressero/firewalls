@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    clientsocket.cpp \
     fileproperties.cpp \
     filesystem.cpp \
     insurancenegative.cpp \
@@ -22,9 +23,12 @@ SOURCES += \
     patientinsurancemenu.cpp \
     patientlabmenu.cpp \
     patientselectionmenu.cpp \
+    sha256.cpp \
+    socket.cpp \
     userdata.cpp
 
 HEADERS += \
+    clientsocket.h \
     definitions.h \
     fileproperties.h \
     filesystem.h \
@@ -38,6 +42,8 @@ HEADERS += \
     patientinsurancemenu.h \
     patientlabmenu.h \
     patientselectionmenu.h \
+    sha256.h \
+    socket.h \
     userdata.h \
     uservalidation.h
 
