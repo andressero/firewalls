@@ -7,11 +7,15 @@
 #include <functional>
 #include "filesystem.h"
 #include "userdata.h"
+#include "clientsocket.h"
+#include "sha256.h"
 
 #include <QDebug>
 
 
 QString myHash(const std::string& password, const std::string& salt);
+QString sha256Hash(const QString& password, const QString& salt);
+std::string sha256ToString(BYTE* hash);
 
 UserData* tokenizer(QString usersFile, int* size) {
     QStringList lines = usersFile.split("\n");
@@ -85,6 +89,76 @@ bool validateLogin(FileSystem* fs, const QString& username, const QString& passw
     //     }
     // }
     // return false;
+}
+
+bool validateLogin(const QString& username, const QString& password) {
+    ClientSocket socket(8080, "127.0.0.1");
+
+    // Connect to server
+    sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(8080);
+    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    socket.connect(serverAddress);
+
+    socket.send(std::string("INICIO"));
+    QString answer(socket.receive().c_str());
+    qInfo() << "ValidateLogin: " << answer << "\n";
+    if (answer == "NOT_OK") {
+        // Tell user login is not available right now?
+        return false;
+    }
+
+    socket.send(std::string("REQUEST SALT " + username.toStdString()));
+
+    QString salt(socket.receive().c_str());
+    qInfo() << "ValidateLogin: " << answer << "\n";
+    if (salt.size() == 0 || salt == "NOT_OK") {
+        // Tell user something went wrong with the login procedure
+        return false;
+    }
+
+
+
+    QString hash = sha256Hash(password, salt);
+
+    socket.send(std::string("LOGIN " + username.toStdString() + " " + hash.toStdString()));
+
+    QString loginStatus(socket.receive().c_str());
+    qInfo() << "ValidateLogin: " << answer << "\n";
+    if (loginStatus == "NOT_OK") {
+        // Tell user wrong username or password
+        return false;
+    }
+
+    return true;
+
+}
+
+QString sha256Hash(const QString& password, const QString& salt) {
+    std::string passwordAndSalt = password.toStdString() + salt.toStdString();
+
+    BYTE *input =  new BYTE[SHA256_BLOCK_SIZE];
+    input = reinterpret_cast<BYTE*>(&passwordAndSalt[0]);
+
+    BYTE hash[SHA256_BLOCK_SIZE];
+    SHA256_CTX context;
+    sha256_init(&context);
+    sha256_update(&context, input, passwordAndSalt.size());
+    sha256_final(&context, hash);
+    return QString(sha256ToString(hash).c_str());
+}
+
+// Maybe send to another .h file?
+std::string sha256ToString(BYTE* hash) {
+    std::string answer(2*SHA256_BLOCK_SIZE, '0');
+    for (size_t i = 0; i < SHA256_BLOCK_SIZE; ++i) {
+        char temp[3] = {0};
+        snprintf(temp, 3, "%02x", hash[i]);
+        answer[2*i] = temp[0];
+        answer[2*i + 1] = temp[1];
+    }
+    return answer;
 }
 
 QString myHash(const std::string& password, const std::string& salt) {

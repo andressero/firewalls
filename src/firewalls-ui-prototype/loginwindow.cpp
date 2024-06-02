@@ -63,10 +63,12 @@ void LoginWindow::on_loginButton_clicked()
 
     if (patientID.match(username).hasMatch()) {
         qInfo() << "LoginWindow: Valid patient\n";
-        if (validateLogin(this->fileSystem, username, password)) {
+        if (validateLogin(username, password)) {
             qInfo() << "LoginWindow: Successful login\n";
             mainMenuPatient* patientMenu = new mainMenuPatient(this, this->fileSystem);
             patientMenu->show();
+        } else {
+            qInfo() << "LoginWindows: Unsuccessful login\n";
         }
     }
 
