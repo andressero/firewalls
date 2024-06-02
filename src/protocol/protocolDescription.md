@@ -5,8 +5,10 @@
 ```.
 INICIO // 0 - 1
    OK/NOT_OK: Server is busy or under maintenance
+REQUEST SALT <USER>
+   OK
 LOGIN <USER> <HASH> // 1 - 1
-   OK/NOT_OK: Incorrect password
+   OK/NOT_OK: Incorrect username or password
 REQUEST USER_DATA <id>    // 2 - n
    OK/NOT_OK
 REQUEST INSURANCE_STATUS <id>    // 2 - n
