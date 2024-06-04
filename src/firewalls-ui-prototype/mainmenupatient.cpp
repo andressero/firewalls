@@ -9,14 +9,6 @@ mainMenuPatient::mainMenuPatient(QWidget *parent)
     ui->setupUi(this);
 }
 
-mainMenuPatient::mainMenuPatient(QWidget *parent, FileSystem* fs)
-    : QWidget(parent)
-    , ui(new Ui::mainMenuPatient)
-    , fs(fs)
-{
-    ui->setupUi(this);
-}
-
 mainMenuPatient::~mainMenuPatient()
 {
     delete ui;
@@ -44,7 +36,7 @@ void mainMenuPatient::on_personalDataButton_clicked()
 
 void mainMenuPatient::on_insuranceButton_clicked()
 {
-    patientInsuranceMenu* insuranceMenu = new patientInsuranceMenu(this, this->fs);
+    patientInsuranceMenu* insuranceMenu = new patientInsuranceMenu(this);
     insuranceMenu->show();
 }
 

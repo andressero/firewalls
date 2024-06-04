@@ -14,7 +14,6 @@ class patientInsuranceMenu : public QWidget
 
 public:
     explicit patientInsuranceMenu(QWidget *parent = nullptr);
-    patientInsuranceMenu(QWidget *parent = nullptr, FileSystem* fs = nullptr);
     ~patientInsuranceMenu();
 
 private slots:
@@ -24,7 +23,6 @@ private slots:
 
 private:
     Ui::patientInsuranceMenu *ui;
-    FileSystem* fs;
 };
 
 #endif // PATIENTINSURANCEMENU_H
