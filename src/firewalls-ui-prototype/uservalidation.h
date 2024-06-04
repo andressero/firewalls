@@ -41,55 +41,55 @@ UserData* tokenizer(QString usersFile, int* size) {
 }
 
 
-bool validateLogin(FileSystem* fs, const QString& username, const QString& password) {
-    fs->open("Users");
-    fs->change2ReadMode("Users");
-    QString file(fs->read("Users", 279).c_str());
-    fs->close("Users");
+// bool validateLogin(FileSystem* fs, const QString& username, const QString& password) {
+//     fs->open("Users");
+//     fs->change2ReadMode("Users");
+//     QString file(fs->read("Users", 279).c_str());
+//     fs->close("Users");
 
-    qInfo() << "Read from file: "<< file << "\n";
+//     qInfo() << "Read from file: "<< file << "\n";
 
-    int usersSize = -1;
-    UserData* users = tokenizer(file, &usersSize);
+//     int usersSize = -1;
+//     UserData* users = tokenizer(file, &usersSize);
 
-    for (int i = 0; i < usersSize; ++i) {
-        qInfo() << "Users: " << users[i].userID << " == " << username << "?\n";
-        if (users[i].userID == username) {
-            QString hash = myHash(password.toStdString(), users[i].salt.toStdString());
-            qInfo() << "password: " << password << "\t salt: " << users[i].salt << "\n";
-            qInfo() << "Hash: " << hash << " == " << users[i].passwordHash << "?\n";
-            if (users[i].passwordHash == hash) {
-                return true;
-            }
-        }
-    }
+//     for (int i = 0; i < usersSize; ++i) {
+//         qInfo() << "Users: " << users[i].userID << " == " << username << "?\n";
+//         if (users[i].userID == username) {
+//             QString hash = myHash(password.toStdString(), users[i].salt.toStdString());
+//             qInfo() << "password: " << password << "\t salt: " << users[i].salt << "\n";
+//             qInfo() << "Hash: " << hash << " == " << users[i].passwordHash << "?\n";
+//             if (users[i].passwordHash == hash) {
+//                 return true;
+//             }
+//         }
+//     }
 
-    delete[] users;
-    // for (UserData& user: users) {
-    //     if (user.userID == username) {
-    //         if (user.passwordHash == myHash(password.toStdString(), salt.toStdString())) {
-    //             return true;
-    //         }
-    //     }
-    // }
+//     delete[] users;
+//     // for (UserData& user: users) {
+//     //     if (user.userID == username) {
+//     //         if (user.passwordHash == myHash(password.toStdString(), salt.toStdString())) {
+//     //             return true;
+//     //         }
+//     //     }
+//     // }
 
-    return false;
+//     return false;
 
-    // for (QString& line: lines) {
-    //     QStringList userData = line.split(",");
-    //     if (userData[0] == username) {
-    //         QString salt = userData[2];
-    //         unsigned char hashArray[64];
-    //         if (myHash(password.toStdString(), salt.toStdString())) {
-    //             QString hash(hashArray);
-    //             if (hash == userData[1]) {
-    //                 return true;
-    //             }
-    //         }
-    //     }
-    // }
-    // return false;
-}
+//     // for (QString& line: lines) {
+//     //     QStringList userData = line.split(",");
+//     //     if (userData[0] == username) {
+//     //         QString salt = userData[2];
+//     //         unsigned char hashArray[64];
+//     //         if (myHash(password.toStdString(), salt.toStdString())) {
+//     //             QString hash(hashArray);
+//     //             if (hash == userData[1]) {
+//     //                 return true;
+//     //             }
+//     //         }
+//     //     }
+//     // }
+//     // return false;
+// }
 
 bool validateLogin(const QString& username, const QString& password) {
     ClientSocket socket(8080, "127.0.0.1");

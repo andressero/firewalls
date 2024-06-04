@@ -16,7 +16,6 @@ class mainMenuPatient : public QWidget
 
 public:
     explicit mainMenuPatient(QWidget *parent = nullptr);
-    mainMenuPatient(QWidget *parent = nullptr, FileSystem* fs = nullptr);
     ~mainMenuPatient();
 
 private slots:
@@ -30,7 +29,6 @@ private slots:
 
 private:
     Ui::mainMenuPatient *ui;
-    FileSystem* fs;
 };
 
 #endif // MAINMENUPATIENT_H

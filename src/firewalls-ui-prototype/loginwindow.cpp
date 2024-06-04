@@ -11,22 +11,6 @@ LoginWindow::LoginWindow(QWidget *parent)
     ui->setupUi(this);
 }
 
-LoginWindow::LoginWindow(QWidget *parent, FileSystem* fs)
-    : QMainWindow(parent)
-    , ui(new Ui::CCSS_Garrobo), fileSystem(fs)
-{
-    // this->fileSystem = fs;
-    ui->setupUi(this);
-}
-
-// LoginWindow::LoginWindow(QWidget *parent, FileSystem& fs)
-//     : QMainWindow(parent)
-//     , ui(new Ui::CCSS_Garrobo), fileSystem(fs)
-// {
-//     // this->fileSystem = fs;
-//     ui->setupUi(this);
-// }
-
 LoginWindow::~LoginWindow()
 {
     delete ui;
@@ -48,14 +32,14 @@ void LoginWindow::on_loginButton_clicked()
 
     // Doctor login
     if (doctorID.match(username).hasMatch()) {
-        if (validateLogin(this->fileSystem, username, password)) {
+        if (validateLogin(username, password)) {
             mainMenuDoctor* doctorMenu = new mainMenuDoctor(this);
             doctorMenu->show();
         }
     }
 
     if (laboratoristID.match(username).hasMatch()) {
-        if (validateLogin(this->fileSystem, username, password)) {
+        if (validateLogin(username, password)) {
             mainMenuLaboratory* laboratoryMenu = new mainMenuLaboratory(this);
             laboratoryMenu->show();
         }
@@ -65,7 +49,7 @@ void LoginWindow::on_loginButton_clicked()
         qInfo() << "LoginWindow: Valid patient\n";
         if (validateLogin(username, password)) {
             qInfo() << "LoginWindow: Successful login\n";
-            mainMenuPatient* patientMenu = new mainMenuPatient(this, this->fileSystem);
+            mainMenuPatient* patientMenu = new mainMenuPatient(this);
             patientMenu->show();
         } else {
             qInfo() << "LoginWindows: Unsuccessful login\n";
