@@ -183,6 +183,22 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="incorrectPasswordLabel">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>310</y>
+      <width>131</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -190,7 +206,7 @@
      <x>0</x>
      <y>0</y>
      <width>360</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
