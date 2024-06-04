@@ -1,3 +1,5 @@
+# Added by diego; There is no need to add the result of the segfaults.
+vgcore.* 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
