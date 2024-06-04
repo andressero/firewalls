@@ -3,6 +3,7 @@
 // Taken from <https://www.geeksforgeeks.org/socket-programming-in-cpp/>
 
 #include "Socket.hpp"
+#include "Logger.hpp"
 
 int protocolGarrobo(char* command);
 
@@ -12,16 +13,23 @@ int main() {
   server.listen(5);
   server.accept();
 
+  Logger logger;
+
+  logger.log("Server accepted a client (1/5)", "server_log.txt");
+
   std::string mensaje = server.receive(server.getClientFileDescriptor());
-  std::cout << mensaje << std::endl;
+  logger.log("Server received:\n" + mensaje, "server_log.txt");
 
   int answer = protocolGarrobo(&mensaje[0]);
   std::string response(std::to_string(answer));
+  logger.log("Server responded:\n" + response, "server_log.txt");
   server.send(server.getClientFileDescriptor(), response);
 
   return 0;
 }
 
+// TODO(all): Use log to output messages 
+// or faulty states.
 int protocolGarrobo(char* command) {
   char* commandToken = strtok(command, " \n");
   // while( commandToken != NULL ) {
