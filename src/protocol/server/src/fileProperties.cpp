@@ -1,7 +1,7 @@
 // Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
 // Serrano>"
 
-#include "fileproperties.h"
+#include "fileProperties.hpp"
 
 FileProperties::FileProperties()
     : startingBlock(UNUSED), lastBlock(UNUSED), cursor(CLOSED),

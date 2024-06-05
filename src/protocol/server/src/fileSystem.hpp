@@ -5,7 +5,7 @@
 #define FILESYSTEM_HPP
 
 #include "Definitions.hpp"
-#include "fileproperties.h"
+#include "fileProperties.hpp"
 
 #include <string>
 
