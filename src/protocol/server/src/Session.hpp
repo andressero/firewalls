@@ -46,6 +46,11 @@ class LabResult {
     this->labResultContent = buffer.str();
   }
 
+  bool empty() const {
+    const bool a = this->labResultID.empty();
+    return a;
+  }
+
   std::string toString() const {
     std::stringstream file;
     file << "LabResultID: " << this->labResultID << " LabResultTestName: " << this->labResultTestName << " LabResultDate: " << this->labResultDate << " LabResultContent: " << "[" << this->labResultContent << "]";
@@ -149,7 +154,7 @@ class Session {
 
   LabResult labResultRequest(std::string labResultID) {
     Sqlite& sqlite = Sqlite::getInstance();
-    std::string sql_statement = "SELECT * FROM 'LabResults'  WHERE labResultID = " + labResultID;
+    std::string sql_statement = "SELECT * FROM 'LabResults'  WHERE labResultID = " + labResultID + " AND patientID = " + this->user;
     LabResult labResult;
     sqlite.exec(sql_statement, getLabReport, (void*)&labResult);
     return labResult;

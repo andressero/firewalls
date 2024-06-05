@@ -127,7 +127,11 @@ std::string protocolGarrobo(std::string input) {
               const std::string labResultID = command[2];
               const LabResult labResult = session->labResultRequest(labResultID);
               LOG("labResult is " << labResult.toString())
-              response = "OK\n" + labResult.toString() + "\n";
+              if (labResult.empty()) {
+                response = "ERROR\n";
+              } else {
+                response = "OK\n" + labResult.toString() + "\n";
+              }
               break;
             }
             default:

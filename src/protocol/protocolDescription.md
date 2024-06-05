@@ -14,16 +14,16 @@ nc es netcat, en modo cliente y leyendo de stdin
 ```.
 INICIO // 0 - 1
    OK/NOT_OK: Server is busy or under maintenance
-LOGIN <USER> <HASH> // 1 - 1
+LOGIN <USER> <HASH> // 0 - 1
    OK/NOT_OK: Incorrect username or password
-REQUEST USER_DATA <id>    // 2 - n
+REQUEST USER_DATA // The id is implied in the session context, sending it would be redundant.
    OK/NOT_OK
-REQUEST INSURANCE_STATUS <id>    // 2 - n
+REQUEST INSURANCE_STATUS // The id is implied in the session context, sending it would be redundant.
    OK/NOT_OK
    ...
-REQUEST LAB_LIST    // 2 - n
+REQUEST LAB_LIST // The id is implied in the session context, sending it would be redundant.
    OK/NOT_OK
-REQUEST LAB_RESULT <labId>    // 2 - n
+REQUEST LAB_RESULT <labResultID>
    OK/NOT_OK
    ...
 
