@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include "Definitions.hpp"
 
 class Socket {
  private:
@@ -18,11 +19,18 @@ class Socket {
 
   sockaddr_in serverAddress;
   sockaddr_in clientAddress;
+  Socket(const Socket&) = delete;
+  Socket& operator=(const Socket&) = delete;
 
  public:
   Socket(short port, std::string address);
   Socket(int fileDescriptor/*, sockaddr_in address*/);
   ~Socket();
+
+  static Socket& getInstance() {
+    static Socket instance(8080, "0.0.0.0"); // Guaranteed to be initialized only once
+    return instance;
+  }
 
   int bind();
   int listen(int requests);
@@ -37,6 +45,15 @@ class Socket {
   sockaddr_in getServerAddress();
 
   std::string getIPAddress();
+
+  // Signal handler function
+  static void signalHandler(int signal) {
+    std::cout << "Received signal " << signal << ". Releasing resources..." << std::endl;
+    Socket& instance = Socket::getInstance();
+    instance.close();
+    exit(signal);
+  }
+
 };
 
 #endif

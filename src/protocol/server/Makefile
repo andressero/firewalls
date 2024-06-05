@@ -12,7 +12,7 @@ FLAGS=$(strip -Wall -Wextra $(FLAG) $(DEFS))
 FLAGC=$(strip $(FLAGS) $(CSTD))
 FLAGX=$(strip $(FLAGS) $(XSTD))
 FLAGJ=$(strip $(FLAG))
-LIBS=#= Libraries to be linked, e.g: LIBS=-lm
+LIBS=-l sqlite3 #= Libraries to be linked, e.g: LIBS=-lm
 LINTF=-build/header_guard,-build/include_subdir,-runtime/int
 LINTC=$(LINTF),-readability/casting
 LINTX=$(LINTF),-build/c++11,-runtime/references

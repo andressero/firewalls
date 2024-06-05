@@ -1,0 +1,4 @@
+Patient ID: 567894319
+Lab Test: X-Ray
+Date: 2024-02-12
+Result: Normal

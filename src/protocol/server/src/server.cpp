@@ -7,77 +7,162 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <csignal>
+#include <unordered_map>
+#include "filesystem.h"
+#include "Session.hpp"
+#include "Sqlite.hpp"
+#include <memory>
 
-std::vector<std::string> splitString(const std::string& input, const std::string& delimiter) {
-    std::vector<std::string> tokens;
-    std::istringstream iss(input);
-    std::string token;
- 
-    while (std::getline(iss, token, delimiter[0])) {
-        tokens.push_back(token);
-    }
- 
-    return tokens;
-}
 
-int protocolGarrobo(std::string command) {
-    std::vector<std::string> tokens = splitString(command, " \n");
+Socket& server = Socket::getInstance();
+FileSystem& fs4 = FileSystem::getInstance();
+Sqlite& database = Sqlite::getInstance();
 
-    if (tokens[0] == "INICIO") {
-        std::cout << "OK\n";
-        return 1;
-    } else if (tokens[0] == "LOGIN") {
-        std::string userToken = tokens[1];
-        std::string hashToken = tokens[2];
-        // return handleLogin(userToken, hashToken);
-        //TODO(Any): Change into an object (session) so you can access the requests for requests
-        //TODO(Any): Add flag to give the user logged permissions
-    } else if (tokens[0] == "REQUEST") {
-        //! This must go inside the object session to make sure the user can only see themselves
-        //TODO(Any): If user is verified allow the following
-        std::string requestToken = tokens[1];
-        if (requestToken == "USER_DATA") {
-            //TODO(Any): There must be a way to allowed the user to only see themselves
-        } else if (requestToken == "INSURANCE_STATUS") {
-            std::string idToken = tokens[2];
-            // return insuranceStatusRequest();
-        } else if (requestToken == "LAB_LIST") {
-            //TODO(Any): There must be a way to allowed the user to only see themselves
-        } else if (requestToken == "LAB_RESULT") {
-            std::string labIdToken = tokens[2];
-            //TODO(Any): ---
-        } else {
-            std::cerr << "Error: "<< requestToken << " is an unknown request\n";
+
+const std::unordered_map<std::string, int> relation = {
+  {"INICIO", 1},
+  {"LOGIN", 2},
+  {"REQUEST", 3},
+  {"LOGOUT", 4},
+  {"QUIT", 5}
+};
+
+const std::unordered_map<std::string, int> requestTypeMap = {
+  {"USER_DATA", 1},
+  {"INSURANCE_STATUS", 2},
+  {"LAB_LIST", 3},
+  {"LAB_RESULT", 4}
+};
+
+int protocolGarrobo(std::string input) {
+    const std::vector<std::string> lines = splitString(input, "\n");
+    Session* session = 0;
+    
+    for (const std::string& line : lines) {
+      
+      LOG("Line: " << "|" << line << "|")
+      const std::vector<std::string> command = splitString(line, " ");
+      const std::string operation = command[0];
+      
+      if (relation.find(operation) == relation.end()) {
+        ERROR(operation + " is an unknown operation!");
+        return -1;
+      }
+      
+      switch (relation.find(operation)->second) {
+        case 1: // INICIO
+          std::cout << "OK\n";
+          LOG("Operation: INICIO")
+          break;
+        case 2: { // LOGIN
+          if (session) {
+            LOG("Already existing session object, Already LOGGED IN!")
+            return -3;
+          }
+          LOG("Operation: LOGIN\n")
+          const std::string user = command[1];
+          const std::string hashToken = command[2];
+          LOG("received hash is " + hashToken + " with size " + std::to_string(hashToken.size()))
+          ASSERT(hashToken.size() == 124);
+          session = new Session(user, hashToken);
+          const bool loginStatus = session->tryLogin();
+          if (loginStatus) {
+            LOG("Login Succesful")
+          } else {
+            LOG("Login Unsuccessful")
+            delete session;
+            session = 0;
+          }
+          break;
         }
-    } else if (tokens[0] == "LOGOUT") {
-        //TODO(Any): Change flag to remove logged permissions from user
-    } else if (tokens[0] == "QUIT") {
-        //TODO(Any): ---
-    } else {
-        std::cerr << "Error: "<< tokens[0] << " is an unknown command\n";
+        case 3: { // REQUEST
+          LOG("Operation: REQUEST")
+          //! This must go inside the object session to make sure the user can only see themselves
+          //TODO(Any): If user is verified allow the following
+          if (!session) {
+            LOG("No session object, NOT LOGGED IN YET")
+            return -3;
+          }
+          if (!session->getLogStatus()) {
+            LOG("NOT LOGGED IN YET")
+            return -3;
+          }
+          const std::string requestType_ = command[1];
+          if (requestTypeMap.find(requestType_ ) == requestTypeMap.end()) {
+            ERROR(requestType_  + " is an unknown request type")
+            return -1;
+          }
+          switch(requestTypeMap.find(requestType_)->second) {
+            case 1: { // USER_DATA
+              LOG("Request Type: USER_DATA")
+              const std::string userData = session->userDataRequest();
+              LOG("userData is" + userData)
+              break;
+            }
+            case 2: { // INSURANCE_STATUS
+              LOG("Request Type: INSURANCE_STATUS")
+              const std::string insuranceStatus = session->insuranceStatusRequest();
+              LOG("insuranceStatus is " + insuranceStatus)
+              break;
+            }
+            case 3: { // LAB_LIST
+              LOG("Request Type: LAB_LIST")
+              const std::vector<LabResult> labList = session->labListRequest();
+              //LOG("labList is " + labList)
+              for (const LabResult& i : labList) {
+                LOG(i.toString())
+              }
+              break;
+            }
+            case 4: {// LAB_RESULT
+              LOG("Request Type: LAB_RESULT")
+              const std::string labResultID = command[2];
+              const LabResult labResult = session->labResultRequest(labResultID);
+              LOG("labResult is " << labResult.toString())
+              break;
+              }
+            default:
+              ERROR(requestType_ + " is an unknown request type")
+              break;
+            }
+          }
+          break;
+        case 4: // LOGOUT
+          LOG("LOGOUT")
+          if (session) {
+            delete session;
+            session = 0;
+          }
+          break;
+        case 5: // QUIT
+          LOG("QUIT")
+          if (session) {
+            delete session;
+            session = 0;
+          }
+          break;
+        default:
+          ERROR(operation + " is an unknown operation!");
+          break;
+      }
+    }
+    if (session) {
+      delete session;
     }
     return -1;
 }
 
-int handleLogin(char* userToken, char* hashToken) {
-  //TODO(Any): implement user verification the same way as was done previously
-  // return 2 : if Login Succesful
-  // return -2 : if login Unsuccessful
-}
-
-
 int main() {
-  Socket server(8080, "0.0.0.0");
+  std::signal(SIGINT, Socket::signalHandler);
   server.bind();
   server.listen(5);
-  server.accept();
-
-  std::string mensaje = server.receive(server.getClientFileDescriptor());
-  std::cout << mensaje << std::endl;
-
-  int answer = protocolGarrobo(mensaje);
-  std::string response(std::to_string(answer));
-  server.send(server.getClientFileDescriptor(), response);
-
+  while (true) {
+    server.accept();
+    std::string mensaje = server.receive(server.getClientFileDescriptor());
+    int answer = protocolGarrobo(mensaje);
+    std::string response(std::to_string(answer));
+    server.send(server.getClientFileDescriptor(), response);
+  }
   return 0;
 }
