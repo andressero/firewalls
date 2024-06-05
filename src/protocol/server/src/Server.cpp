@@ -91,7 +91,7 @@ void getRequestResponse(std::string& response, const std::vector<std::string>& c
     return;
 }
 
-std::string protocolGarrobo(std::string input) {
+std::string protocolGarrobo(const std::string& input) {
     const std::vector<std::string> lines = splitString(input, "\n");
     std::string response = "ERROR\n";
     Session* session = 0;
@@ -143,7 +143,10 @@ std::string protocolGarrobo(std::string input) {
           [[fallthrough]];
         case 5: // QUIT
           LOG("QUIT")
-          if (session) delete session; session = 0;
+          if (session) {
+            delete session;
+            session = 0;
+          }
           break;
         default:
           response = "ERROR\n";
@@ -151,7 +154,10 @@ std::string protocolGarrobo(std::string input) {
           break;
       }
     }
-    if (session) delete session; session = 0;
+    if (session) {
+      delete session;
+      session = 0;
+    }
     return response;
 }
 
