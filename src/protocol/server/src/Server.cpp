@@ -1,4 +1,4 @@
-// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
+// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolaños, Andres
 // Serrano>"
 // Taken from <https://www.geeksforgeeks.org/socket-programming-in-cpp/>
 
@@ -28,6 +28,69 @@ const std::unordered_map<std::string, int> requestTypeMap = {
   {"LAB_RESULT", 4}
 };
 
+void getRequestResponse(std::string& response, const std::vector<std::string>& command, Session* session) {
+  if (!session) {
+    LOG("No session object, NOT LOGGED IN YET")
+    response = "ERROR\n";
+    return;
+  }
+  if (!session->getLogStatus()) {
+    LOG("NOT LOGGED IN YET")
+    response = "ERROR\n";
+    return;
+  }
+  const std::string requestType_ = command[1];
+  if (requestTypeMap.find(requestType_ ) == requestTypeMap.end()) {
+    ERROR(requestType_  + " is an unknown request type")
+    response = "ERROR\n";
+    return;
+  }
+  switch(requestTypeMap.find(requestType_)->second) {
+    case 1: { // USER_DATA
+      LOG("Request Type: USER_DATA")
+      const std::string userData = session->userDataRequest();
+      LOG("userData is" + userData)
+      response = "OK\n" + userData + "\n";
+      break;
+    }
+    case 2: { // INSURANCE_STATUS
+      LOG("Request Type: INSURANCE_STATUS")
+      const std::string insuranceStatus = session->insuranceStatusRequest();
+      LOG("insuranceStatus is " + insuranceStatus)
+      response = "OK\n" + insuranceStatus + "\n";
+      break;
+    }
+    case 3: { // LAB_LIST
+      LOG("Request Type: LAB_LIST")
+      const std::vector<LabResult> labList = session->labListRequest();
+      response = "";
+      for (const LabResult& i : labList) {
+        LOG(i.toString())
+        response += i.toString() + "\t";
+      }
+      response += "\n";
+      break;
+    }
+    case 4: {// LAB_RESULT
+      LOG("Request Type: LAB_RESULT")
+      const std::string labResultID = command[2];
+      const LabResult labResult = session->labResultRequest(labResultID);
+      LOG("labResult is " << labResult.toString())
+      if (labResult.empty()) {
+        response = "ERROR\n";
+      } else {
+        response = "OK\n" + labResult.toString() + "\n";
+      }
+      break;
+    }
+    default:
+      response = "ERROR\n";
+      ERROR(requestType_ + " is an unknown request type")
+      break;
+    }
+    return;
+}
+
 std::string protocolGarrobo(std::string input) {
     const std::vector<std::string> lines = splitString(input, "\n");
     std::string response = "ERROR\n";
@@ -50,14 +113,13 @@ std::string protocolGarrobo(std::string input) {
           response = "OK\n";
           break;
         case 2: { // LOGIN
+          LOG("Operation: LOGIN\n")
           if (session) {
             LOG("Already existing session object, Already LOGGED IN!")
             return "ERROR\n";
           }
-          LOG("Operation: LOGIN\n")
           const std::string user = command[1];
           const std::string hashToken = command[2];
-          LOG("received hash is " + hashToken + " with size " + std::to_string(hashToken.size()))
           ASSERT(hashToken.size() == 124);
           session = new Session(user, hashToken);
           const bool loginStatus = session->tryLogin();
@@ -65,88 +127,23 @@ std::string protocolGarrobo(std::string input) {
             LOG("Login Succesful")
             response = "OK\n";
           } else {
-            LOG("Login Unsuccessful")
+            LOG("Login Failed")
             response = "ERROR\n";
             delete session;
             session = 0;
           }
           break;
         }
-        case 3: { // REQUEST
+        case 3:// REQUEST
           LOG("Operation: REQUEST")
-          //! This must go inside the object session to make sure the user can only see themselves
-          //TODO(Any): If user is verified allow the following
-          if (!session) {
-            LOG("No session object, NOT LOGGED IN YET")
-            return "ERROR\n";
-          }
-          if (!session->getLogStatus()) {
-            LOG("NOT LOGGED IN YET")
-            return "ERROR\n";
-          }
-          const std::string requestType_ = command[1];
-          if (requestTypeMap.find(requestType_ ) == requestTypeMap.end()) {
-            ERROR(requestType_  + " is an unknown request type")
-            return "ERROR\n";
-          }
-          switch(requestTypeMap.find(requestType_)->second) {
-            case 1: { // USER_DATA
-              LOG("Request Type: USER_DATA")
-              const std::string userData = session->userDataRequest();
-              LOG("userData is" + userData)
-              response = "OK\n" + userData + "\n";
-              break;
-            }
-            case 2: { // INSURANCE_STATUS
-              LOG("Request Type: INSURANCE_STATUS")
-              const std::string insuranceStatus = session->insuranceStatusRequest();
-              LOG("insuranceStatus is " + insuranceStatus)
-              response = "OK\n" + insuranceStatus + "\n";
-              break;
-            }
-            case 3: { // LAB_LIST
-              LOG("Request Type: LAB_LIST")
-              const std::vector<LabResult> labList = session->labListRequest();
-              response = "";
-              for (const LabResult& i : labList) {
-                LOG(i.toString())
-                response += i.toString() + "\t";
-              }
-              response += "\n";
-              break;
-            }
-            case 4: {// LAB_RESULT
-              LOG("Request Type: LAB_RESULT")
-              const std::string labResultID = command[2];
-              const LabResult labResult = session->labResultRequest(labResultID);
-              LOG("labResult is " << labResult.toString())
-              if (labResult.empty()) {
-                response = "ERROR\n";
-              } else {
-                response = "OK\n" + labResult.toString() + "\n";
-              }
-              break;
-            }
-            default:
-              response = "ERROR\n";
-              ERROR(requestType_ + " is an unknown request type")
-              break;
-            }
-          }
+          getRequestResponse(response, command, session);
           break;
-        case 4: // LOGOUT
-          LOG("LOGOUT")
-          if (session) {
-            delete session;
-            session = 0;
-          }
-          break;
+        case 4: // LOGOUT FALLTHROUGH
+          LOG("Operation LOGOUT")
+          [[fallthrough]];
         case 5: // QUIT
           LOG("QUIT")
-          if (session) {
-            delete session;
-            session = 0;
-          }
+          if (session) delete session; session = 0;
           break;
         default:
           response = "ERROR\n";
@@ -154,9 +151,7 @@ std::string protocolGarrobo(std::string input) {
           break;
       }
     }
-    if (session) {
-      delete session;
-    }
+    if (session) delete session; session = 0;
     return response;
 }
 
