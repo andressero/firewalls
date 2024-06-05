@@ -3,18 +3,18 @@
 #ifndef SESSION_HPP
 #define SESSION_HPP
 
-#include "Sqlite.hpp" 
-#include "fileSystem.hpp"
+#include "FileSystem.hpp"
+#include "Sqlite.hpp"
 
 class LabResult {
-  public:
+public:
   std::string labResultID;
   std::string labResultTestName;
   std::string labResultDate;
   std::string labResultContent;
   LabResult() = default;
 
-  int operator=(const LabResult& other) {
+  int operator=(const LabResult &other) {
     this->labResultID = other.labResultID;
     this->labResultTestName = other.labResultTestName;
     this->labResultDate = other.labResultDate;
@@ -22,11 +22,10 @@ class LabResult {
     return 0;
   }
 
-  LabResult(const LabResult& other) {
-    *this = other;
-  }
+  LabResult(const LabResult &other) { *this = other; }
 
-  LabResult(char* labResultID, char* labResultTestName, char* labResultDate, char* labResultContentFilePath) {
+  LabResult(char *labResultID, char *labResultTestName, char *labResultDate,
+            char *labResultContentFilePath) {
     this->labResultID = std::string(labResultID);
     this->labResultTestName = std::string(labResultTestName);
     this->labResultDate = std::string(labResultDate);
@@ -43,35 +42,32 @@ class LabResult {
 
   std::string toString() const {
     std::stringstream file;
-    file << "LabResultID: " << this->labResultID << " LabResultTestName: " << this->labResultTestName << " LabResultDate: " << this->labResultDate << " LabResultContent: " << "[" << this->labResultContent << "]";
+    file << "LabResultID: " << this->labResultID
+         << " LabResultTestName: " << this->labResultTestName
+         << " LabResultDate: " << this->labResultDate << " LabResultContent: "
+         << "[" << this->labResultContent << "]";
     return file.str();
   }
 };
 
 class Session {
- private:
-  std::string user; 
+private:
+  std::string user;
   std::string hash;
   bool loggedIn;
- public:
-  Session(): loggedIn(false) {};
-  Session(std::string user, std::string hash): user(user), hash(hash),  loggedIn(false) {};
+
+public:
+  Session() : loggedIn(false){};
+  Session(std::string user, std::string hash)
+      : user(user), hash(hash), loggedIn(false){};
   ~Session() = default;
 
-  void setUser(std::string user) {
-    this->user = user;
-  }
-  void setHash(std::string hash) {
-    this->hash = hash;
-  }
-  void setLogStatus(bool loggedIn) {
-    this->loggedIn = loggedIn;
-  }
-  bool getLogStatus() {
-    return this->loggedIn;
-  }
+  void setUser(std::string user) { this->user = user; }
+  void setHash(std::string hash) { this->hash = hash; }
+  void setLogStatus(bool loggedIn) { this->loggedIn = loggedIn; }
+  bool getLogStatus() { return this->loggedIn; }
   bool tryLogin() {
-    FileSystem& fs4 = FileSystem::getInstance();
+    FileSystem &fs4 = FileSystem::getInstance();
     fs4.open(user);
     fs4.change2ReadMode(user);
     const std::string userData = fs4.read(user, 200);
@@ -79,9 +75,9 @@ class Session {
 
     const std::string storedHash = splitString(userData, ",")[1];
     LOG("STORED HASH SIZE " + std::to_string(storedHash.size()))
-    //ASSERT(storedHash.size() == 124);
+    // ASSERT(storedHash.size() == 124);
     LOG("RECEIVED HASH SIZE " + std::to_string(this->hash.size()))
-    //ASSERT(storedHash.size() == 124);
+    // ASSERT(storedHash.size() == 124);
     const bool validLogin = storedHash == this->hash;
 
     LOG("Valid login: " + std::to_string(validLogin))
@@ -92,9 +88,9 @@ class Session {
     return validLogin;
   }
 
-  static int getUserData(void *data, int argc, char **argv, char **azColName){
+  static int getUserData(void *data, int argc, char **argv, char **azColName) {
     (void)azColName;
-    std::string* isInsured = (std::string*)data;
+    std::string *isInsured = (std::string *)data;
     for (int i = 0; i < argc; i++) {
       *isInsured += std::string(argv[i]) + ",";
     }
@@ -102,51 +98,56 @@ class Session {
   }
 
   std::string userDataRequest() {
-    Sqlite& sqlite = Sqlite::getInstance();
-    std::string sql_statement = "SELECT * FROM 'userData'  WHERE patientID = " + this->user;
+    Sqlite &sqlite = Sqlite::getInstance();
+    std::string sql_statement =
+        "SELECT * FROM 'userData'  WHERE patientID = " + this->user;
     std::string userData;
-    sqlite.exec(sql_statement, getUserData, (void*)&userData);
+    sqlite.exec(sql_statement, getUserData, (void *)&userData);
     return userData;
   }
 
-
   std::string insuranceStatusRequest() {
-    const std::string insuranceStatus = splitString(this->userDataRequest(), ",")[11];
+    const std::string insuranceStatus =
+        splitString(this->userDataRequest(), ",")[11];
     return insuranceStatus;
   }
 
-  static int getLabReportList(void *data, int argc, char **argv, char **azColName){
+  static int getLabReportList(void *data, int argc, char **argv,
+                              char **azColName) {
     (void)argc;
     (void)azColName;
-    std::vector<LabResult>* labResults = (std::vector<LabResult>*)data;
+    std::vector<LabResult> *labResults = (std::vector<LabResult> *)data;
     LabResult labResult(argv[0], argv[2], argv[4], argv[3]);
     labResults->push_back(labResult);
-    //LOG("LabResultID: " << argv[0] << " LabResultTestName: " << argv[1] << " LabResultDate: " << argv[3] << " LabResultContent: " << argv[2])
+    // LOG("LabResultID: " << argv[0] << " LabResultTestName: " << argv[1] << "
+    // LabResultDate: " << argv[3] << " LabResultContent: " << argv[2])
     return 0;
   }
 
   std::vector<LabResult> labListRequest() {
-    Sqlite& sqlite = Sqlite::getInstance();
+    Sqlite &sqlite = Sqlite::getInstance();
     std::string sql_statement = "SELECT * FROM 'LabResults' LIMIT 0,30";
     std::vector<LabResult> labResults;
-    sqlite.exec(sql_statement, getLabReportList, (void*)&labResults);
+    sqlite.exec(sql_statement, getLabReportList, (void *)&labResults);
     return labResults;
   }
 
-  static int getLabReport(void *data, int argc, char **argv, char **azColName){
+  static int getLabReport(void *data, int argc, char **argv, char **azColName) {
     (void)argc;
     (void)azColName;
-    LabResult* labResult = (LabResult*)data;
+    LabResult *labResult = (LabResult *)data;
     LabResult labResult2(argv[0], argv[2], argv[4], argv[3]);
     *labResult = labResult2;
     return 0;
   }
 
   LabResult labResultRequest(std::string labResultID) {
-    Sqlite& sqlite = Sqlite::getInstance();
-    std::string sql_statement = "SELECT * FROM 'LabResults'  WHERE labResultID = " + labResultID + " AND patientID = " + this->user;
+    Sqlite &sqlite = Sqlite::getInstance();
+    std::string sql_statement =
+        "SELECT * FROM 'LabResults'  WHERE labResultID = " + labResultID +
+        " AND patientID = " + this->user;
     LabResult labResult;
-    sqlite.exec(sql_statement, getLabReport, (void*)&labResult);
+    sqlite.exec(sql_statement, getLabReport, (void *)&labResult);
     return labResult;
   }
 };

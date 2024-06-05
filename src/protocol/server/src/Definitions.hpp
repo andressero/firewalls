@@ -4,25 +4,25 @@
 #ifndef DEFINITIONS_HPP
 #define DEFINITIONS_HPP
 
+#include <arpa/inet.h>
+#include <chrono> // For std::chrono::seconds
+#include <csignal>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <arpa/inet.h>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <cstring>
 #include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cstdio>
-#include <csignal>
-#include <unordered_map>
-#include <chrono>    // For std::chrono::seconds
-#include <thread>    // For std::this_thread::sleep_for
 #include <sqlite3.h>
+#include <sstream>
+#include <string>
+#include <sys/socket.h>
+#include <thread> // For std::this_thread::sleep_for
+#include <unistd.h>
+#include <unordered_map> // !High level
+#include <vector>        // !High level
 
 /**
  * @brief asserts that a certain condition is true, else it gives an error
@@ -77,6 +77,19 @@
     std::cerr << "\033[1;32m"                                                  \
               << "LOG: " << message << "\033[0m" << std::endl;
 
+#define LOG_TO_FILE(message, filename)                                         \
+  do {                                                                         \
+    std::ofstream file(filename, std::ios_base::app);                          \
+    if (file.is_open()) {                                                      \
+      file << message << std::endl;                                            \
+      file.close();                                                            \
+    } else {                                                                   \
+      std::cerr << "Unable to open file " << filename << std::endl;            \
+    }                                                                          \
+  } while (0)
+
+#define LOG_TO_DEFAULT_FILE(message) LOG _TO_FILE(message, "log.txt")
+
 // FAT table
 
 /**
@@ -119,7 +132,7 @@
 // TODO(all): Add error values to here, document the digit syntax rules.
 /**
  * @brief Error codes to some FileSystem methods.
- * 
+ *
  * @details This codes syntax is according with the next digit specification:
  *  * 1x: blah blah
  *  * 2x: blah blah
