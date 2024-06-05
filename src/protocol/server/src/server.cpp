@@ -35,8 +35,9 @@ const std::unordered_map<std::string, int> requestTypeMap = {
   {"LAB_RESULT", 4}
 };
 
-int protocolGarrobo(std::string input) {
+std::string protocolGarrobo(std::string input) {
     const std::vector<std::string> lines = splitString(input, "\n");
+    std::string response = "ERROR\n";
     Session* session = 0;
     
     for (const std::string& line : lines) {
@@ -47,18 +48,18 @@ int protocolGarrobo(std::string input) {
       
       if (relation.find(operation) == relation.end()) {
         ERROR(operation + " is an unknown operation!");
-        return -1;
+        return "ERROR\n";
       }
       
       switch (relation.find(operation)->second) {
         case 1: // INICIO
-          std::cout << "OK\n";
           LOG("Operation: INICIO")
+          response = "OK\n";
           break;
         case 2: { // LOGIN
           if (session) {
             LOG("Already existing session object, Already LOGGED IN!")
-            return -3;
+            return "ERROR\n";
           }
           LOG("Operation: LOGIN\n")
           const std::string user = command[1];
@@ -69,8 +70,10 @@ int protocolGarrobo(std::string input) {
           const bool loginStatus = session->tryLogin();
           if (loginStatus) {
             LOG("Login Succesful")
+            response = "OK\n";
           } else {
             LOG("Login Unsuccessful")
+            response = "ERROR\n";
             delete session;
             session = 0;
           }
@@ -82,37 +85,41 @@ int protocolGarrobo(std::string input) {
           //TODO(Any): If user is verified allow the following
           if (!session) {
             LOG("No session object, NOT LOGGED IN YET")
-            return -3;
+            return "ERROR\n";
           }
           if (!session->getLogStatus()) {
             LOG("NOT LOGGED IN YET")
-            return -3;
+            return "ERROR\n";
           }
           const std::string requestType_ = command[1];
           if (requestTypeMap.find(requestType_ ) == requestTypeMap.end()) {
             ERROR(requestType_  + " is an unknown request type")
-            return -1;
+            return "ERROR\n";
           }
           switch(requestTypeMap.find(requestType_)->second) {
             case 1: { // USER_DATA
               LOG("Request Type: USER_DATA")
               const std::string userData = session->userDataRequest();
               LOG("userData is" + userData)
+              response = "OK\n" + userData + "\n";
               break;
             }
             case 2: { // INSURANCE_STATUS
               LOG("Request Type: INSURANCE_STATUS")
               const std::string insuranceStatus = session->insuranceStatusRequest();
               LOG("insuranceStatus is " + insuranceStatus)
+              response = "OK\n" + insuranceStatus + "\n";
               break;
             }
             case 3: { // LAB_LIST
               LOG("Request Type: LAB_LIST")
               const std::vector<LabResult> labList = session->labListRequest();
-              //LOG("labList is " + labList)
+              response = "";
               for (const LabResult& i : labList) {
                 LOG(i.toString())
+                response += i.toString() + "\t";
               }
+              response += "\n";
               break;
             }
             case 4: {// LAB_RESULT
@@ -120,9 +127,11 @@ int protocolGarrobo(std::string input) {
               const std::string labResultID = command[2];
               const LabResult labResult = session->labResultRequest(labResultID);
               LOG("labResult is " << labResult.toString())
+              response = "OK\n" + labResult.toString() + "\n";
               break;
-              }
+            }
             default:
+              response = "ERROR\n";
               ERROR(requestType_ + " is an unknown request type")
               break;
             }
@@ -143,6 +152,7 @@ int protocolGarrobo(std::string input) {
           }
           break;
         default:
+          response = "ERROR\n";
           ERROR(operation + " is an unknown operation!");
           break;
       }
@@ -150,7 +160,7 @@ int protocolGarrobo(std::string input) {
     if (session) {
       delete session;
     }
-    return -1;
+    return response;
 }
 
 int main() {
@@ -159,9 +169,8 @@ int main() {
   server.listen(5);
   while (true) {
     server.accept();
-    std::string mensaje = server.receive(server.getClientFileDescriptor());
-    int answer = protocolGarrobo(mensaje);
-    std::string response(std::to_string(answer));
+    std::string request = server.receive(server.getClientFileDescriptor());
+    std::string response = protocolGarrobo(request);
     server.send(server.getClientFileDescriptor(), response);
   }
   return 0;
