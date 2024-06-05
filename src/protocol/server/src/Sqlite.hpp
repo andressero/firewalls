@@ -43,6 +43,14 @@ private:
         fprintf(stdout, "Operation done successfully\n");
     }
   }
+
+  // Signal handler function
+  static void signalHandler(int signal) {
+    std::cout << "SQLITE Received signal " << signal << ". Releasing resources..." << std::endl;
+    Sqlite& instance = Sqlite::getInstance();
+    instance.close();
+  }
+
 };
 
 #endif

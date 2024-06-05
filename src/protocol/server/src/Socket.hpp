@@ -48,10 +48,9 @@ class Socket {
 
   // Signal handler function
   static void signalHandler(int signal) {
-    std::cout << "Received signal " << signal << ". Releasing resources..." << std::endl;
+    std::cout << "Socket received signal " << signal << ". Releasing resources..." << std::endl;
     Socket& instance = Socket::getInstance();
     instance.close();
-    exit(signal);
   }
 
 };

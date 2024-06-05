@@ -167,8 +167,19 @@ std::string protocolGarrobo(std::string input) {
     return response;
 }
 
+static void signalr(int signal) {
+  std::cout << "Received signal " << signal << ". Releasing resources..." << std::endl;
+  Socket& server = Socket::getInstance();
+  server.signalHandler(signal);
+  Sqlite& database = Sqlite::getInstance();
+  database.signalHandler(signal);
+  FileSystem& fs = FileSystem::getInstance();
+  fs.signalHandler(signal);
+  exit(0);
+}
+
 int main() {
-  std::signal(SIGINT, Socket::signalHandler);
+  std::signal(SIGINT, signalr);
   server.bind();
   server.listen(5);
   while (true) {

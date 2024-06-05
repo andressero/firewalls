@@ -201,6 +201,12 @@ public:
    */
     void changeCursor(const std::string name, UNIT_INDEX cursor);
 
+    // Signal handler function
+    static void signalHandler(int signal) {
+        std::cout << "FileSystem received signal " << signal << ". Releasing resources..." << std::endl;
+        FileSystem& instance = FileSystem::getInstance();
+        instance.DumpToFile("output.txt");
+    }
 };
 
 
