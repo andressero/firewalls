@@ -4,12 +4,7 @@
 #ifndef FILESYSTEM_HPP
 #define FILESYSTEM_HPP
 
-#include "Definitions.hpp"
 #include "fileProperties.hpp"
-
-#include <string>
-
-
 
 std::vector<std::string> splitString(const std::string& input, const std::string& delimiter);
 std::string truncateString(const std::string& str, size_t size);

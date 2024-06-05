@@ -1,9 +1,7 @@
 #ifndef SQLITE_HPP
 #define SQLITE_HPP
 
-#include <sqlite3.h>
-#include <string>
-#include <cstdio>
+#include "Definitions.hpp"
 
 class Sqlite {
 private:

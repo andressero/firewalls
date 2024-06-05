@@ -2,8 +2,6 @@
 // Serrano>"
 
 #include "Socket.hpp"
-#include <chrono>    // For std::chrono::seconds
-#include <thread>    // For std::this_thread::sleep_for
 
 Socket::Socket(short port = 8080, std::string address = "0.0.0.0") {
   this->serverFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);

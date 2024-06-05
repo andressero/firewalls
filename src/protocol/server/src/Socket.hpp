@@ -3,13 +3,6 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
-#include <cstring>
-#include <iostream>
-#include <string>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <arpa/inet.h>
 #include "Definitions.hpp"
 
 class Socket {

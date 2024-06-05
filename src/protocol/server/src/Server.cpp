@@ -3,16 +3,9 @@
 // Taken from <https://www.geeksforgeeks.org/socket-programming-in-cpp/>
 
 #include "Socket.hpp"
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <csignal>
-#include <unordered_map>
 #include "fileSystem.hpp"
 #include "Session.hpp"
 #include "Sqlite.hpp"
-#include <memory>
 
 
 Socket& server = Socket::getInstance();

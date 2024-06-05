@@ -2,9 +2,6 @@
 // Serrano>"
 
 #include "fileSystem.hpp"
-#include <sstream>
-#include <fstream>
-#include <vector>
 
 std::vector<std::string> splitString(const std::string& input, const std::string& delimiter) {
     std::vector<std::string> tokens;
@@ -27,10 +24,9 @@ std::string truncateString(const std::string& str, size_t size) {
 }
 
 // FileSystem
-FileSystem::FileSystem()
-    : unit(new u8[STORAGE_VOLUME]()),
-    directory(new FileProperties[BLOCK_COUNT]()),
-    FAT(new BLOCK_INDEX[BLOCK_COUNT]()) {
+FileSystem::FileSystem(): directory(new FileProperties[BLOCK_COUNT]()),
+    FAT(new BLOCK_INDEX[BLOCK_COUNT]()),
+    unit(new u8[STORAGE_VOLUME]())  {
     for (size_t i = 0; i < BLOCK_COUNT; ++i) {
         this->FAT[i] = UNUSED;
     }

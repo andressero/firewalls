@@ -3,17 +3,7 @@
 #ifndef SESSION_HPP
 #define SESSION_HPP
 
-#include <cstring>
-#include <iostream>
-#include <string>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <sstream>
-#include <vector>
-#include <sstream>
 #include "Sqlite.hpp" 
-#include <cstdio>
 #include "fileSystem.hpp"
 
 class LabResult {
