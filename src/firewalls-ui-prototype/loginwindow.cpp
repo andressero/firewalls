@@ -35,6 +35,8 @@ void LoginWindow::on_loginButton_clicked()
         if (validateLogin(username, password)) {
             mainMenuDoctor* doctorMenu = new mainMenuDoctor(this);
             doctorMenu->show();
+        } else {
+            ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
         }
     }
 
@@ -42,6 +44,8 @@ void LoginWindow::on_loginButton_clicked()
         if (validateLogin(username, password)) {
             mainMenuLaboratory* laboratoryMenu = new mainMenuLaboratory(this);
             laboratoryMenu->show();
+        } else {
+            ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
         }
     }
 
@@ -52,6 +56,7 @@ void LoginWindow::on_loginButton_clicked()
             mainMenuPatient* patientMenu = new mainMenuPatient(this);
             patientMenu->show();
         } else {
+            ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
             qInfo() << "LoginWindows: Unsuccessful login\n";
         }
     }
