@@ -23,6 +23,7 @@ SOURCES += \
     patientinsurancemenu.cpp \
     patientlabmenu.cpp \
     patientselectionmenu.cpp \
+    request.cpp \
     sha256.cpp \
     socket.cpp \
     userdata.cpp
@@ -42,6 +43,7 @@ HEADERS += \
     patientinsurancemenu.h \
     patientlabmenu.h \
     patientselectionmenu.h \
+    request.h \
     sha256.h \
     socket.h \
     userdata.h \
