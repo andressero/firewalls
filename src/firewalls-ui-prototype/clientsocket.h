@@ -1,5 +1,8 @@
 #include "socket.h"
 
+#ifndef CLIENTSOCKET_H
+#define CLIENTSOCKET_H
+
 class ClientSocket: public Socket {
 public:
 
@@ -8,3 +11,5 @@ public:
     virtual int send(std::string message);
     virtual std::string receive();
 };
+
+#endif
