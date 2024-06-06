@@ -32,7 +32,7 @@ void LoginWindow::on_loginButton_clicked()
 
     // Doctor login
     if (doctorID.match(username).hasMatch()) {
-        if (validateLogin(username, password)) {
+        if (validateLogin(username.toStdString(), password.toStdString())) {
             mainMenuDoctor* doctorMenu = new mainMenuDoctor(this);
             doctorMenu->show();
         } else {
@@ -41,7 +41,7 @@ void LoginWindow::on_loginButton_clicked()
     }
 
     if (laboratoristID.match(username).hasMatch()) {
-        if (validateLogin(username, password)) {
+        if (validateLogin(username.toStdString(), password.toStdString())) {
             mainMenuLaboratory* laboratoryMenu = new mainMenuLaboratory(this);
             laboratoryMenu->show();
         } else {
@@ -51,7 +51,7 @@ void LoginWindow::on_loginButton_clicked()
 
     if (patientID.match(username).hasMatch()) {
         qInfo() << "LoginWindow: Valid patient\n";
-        if (validateLogin(username, password)) {
+        if (validateLogin(username.toStdString(), password.toStdString())) {
             qInfo() << "LoginWindow: Successful login\n";
             mainMenuPatient* patientMenu = new mainMenuPatient(this);
             patientMenu->show();
