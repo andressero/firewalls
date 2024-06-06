@@ -5,6 +5,33 @@
 
 #include "FileSystem.hpp"
 #include "Sqlite.hpp"
+#include "SHA256.hpp"
+
+// Sha256 stuff.
+// TODO[any]: Put sha256Hash and sha256ToString elsewhere?
+std::string sha256ToString(const BYTE* hash) {
+    std::string answer(2*SHA256_BLOCK_SIZE, '0');
+    for (size_t i = 0; i < SHA256_BLOCK_SIZE; ++i) {
+        char temp[3] = {0};
+        snprintf(temp, 3, "%02x", hash[i]);
+        answer[2*i] = temp[0];
+        answer[2*i + 1] = temp[1];
+    }
+    return answer;
+}
+
+std::string sha256Hash(std::string& strInput) {
+    BYTE *input =  new BYTE[SHA256_BLOCK_SIZE];
+    input = reinterpret_cast<BYTE*>(&strInput[0]);
+
+    BYTE hash[SHA256_BLOCK_SIZE];
+    SHA256_CTX context;
+    sha256_init(&context);
+    sha256_update(&context, input, strInput.size());
+    sha256_final(&context, hash);
+    // delete[] input;
+    return sha256ToString(hash);
+}
 
 class LabResult {
 public:
@@ -73,12 +100,19 @@ public:
     const std::string userData = fs4.read(user, 200);
     fs4.close(user);
 
-    const std::string storedHash = splitString(userData, ",")[1];
+    const std::vector<std::string> fields = splitString(userData, ",");
+
+    const std::string storedHash = fields[1];
     LOG("STORED HASH SIZE " + std::to_string(storedHash.size()))
     // ASSERT(storedHash.size() == 124);
     LOG("RECEIVED HASH SIZE " + std::to_string(this->hash.size()))
     // ASSERT(storedHash.size() == 124);
-    const bool validLogin = storedHash == this->hash;
+
+    // updated input is hash + salt
+    std::string updatedHashInput = this->hash + fields[2];
+    const std::string updatedHash = sha256Hash(updatedHashInput);
+
+    const bool validLogin = storedHash == updatedHash;
 
     LOG("Valid login: " + std::to_string(validLogin))
 
