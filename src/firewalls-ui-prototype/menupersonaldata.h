@@ -15,6 +15,8 @@ public:
     explicit menuPersonalData(QWidget *parent = nullptr);
     ~menuPersonalData();
 
+    void updatePersonalData(const std::string& personalData);
+
 private slots:
     void on_backButton_clicked();
 

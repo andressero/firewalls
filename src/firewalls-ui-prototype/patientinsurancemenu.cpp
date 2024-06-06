@@ -3,6 +3,7 @@
 // #include "uservalidation.h"
 #include "insurancenegative.h"
 #include "insurancepositive.h"
+#include "request.h"
 
 patientInsuranceMenu::patientInsuranceMenu(QWidget *parent)
     : QWidget(parent)
@@ -24,15 +25,20 @@ void patientInsuranceMenu::on_backButton_clicked()
 
 void patientInsuranceMenu::on_consultButton_clicked()
 {
-    QString id = this->ui->idLine->text();
-    if (id == "123456789") {
-        // positive window
-        insurancePositive* positiveInsurance = new insurancePositive(this);
-        positiveInsurance->show();
-    } else {
-        //                 // negative window
-        insuranceNegative* negativeInsurance = new insuranceNegative(this);
-        negativeInsurance->show();
+    std::string id = this->ui->idLine->text().toStdString();
+
+    if (id.size() > 0) {
+        Request& request = Request::getInstance();
+        std::string status = request.requestInsuranceStatus();
+
+        qInfo() << status << "\n";
+        if (status == "OK\nOK\n1\n") {
+            insurancePositive* positiveInsurance = new insurancePositive(this);
+            positiveInsurance->show();
+        } else if(status == "OK\nOK\n0\n") {
+            insuranceNegative* negativeInsurance = new insuranceNegative(this);
+            negativeInsurance->show();
+        }
     }
 }
 
