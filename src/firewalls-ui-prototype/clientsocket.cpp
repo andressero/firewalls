@@ -15,6 +15,12 @@ ClientSocket::ClientSocket(short port, std::string address) {
         this->address.sin_addr.s_addr = inet_addr(address.c_str());
     }
 
+    sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(8080);
+    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    this->connect(serverAddress);
+
 }
 
 int ClientSocket::connect(sockaddr_in& address) {

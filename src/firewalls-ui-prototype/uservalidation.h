@@ -16,30 +16,43 @@ bool validateLogin(const QString& username, const QString& password) {
     ClientSocket socket(8080, "127.0.0.1");
 
     // Connect to server
-    sockaddr_in serverAddress;
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-    socket.connect(serverAddress);
 
-    socket.send(std::string("INICIO"));
-    QString answer(socket.receive().c_str());
+    QString hash = sha256Hash(password);
+
+    std::string message = "INICIO\nLOGIN " + username.toStdString() + " " + hash.toStdString();
+    message.append("\nREQUEST USER_DATA\nREQUEST INSURANCE_STATUS");
+    message.append("\nREQUEST LAB_LIST");
+
+
+    socket.send(message);
+    std::string answer = socket.receive();
+    QString finalAnswer(answer.c_str());
+
+    qInfo() << answer << "\n";
+
+    if(answer == "ERROR\n") {
+        return false;
+    }
+
+    return true;
+
+    #if 0
     qInfo() << "ValidateLogin: " << answer << "\n";
-    if (answer == "NOT_OK") {
+    if (answer == "NOT_OK" || answer == "ERROR") {
         // Tell user login is not available right now?
         return false;
     }
 
-    QString hash = sha256Hash(password);
-
     socket.send(std::string("LOGIN " + username.toStdString() + " " + hash.toStdString()));
 
     QString loginStatus(socket.receive().c_str());
+    answer.removeLast();
     qInfo() << "ValidateLogin: " << answer << "\n";
     if (loginStatus == "NOT_OK") {
         // Tell user wrong username or password
         return false;
     }
+    #endif
 
     return true;
 
@@ -56,7 +69,7 @@ QString sha256Hash(const QString& password) {
     sha256_init(&context);
     sha256_update(&context, input, passwordString.size());
     sha256_final(&context, hash);
-    delete[] input;
+    // delete[] input;
     return QString(sha256ToString(hash).c_str());
 }
 
