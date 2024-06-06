@@ -44,14 +44,14 @@ void getRequestResponse(std::string &response,
     LOG("Request Type: USER_DATA")
     const std::string userData = session->userDataRequest();
     LOG("userData is" + userData)
-    response = "OK\n" + userData + "\n";
+    response += "OK\n" + userData + "\n";
     break;
   }
   case 2: { // INSURANCE_STATUS
     LOG("Request Type: INSURANCE_STATUS")
     const std::string insuranceStatus = session->insuranceStatusRequest();
     LOG("insuranceStatus is " + insuranceStatus)
-    response = "OK\n" + insuranceStatus + "\n";
+    response += "OK\n" + insuranceStatus + "\n";
     break;
   }
   case 3: { // LAB_LIST
@@ -73,7 +73,7 @@ void getRequestResponse(std::string &response,
     if (labResult.empty()) {
       response = "ERROR\n";
     } else {
-      response = "OK\n" + labResult.toString() + "\n";
+      response += "OK\n" + labResult.toString() + "\n";
     }
     break;
   }
@@ -115,7 +115,8 @@ std::string protocolGarrobo(const std::string &input) {
       }
       const std::string user = command[1];
       const std::string hashToken = command[2];
-      ASSERT(hashToken.size() == 124);
+      ASSERT(hashToken.size() == 64);
+
       session = new Session(user, hashToken);
       const bool loginStatus = session->tryLogin();
       if (loginStatus) {
