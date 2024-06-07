@@ -1,0 +1,41 @@
+SERVER
+
+shared MAP<socket, socketToken>
+
+Hilo 1: Recibe clientes y redirecciona a fileSystem o DB
+while(true) {
+	client = serverSocket.accept()
+	request = serverSocket.receive(client)
+	
+	if(request == LOGIN) {
+		serverSocket.send(authServer, request)
+		enqueue(authServerQueue, client)
+	} else if (request == REQUEST) {
+		serverSocket.send(dbServer, request)
+		enqueue(dbServerQueue, client)
+		addToMap(socket, getToken(request))
+	}
+
+}
+
+Hilo 2: Recibe clientes que quieren hacer login, recibe la respuesta de fileSystem y responde al cliente
+while(true) {
+	client = dequeue()
+	response = serverAuthServerSocket.receive(authServer)
+	serverSocket.send(client, response)
+	removeFromMap(socket)
+	
+}
+
+
+Hilo 3: Recibe clientes que quieren hacer requests, recibe la respuesta de DB y responde al cliente
+while(true) {
+	client = dequeue()
+	response = serverDbServerSocket.receive(dbServer)
+	serverSocket.send(client, response)
+	removeFromMap(socket)
+	
+}
+
+
+
