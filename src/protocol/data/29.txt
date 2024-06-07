@@ -1,4 +1,0 @@
-Patient ID: 234560986
-Lab Test: CT Scan
-Date: 2024-08-30
-Result: Normal

@@ -1,4 +1,0 @@
-Patient ID: 456783209
-Lab Test: X-Ray
-Date: 2024-02-12
-Result: Normal

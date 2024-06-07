@@ -1,4 +1,0 @@
-Patient ID: 901238763
-Lab Test: Blood Test
-Date: 2024-05-22
-Result: Normal

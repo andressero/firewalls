@@ -1,4 +1,0 @@
-Patient ID: 123450987
-Lab Test: Ultrasound
-Date: 2024-09-01
-Result: Normal
