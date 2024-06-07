@@ -1,0 +1,4 @@
+Patient ID: 123459874
+Lab Test: X-Ray
+Date: 2024-06-25
+Result: Normal
