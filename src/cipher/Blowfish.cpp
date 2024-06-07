@@ -249,9 +249,10 @@ void Blowfish::setKey(const std::string& key) {
     this->setKey(reinterpret_cast<const unsigned char*>(key.c_str()), key.length());
 }
 
-void Blowfish::encrypt(std::string& dst, const std::string& src) const {   
+void Blowfish::encrypt(std::string& dst, const std::string& src) const {
+    const size_t newSize = (8 - (src.size() % 8)) + src.size();
     // Input/Output length must be a multiple of the block length (64bit) 8 bytes
-    dst.resize(std::lcm(src.size(), 8)); // LOWEST COMMON MULTIPLE
+    dst.resize(newSize); // LOWEST COMMON MULTIPLE
     this->encrypt(reinterpret_cast<unsigned char*>(&dst[0]), reinterpret_cast<const unsigned char*>(src.c_str()), src.length());
     dst = base64::to_base64(dst);
 }
