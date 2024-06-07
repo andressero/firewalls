@@ -10,7 +10,7 @@ int main(int argc, const char * argv[])
     Blowfish blowfish;
     blowfish.setKey(key);
     
-    std::string text = "Hello, Blowfish!----";
+    std::string text = "a";
     
     blowfish.encrypt(text, text);
     std::cout << text << std::endl;
