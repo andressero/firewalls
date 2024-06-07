@@ -11,14 +11,16 @@ Socket &server = Socket::getInstance();
 FileSystem &fs4 = FileSystem::getInstance();
 Sqlite &database = Sqlite::getInstance();
 
+// TODO(any): Remove INICIO and QUIT as both are unnecessary.
 const std::unordered_map<std::string, int> relation = {
     {"INICIO", 1}, {"LOGIN", 2}, {"REQUEST", 3}, {"LOGOUT", 4}, {"QUIT", 5}};
 
+// * Data insertion is only available for laboratorian as well as
+// * insurance status is only available for patients.
 const std::unordered_map<std::string, int> requestTypeMap = {
-    {"USER_DATA", 1},
-    {"INSURANCE_STATUS", 2},
-    {"LAB_LIST", 3},
-    {"LAB_RESULT", 4}};
+    {"USER_DATA", 1},     {"INSURANCE_STATUS", 2}, {"LAB_LIST", 3},
+    {"LAB_RESULT", 4},    {"PATIENT_LIST", 5},     {"PATIENT_DATA", 6},
+    {"DATA_INSERTION", 7}};
 
 void getRequestResponse(std::string &response,
                         const std::vector<std::string> &command,
@@ -77,6 +79,21 @@ void getRequestResponse(std::string &response,
     }
     break;
   }
+  case 5: { // PATIENT_LIST
+    /*c(L): REQUEST PATIENT_LIST*/
+    // TODO(any): Implement this request
+    break;
+  }
+  case 6: { // PATIENT_DATA
+    /*c(L): REQUEST PATIENT_DATA <patientID>*/
+    // TODO(any): Implement this request
+    break;
+  }
+  case 7: { // DATA_INSERTION
+    /*c(L): REQUEST DATA_INSERTION <dataToInsert>*/
+    // TODO(any): Implement this request
+    break;
+  }
   default:
     response = "ERROR\n";
     ERROR(requestType_ + " is an unknown request type")
@@ -85,11 +102,13 @@ void getRequestResponse(std::string &response,
   return;
 }
 
+// TODO(any): Remove INICIO and QUIT as both are unnecessary.
 std::string protocolGarrobo(const std::string &input) {
   const std::vector<std::string> lines = splitString(input, "\n");
   std::string response = "ERROR\n";
   Session *session = 0;
 
+  // TODO(any): Separate requests.
   for (const std::string &line : lines) {
 
     LOG("Line: "

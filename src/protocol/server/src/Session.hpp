@@ -4,33 +4,31 @@
 #define SESSION_HPP
 
 #include "FileSystem.hpp"
-#include "Sqlite.hpp"
 #include "SHA256.hpp"
+#include "Sqlite.hpp"
 
 // Sha256 stuff.
 // TODO[any]: Put sha256Hash and sha256ToString elsewhere?
-std::string sha256ToString(const BYTE* hash) {
-    std::string answer(2*SHA256_BLOCK_SIZE, '0');
-    for (size_t i = 0; i < SHA256_BLOCK_SIZE; ++i) {
-        char temp[3] = {0};
-        snprintf(temp, 3, "%02x", hash[i]);
-        answer[2*i] = temp[0];
-        answer[2*i + 1] = temp[1];
-    }
-    return answer;
+std::string sha256ToString(const BYTE *hash) {
+  std::string answer(2 * SHA256_BLOCK_SIZE, '0');
+  for (size_t i = 0; i < SHA256_BLOCK_SIZE; ++i) {
+    char temp[3] = {0};
+    snprintf(temp, 3, "%02x", hash[i]);
+    answer[2 * i] = temp[0];
+    answer[2 * i + 1] = temp[1];
+  }
+  return answer;
 }
 
-std::string sha256Hash(std::string& strInput) {
-    BYTE *input =  new BYTE[SHA256_BLOCK_SIZE];
-    input = reinterpret_cast<BYTE*>(&strInput[0]);
+std::string sha256Hash(std::string &strInput) {
+  const BYTE *input = reinterpret_cast<const BYTE *>(strInput.data());
 
-    BYTE hash[SHA256_BLOCK_SIZE];
-    SHA256_CTX context;
-    sha256_init(&context);
-    sha256_update(&context, input, strInput.size());
-    sha256_final(&context, hash);
-    // delete[] input;
-    return sha256ToString(hash);
+  BYTE hash[SHA256_BLOCK_SIZE];
+  SHA256_CTX context;
+  sha256_init(&context);
+  sha256_update(&context, input, strInput.size());
+  sha256_final(&context, hash);
+  return sha256ToString(hash);
 }
 
 class LabResult {
