@@ -32,10 +32,10 @@ std::string Request::requestUserData() {
     return parsedAnswer;
 }
 
-std::string Request::requestInsuranceStatus() {
+std::string Request::requestInsuranceStatus(/*std::string id*/) {
     ClientSocket socket(8080, "127.0.0.1");
     std::string request = "INICIO\nLOGIN " + this->username + " " + this->hash;
-    request.append("\nREQUEST INSURANCE_STATUS");
+    request.append("\nREQUEST INSURANCE_STATUS "/* + id*/);
 
     socket.send(request);
     std::string answer = socket.receive();

@@ -29,7 +29,8 @@ void patientInsuranceMenu::on_consultButton_clicked()
 
     if (id.size() > 0) {
         Request& request = Request::getInstance();
-        std::string status = request.requestInsuranceStatus();
+        // TODO(any): make server accept any id
+        std::string status = request.requestInsuranceStatus(/*id*/);
 
         qInfo() << status << "\n";
         if (status == "OK\nOK\n1\n") {

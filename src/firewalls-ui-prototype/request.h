@@ -23,7 +23,7 @@ public:
 
     std::string requestLogin();
     std::string requestUserData();
-    std::string requestInsuranceStatus();
+    std::string requestInsuranceStatus(/*std::string id*/);
     std::string requestLabList();
     std::string requestLabResult(int resultNumber);
 
