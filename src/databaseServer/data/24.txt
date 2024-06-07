@@ -1,4 +1,0 @@
-Patient ID: 678905431
-Lab Test: CT Scan
-Date: 2024-03-18
-Result: Normal

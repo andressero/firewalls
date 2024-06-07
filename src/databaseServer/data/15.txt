@@ -1,4 +1,0 @@
-Patient ID: 678905432
-Lab Test: Ultrasound
-Date: 2024-04-20
-Result: Normal

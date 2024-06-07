@@ -1,4 +1,0 @@
-Patient ID: 234561098
-Lab Test: Blood Test
-Date: 2024-01-10
-Result: Normal

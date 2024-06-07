@@ -1,4 +1,0 @@
-Patient ID: 345678901
-Lab Test: MRI
-Date: 2024-01-15
-Result: Normal
