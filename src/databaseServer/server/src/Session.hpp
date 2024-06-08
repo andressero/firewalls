@@ -3,32 +3,19 @@
 #ifndef SESSION_HPP
 #define SESSION_HPP
 
-#include "FileSystem.hpp"
-#include "SHA256.hpp"
 #include "Sqlite.hpp"
 
-// Sha256 stuff.
-// TODO[any]: Put sha256Hash and sha256ToString elsewhere?
-std::string sha256ToString(const BYTE *hash) {
-  std::string answer(2 * SHA256_BLOCK_SIZE, '0');
-  for (size_t i = 0; i < SHA256_BLOCK_SIZE; ++i) {
-    char temp[3] = {0};
-    snprintf(temp, 3, "%02x", hash[i]);
-    answer[2 * i] = temp[0];
-    answer[2 * i + 1] = temp[1];
+std::vector<std::string> splitString(const std::string &input,
+                                     const std::string &delimiter) {
+  std::vector<std::string> tokens;
+  std::istringstream iss(input);
+  std::string token;
+
+  while (std::getline(iss, token, delimiter[0])) {
+    tokens.push_back(token);
   }
-  return answer;
-}
 
-std::string sha256Hash(std::string &strInput) {
-  const BYTE *input = reinterpret_cast<const BYTE *>(strInput.data());
-
-  BYTE hash[SHA256_BLOCK_SIZE];
-  SHA256_CTX context;
-  sha256_init(&context);
-  sha256_update(&context, input, strInput.size());
-  sha256_final(&context, hash);
-  return sha256ToString(hash);
+  return tokens;
 }
 
 class LabResult {
@@ -91,34 +78,7 @@ public:
   void setHash(std::string hash) { this->hash = hash; }
   void setLogStatus(bool loggedIn) { this->loggedIn = loggedIn; }
   bool getLogStatus() { return this->loggedIn; }
-  bool tryLogin() {
-    FileSystem &fs4 = FileSystem::getInstance();
-    fs4.open(user);
-    fs4.change2ReadMode(user);
-    const std::string userData = fs4.read(user, 200);
-    fs4.close(user);
 
-    const std::vector<std::string> fields = splitString(userData, ",");
-
-    const std::string storedHash = fields[1];
-    LOG("STORED HASH SIZE " + std::to_string(storedHash.size()))
-    // ASSERT(storedHash.size() == 124);
-    LOG("RECEIVED HASH SIZE " + std::to_string(this->hash.size()))
-    // ASSERT(storedHash.size() == 124);
-
-    // updated input is hash + salt
-    std::string updatedHashInput = this->hash + fields[2];
-    const std::string updatedHash = sha256Hash(updatedHashInput);
-
-    const bool validLogin = storedHash == updatedHash;
-
-    LOG("Valid login: " + std::to_string(validLogin))
-
-    if (validLogin) {
-      this->loggedIn = true;
-    }
-    return validLogin;
-  }
 
   static int getUserData(void *data, int argc, char **argv, char **azColName) {
     (void)azColName;
@@ -132,10 +92,20 @@ public:
   std::string userDataRequest() {
     Sqlite &sqlite = Sqlite::getInstance();
     std::string sql_statement =
-        "SELECT * FROM 'userData'  WHERE patientID = " + this->user;
+        "SELECT * FROM 'usersData'  WHERE patientID = " + this->user;
     std::string userData;
     sqlite.exec(sql_statement, getUserData, (void *)&userData);
     return userData;
+  }
+
+  // TODO[any]: This procedure and userDataRequest are very similar. Maybe
+  // combine them
+  std::string patientDataRequest(std::string patientID) {
+    Sqlite& sqlite = Sqlite::getInstance();
+    std::string sql_statement = "SELECT * FROM 'userData' WHERE patientID = " + patientID;
+    std::string patientData;
+    sqlite.exec(sql_statement, getUserData, (void*)&patientData);
+    return patientData;
   }
 
   std::string insuranceStatusRequest() {
@@ -162,6 +132,20 @@ public:
     std::vector<LabResult> labResults;
     sqlite.exec(sql_statement, getLabReportList, (void *)&labResults);
     return labResults;
+  }
+
+  /*
+  static int getPatientList(void* data, int argc, char** argv, char** azColName) {
+    // ???
+  }
+  */
+
+  std::vector<std::string> patientListRequest() {
+    Sqlite &sqlite = Sqlite::getInstance();
+    std::string sql_statement = "SELECT * FROM 'UsersData' LIMIT 0,30";
+    std::vector<std::string> patients;
+    sqlite.exec(sql_statement, nullptr, (void*) &patients);
+    return patients;
   }
 
   static int getLabReport(void *data, int argc, char **argv, char **azColName) {
