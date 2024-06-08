@@ -21,8 +21,8 @@
 #include <sys/socket.h>
 #include <thread> // For std::this_thread::sleep_for
 #include <unistd.h>
-#include <unordered_map> // !High level
-#include <vector>        // !High level
+#include <unordered_map>
+#include <vector>
 
 /**
  * @brief asserts that a certain condition is true, else it gives an error
@@ -77,18 +77,17 @@
     std::cerr << "\033[1;32m"                                                  \
               << "LOG: " << message << "\033[0m" << std::endl;
 
-#define LOG_TO_FILE(message, filename)                                         \
+#define FILELOG(message)                                                       \
   do {                                                                         \
-    std::ofstream file(filename, std::ios_base::app);                          \
+    std::ofstream file("log-auth_server.txt", std::ios_base::app);             \
     if (file.is_open()) {                                                      \
       file << message << std::endl;                                            \
       file.close();                                                            \
     } else {                                                                   \
-      std::cerr << "Unable to open file " << filename << std::endl;            \
+      std::cerr << "Unable to open file "                                      \
+                << "log-auth_server.txt" << std::endl;                         \
     }                                                                          \
   } while (0)
-
-#define LOG_TO_DEFAULT_FILE(message) LOG _TO_FILE(message, "log.txt")
 
 // FAT table
 

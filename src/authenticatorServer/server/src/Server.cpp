@@ -3,186 +3,96 @@
 // Adapted from <https://www.geeksforgeeks.org/socket-programming-in-cpp/>
 
 #include "FileSystem.hpp"
-#include "Session.hpp"
 #include "Socket.hpp"
-#include "Sqlite.hpp"
+#include "authUtils.hpp"
 
 Socket &server = Socket::getInstance();
-FileSystem &fs4 = FileSystem::getInstance();
-Sqlite &database = Sqlite::getInstance();
+FileSystem &fs = FileSystem::getInstance();
 
-// TODO(any): Remove INICIO and QUIT as both are unnecessary.
-const std::unordered_map<std::string, int> relation = {
-    {"INICIO", 1}, {"LOGIN", 2}, {"REQUEST", 3}, {"LOGOUT", 4}, {"QUIT", 5}};
+/**
+ * @brief Obtains the correct users hash and compares it with the processed
+ * received hash.
+ *
+ * @param user User that's authenticating
+ * @param hash Received(rcvd) Hash.
+ * @return true Login was successful
+ * @return false otherwise
+ */
+bool tryLogin(const std::string &user, const std::string &hash) {
+  bool isLoginValid = false;
+  // Get login data from File System
+  if (!fs.open(user)) {
+    return isLoginValid;
+  }
+  fs.change2ReadMode(user);
+  const std::string userData = fs.read(user, 200);
+  if (userData == "") {
+    return isLoginValid;
+  }
+  if (!fs.close(user)) {
+    return isLoginValid;
+  }
 
-// * Data insertion is only available for laboratorian as well as
-// * insurance status is only available for patients.
-const std::unordered_map<std::string, int> requestTypeMap = {
-    {"USER_DATA", 1},     {"INSURANCE_STATUS", 2}, {"LAB_LIST", 3},
-    {"LAB_RESULT", 4},    {"PATIENT_LIST", 5},     {"PATIENT_DATA", 6},
-    {"DATA_INSERTION", 7}};
+  const std::vector<std::string> fields = splitString(userData, ",");
 
-void getRequestResponse(std::string &response,
-                        const std::vector<std::string> &command,
-                        Session *session) {
-  if (!session) {
-    LOG("No session object, NOT LOGGED IN YET")
-    response = "ERROR\n";
-    return;
-  }
-  if (!session->getLogStatus()) {
-    LOG("NOT LOGGED IN YET")
-    response = "ERROR\n";
-    return;
-  }
-  const std::string requestType_ = command[1];
-  if (requestTypeMap.find(requestType_) == requestTypeMap.end()) {
-    ERROR(requestType_ + " is an unknown request type")
-    response = "ERROR\n";
-    return;
-  }
-  switch (requestTypeMap.find(requestType_)->second) {
-  case 1: { // USER_DATA
-    LOG("Request Type: USER_DATA")
-    const std::string userData = session->userDataRequest();
-    LOG("userData is" + userData)
-    response += "OK\n" + userData + "\n";
-    break;
-  }
-  case 2: { // INSURANCE_STATUS
-    LOG("Request Type: INSURANCE_STATUS")
-    const std::string insuranceStatus = session->insuranceStatusRequest();
-    LOG("insuranceStatus is " + insuranceStatus)
-    response += "OK\n" + insuranceStatus + "\n";
-    break;
-  }
-  case 3: { // LAB_LIST
-    LOG("Request Type: LAB_LIST")
-    const std::vector<LabResult> labList = session->labListRequest();
-    response = "";
-    for (const LabResult &i : labList) {
-      LOG(i.toString())
-      response += i.toString() + "\t";
-    }
-    response += "\n";
-    break;
-  }
-  case 4: { // LAB_RESULT
-    LOG("Request Type: LAB_RESULT")
-    const std::string labResultID = command[2];
-    const LabResult labResult = session->labResultRequest(labResultID);
-    LOG("labResult is " << labResult.toString())
-    if (labResult.empty()) {
-      response = "ERROR\n";
-    } else {
-      response += "OK\n" + labResult.toString() + "\n";
-    }
-    break;
-  }
-  case 5: { // PATIENT_LIST
-    /*c(L): REQUEST PATIENT_LIST*/
-    // TODO(any): Implement this request
-    break;
-  }
-  case 6: { // PATIENT_DATA
-    /*c(L): REQUEST PATIENT_DATA <patientID>*/
-    // TODO(any): Implement this request
-    break;
-  }
-  case 7: { // DATA_INSERTION
-    /*c(L): REQUEST DATA_INSERTION <dataToInsert>*/
-    // TODO(any): Implement this request
-    break;
-  }
-  default:
-    response = "ERROR\n";
-    ERROR(requestType_ + " is an unknown request type")
-    break;
-  }
-  return;
+  const std::string storedHash = fields[1];
+  LOG("STORED HASH SIZE " + std::to_string(storedHash.size()))
+  LOG("RECEIVED HASH SIZE " + std::to_string(hash.size()))
+
+  // updated input is hash + salt
+  std::string saltedRcvdHash = hash + fields[2];
+  const std::string updatedRcvdHash = sha256Hash(saltedRcvdHash);
+
+  isLoginValid = storedHash == updatedRcvdHash;
+  LOG("Valid login: " + std::to_string(isLoginValid))
+
+  return isLoginValid;
 }
 
-// TODO(any): Remove INICIO and QUIT as both are unnecessary.
+/**
+ * @brief Servers protocol to handle user auth.
+ *
+ * @details It just allows one of the instructions of the protocol
+ * specification. LOGIN
+ *
+ * @param input Clients input.
+ * @return The servers response
+ */
 std::string protocolGarrobo(const std::string &input) {
-  const std::vector<std::string> lines = splitString(input, "\n");
-  std::string response = "ERROR\n";
-  Session *session = 0;
+  std::string response = "NOT_OK\n";
 
-  // TODO(any): Separate requests.
-  for (const std::string &line : lines) {
+  std::vector<std::string> command = splitString(input, " ");
 
-    LOG("Line: "
-        << "|" << line << "|")
-    const std::vector<std::string> command = splitString(line, " ");
-    const std::string operation = command[0];
-
-    if (relation.find(operation) == relation.end()) {
-      ERROR(operation + " is an unknown operation!");
-      return "ERROR\n";
-    }
-
-    switch (relation.find(operation)->second) {
-    case 1: // INICIO
-      LOG("Operation: INICIO")
-      response = "OK\n";
-      break;
-    case 2: { // LOGIN
-      LOG("Operation: LOGIN\n")
-      if (session) {
-        LOG("Already existing session object, Already LOGGED IN!")
-        return "ERROR\n";
-      }
-      const std::string user = command[1];
-      const std::string hashToken = command[2];
-      ASSERT(hashToken.size() == 64);
-
-      session = new Session(user, hashToken);
-      const bool loginStatus = session->tryLogin();
-      if (loginStatus) {
-        LOG("Login Succesful")
-        response = "OK\n";
-      } else {
-        LOG("Login Failed")
-        response = "ERROR\n";
-        delete session;
-        session = 0;
-      }
-      break;
-    }
-    case 3: // REQUEST
-      LOG("Operation: REQUEST")
-      getRequestResponse(response, command, session);
-      break;
-    case 4: // LOGOUT FALLTHROUGH
-      LOG("Operation LOGOUT")
-      [[fallthrough]];
-    case 5: // QUIT
-      LOG("QUIT")
-      if (session) {
-        delete session;
-        session = 0;
-      }
-      break;
-    default:
-      response = "ERROR\n";
-      ERROR(operation + " is an unknown operation!");
-      break;
-    }
+  if (command[0] != "LOGIN") {
+    LOG("Server is not able to handle " + command[0]);
+    FILELOG("Server is not able to handle " + command[0]);
+    return response;
   }
-  if (session) {
-    delete session;
-    session = 0;
+  LOG("LOGIN command");
+  FILELOG("LOGIN command");
+
+  std::string user = command[1];
+  std::string hash = command[2];
+  if (tryLogin(user, hash)) {
+    LOG("Login successful");
+    FILELOG("Login successful");
+    response = "OK\n";
+  } else {
+    LOG("Login unsuccessful");
+    FILELOG("Login unsuccessful");
   }
+
   return response;
 }
 
+/**
+ * @brief Handles Ctrl + C signal.
+ */
 static void signalr(int signal) {
   std::cout << "Received signal " << signal << ". Releasing resources..."
             << std::endl;
   Socket &server = Socket::getInstance();
   server.signalHandler(signal);
-  Sqlite &database = Sqlite::getInstance();
-  database.signalHandler(signal);
   FileSystem &fs = FileSystem::getInstance();
   fs.signalHandler(signal);
   exit(0);
