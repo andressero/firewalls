@@ -39,8 +39,8 @@ std::string protocolGarrobo(Socket client_socket, Socket &auth_server_socket,
         response = db_response;
       }
     } else {
-      LOG("Received unknown request type");
-      FILELOG("Received unknown request type");
+      LOG("Received unordered or unknown request type");
+      FILELOG("Received unordered or unknown request type");
       response = "NOT_OK\n";
       break;
     }
@@ -55,6 +55,7 @@ int main() {
   if (!server_socket.create() || !server_socket.bind(3000) ||
       !server_socket.listen()) {
     ERROR("Failed to setup server");
+    FILELOG("Failed to setup server");
     return 1;
   }
 
@@ -62,6 +63,7 @@ int main() {
   if (!auth_server_socket.create() ||
       !auth_server_socket.connect("127.0.0.1", 4000)) {
     ERROR("Failed to connect to auth server");
+    FILELOG("Failed to connect to auth server");
     return 1;
   }
 
@@ -69,6 +71,7 @@ int main() {
   if (!db_server_socket.create() ||
       !db_server_socket.connect("127.0.0.1", 5000)) {
     ERROR("Failed to connect to db server");
+    FILELOG("Failed to connect to db server");
     return 1;
   }
 
@@ -77,10 +80,14 @@ int main() {
     Socket client_socket;
     std::string response;
     if (server_socket.accept(client_socket)) {
+      LOG("Accepted connection from client");
+      FILELOG("Accepted connection from client");
       response =
           protocolGarrobo(client_socket, auth_server_socket, db_server_socket);
     }
     client_socket.send(response);
+    LOG("Response sent to client");
+    FILELOG("Response sent to client");
   }
 
   return 0;

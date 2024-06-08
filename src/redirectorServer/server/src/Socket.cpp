@@ -2,6 +2,7 @@
 // Serrano>"
 
 #include "Socket.hpp"
+#include "redirectorUtils.hpp"
 #include <fcntl.h>
 
 Socket::Socket() : m_sock(-1) { memset(&m_addr, 0, sizeof(m_addr)); }
@@ -31,12 +32,21 @@ bool Socket::bind(const int port) {
 }
 
 bool Socket::listen() const {
+  bool listenSuccessful = false;
   if (!is_valid()) {
-    return false;
+    return listenSuccessful;
   }
 
   int listen_return = ::listen(m_sock, 5);
-  return listen_return != -1;
+  listenSuccessful = listen_return != -1;
+  if (!listenSuccessful) {
+    ERROR("Unable to start listening");
+    FILELOG("Unable to start listening");
+  } else {
+    LOG("Listening...");
+    FILELOG("Listening...");
+  }
+  return listenSuccessful;
 }
 
 bool Socket::accept(Socket &newSocket) const {
