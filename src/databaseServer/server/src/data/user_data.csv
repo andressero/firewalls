@@ -1,0 +1,12 @@
+patientID,fullName,sex,email,phoneNumber,bloodType,organDonor,cronicConditions,alergies,emergencyContactFullName,emergencyContactPhoneNumber,isInsured
+L13579,Alice Smith,Female,alice@example.com,+1112345678,A+,Yes,None,Peanuts,Bob Smith,+1118765432,Yes
+L98765,Bob Johnson,Male,bob@example.com,+2222345678,B-,No,Hypertension,None,Alice Johnson,+2228765432,Yes
+L67890,Charlie Brown,Male,charlie@example.com,+3332345678,O+,Yes,Diabetes,Penicillin,David Brown,+3338765432,Yes
+L54321,David Wilson,Male,david@example.com,+4442345678,AB+,No,Asthma,None,Eva Wilson,+4448765432,Yes
+L12345,Eva Davis,Female,eva@example.com,+5552345678,A-,Yes,None,Dust,Frank Davis,+5558765432,Yes
+D12345, Jose Jose, Male, jj@example.com, +7772375677, A+, Yes, None, None, Cristian Jose, 7778765432, Yes
+567890123,Frank Miller,Male,frank@example.com,+6662345678,B+,No,Heart Disease,None,Grace Miller,+6668765432,Yes
+456789012,Grace Lee,Female,grace@example.com,+7772345678,O-,Yes,None,Latex,Hank Lee,+7778765432,No
+345678901,Hank Kim,Male,hank@example.com,+8882345678,AB-,No,None,None,Ivy Kim,+8888765432,Yes
+234567890,Ivy Martin,Female,ivy@example.com,+9992345678,A+,Yes,Arthritis,None,Jack Martin,+9998765432,Yes
+123456789,Jack Thomas,Male,jack@example.com,+1012345678,B-,No,None,None,Kim Thomas,+1018765432,No
