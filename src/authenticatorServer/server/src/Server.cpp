@@ -15,22 +15,28 @@ FileSystem &fs = FileSystem::getInstance();
  *
  * @param user User that's authenticating
  * @param hash Received(rcvd) Hash.
- * @return true Login was successful
+ * @return true Authentication was successful
  * @return false otherwise
  */
-bool tryLogin(const std::string &user, const std::string &hash) {
-  bool isLoginValid = false;
-  // Get login data from File System
+bool tryAuth(const std::string &user, const std::string &hash) {
+  bool authSuccessful = false;
+  // Get Auth data from File System
   if (!fs.open(user)) {
-    return isLoginValid;
+    LOG("\tFileSystem failed at open");
+    FILELOG("\tFileSystem failed at open");
+    return authSuccessful;
   }
   fs.change2ReadMode(user);
   const std::string userData = fs.read(user, 200);
   if (userData == "") {
-    return isLoginValid;
+    LOG("\tFileSystem failed at read");
+    FILELOG("\tFileSystem failed at read");
+    return authSuccessful;
   }
   if (!fs.close(user)) {
-    return isLoginValid;
+    LOG("\tFileSystem failed at close");
+    FILELOG("\tFileSystem failed at close");
+    return authSuccessful;
   }
 
   const std::vector<std::string> fields = splitString(userData, ",");
@@ -43,17 +49,17 @@ bool tryLogin(const std::string &user, const std::string &hash) {
   std::string saltedRcvdHash = hash + fields[2];
   const std::string updatedRcvdHash = sha256Hash(saltedRcvdHash);
 
-  isLoginValid = storedHash == updatedRcvdHash;
-  LOG("Valid login: " + std::to_string(isLoginValid))
+  authSuccessful = storedHash == updatedRcvdHash;
+  LOG("Successful Authentication: " + std::to_string(authSuccessful))
 
-  return isLoginValid;
+  return authSuccessful;
 }
 
 /**
  * @brief Servers protocol to handle user auth.
  *
  * @details It just allows one of the instructions of the protocol
- * specification. LOGIN
+ * specification. AUTH
  *
  * @param input Clients input.
  * @return The servers response
@@ -63,23 +69,23 @@ std::string protocolGarrobo(const std::string &input) {
 
   std::vector<std::string> command = splitString(input, " ");
 
-  if (command[0] != "LOGIN") {
+  if (command[0] != "AUTH") {
     LOG("Server is not able to handle " + command[0]);
     FILELOG("Server is not able to handle " + command[0]);
     return response;
   }
-  LOG("LOGIN command");
-  FILELOG("LOGIN command");
+  LOG("AUTH command");
+  FILELOG("AUTH command");
 
   std::string user = command[1];
   std::string hash = command[2];
-  if (tryLogin(user, hash)) {
-    LOG("Login successful");
-    FILELOG("Login successful");
+  if (tryAuth(user, hash)) {
+    LOG("Authentication successful");
+    FILELOG("Authentication successful");
     response = "OK\n";
   } else {
-    LOG("Login unsuccessful");
-    FILELOG("Login unsuccessful");
+    LOG("Authentication unsuccessful");
+    FILELOG("Authentication unsuccessful");
   }
 
   return response;

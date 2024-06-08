@@ -2,18 +2,13 @@
 // Serrano>"
 // Adapted from <https://www.geeksforgeeks.org/socket-programming-in-cpp/>
 
-#include "FileSystem.hpp"
-#include "Session.hpp"
 #include "Socket.hpp"
-#include "Sqlite.hpp"
+#include "redirectorUtils.hpp"
 
 Socket &server = Socket::getInstance();
-FileSystem &fs4 = FileSystem::getInstance();
-Sqlite &database = Sqlite::getInstance();
 
-// TODO(any): Remove INICIO and QUIT as both are unnecessary.
-const std::unordered_map<std::string, int> relation = {
-    {"INICIO", 1}, {"LOGIN", 2}, {"REQUEST", 3}, {"LOGOUT", 4}, {"QUIT", 5}};
+const std::unordered_map<std::string, int> relation = {{"AUTH", 1},
+                                                       {"REQUEST", 2}};
 
 // * Data insertion is only available for laboratorian as well as
 // * insurance status is only available for patients.
@@ -22,93 +17,13 @@ const std::unordered_map<std::string, int> requestTypeMap = {
     {"LAB_RESULT", 4},    {"PATIENT_LIST", 5},     {"PATIENT_DATA", 6},
     {"DATA_INSERTION", 7}};
 
-void getRequestResponse(std::string &response,
-                        const std::vector<std::string> &command,
-                        Session *session) {
-  if (!session) {
-    LOG("No session object, NOT LOGGED IN YET")
-    response = "ERROR\n";
-    return;
-  }
-  if (!session->getLogStatus()) {
-    LOG("NOT LOGGED IN YET")
-    response = "ERROR\n";
-    return;
-  }
-  const std::string requestType_ = command[1];
-  if (requestTypeMap.find(requestType_) == requestTypeMap.end()) {
-    ERROR(requestType_ + " is an unknown request type")
-    response = "ERROR\n";
-    return;
-  }
-  switch (requestTypeMap.find(requestType_)->second) {
-  case 1: { // USER_DATA
-    LOG("Request Type: USER_DATA")
-    const std::string userData = session->userDataRequest();
-    LOG("userData is" + userData)
-    response += "OK\n" + userData + "\n";
-    break;
-  }
-  case 2: { // INSURANCE_STATUS
-    LOG("Request Type: INSURANCE_STATUS")
-    const std::string insuranceStatus = session->insuranceStatusRequest();
-    LOG("insuranceStatus is " + insuranceStatus)
-    response += "OK\n" + insuranceStatus + "\n";
-    break;
-  }
-  case 3: { // LAB_LIST
-    LOG("Request Type: LAB_LIST")
-    const std::vector<LabResult> labList = session->labListRequest();
-    response = "";
-    for (const LabResult &i : labList) {
-      LOG(i.toString())
-      response += i.toString() + "\t";
-    }
-    response += "\n";
-    break;
-  }
-  case 4: { // LAB_RESULT
-    LOG("Request Type: LAB_RESULT")
-    const std::string labResultID = command[2];
-    const LabResult labResult = session->labResultRequest(labResultID);
-    LOG("labResult is " << labResult.toString())
-    if (labResult.empty()) {
-      response = "ERROR\n";
-    } else {
-      response += "OK\n" + labResult.toString() + "\n";
-    }
-    break;
-  }
-  case 5: { // PATIENT_LIST
-    /*c(L): REQUEST PATIENT_LIST*/
-    // TODO(any): Implement this request
-    break;
-  }
-  case 6: { // PATIENT_DATA
-    /*c(L): REQUEST PATIENT_DATA <patientID>*/
-    // TODO(any): Implement this request
-    break;
-  }
-  case 7: { // DATA_INSERTION
-    /*c(L): REQUEST DATA_INSERTION <dataToInsert>*/
-    // TODO(any): Implement this request
-    break;
-  }
-  default:
-    response = "ERROR\n";
-    ERROR(requestType_ + " is an unknown request type")
-    break;
-  }
-  return;
-}
-
-// TODO(any): Remove INICIO and QUIT as both are unnecessary.
 std::string protocolGarrobo(const std::string &input) {
   const std::vector<std::string> lines = splitString(input, "\n");
-  std::string response = "ERROR\n";
-  Session *session = 0;
-
-  // TODO(any): Separate requests.
+  std::string response = "NOT_OK\n";
+  /*Each client message got:
+  <always>AUTH ...
+  <whenever clients wants if logged in(auth successful)>REQUEST ...
+  */
   for (const std::string &line : lines) {
 
     LOG("Line: "
@@ -122,46 +37,16 @@ std::string protocolGarrobo(const std::string &input) {
     }
 
     switch (relation.find(operation)->second) {
-    case 1: // INICIO
-      LOG("Operation: INICIO")
-      response = "OK\n";
-      break;
-    case 2: { // LOGIN
-      LOG("Operation: LOGIN\n")
-      if (session) {
-        LOG("Already existing session object, Already LOGGED IN!")
-        return "ERROR\n";
-      }
-      const std::string user = command[1];
-      const std::string hashToken = command[2];
-      ASSERT(hashToken.size() == 64);
-
-      session = new Session(user, hashToken);
-      const bool loginStatus = session->tryLogin();
-      if (loginStatus) {
-        LOG("Login Succesful")
-        response = "OK\n";
-      } else {
-        LOG("Login Failed")
-        response = "ERROR\n";
-        delete session;
-        session = 0;
-      }
+    case 1: { // AUTH
+      LOG("Operation: AUTH\n")
+      // TODO(any): send it to auth_server
+      // response = auth_servers response
       break;
     }
-    case 3: // REQUEST
+    case 2: // REQUEST
       LOG("Operation: REQUEST")
-      getRequestResponse(response, command, session);
-      break;
-    case 4: // LOGOUT FALLTHROUGH
-      LOG("Operation LOGOUT")
-      [[fallthrough]];
-    case 5: // QUIT
-      LOG("QUIT")
-      if (session) {
-        delete session;
-        session = 0;
-      }
+      // TODO(any): send it to db_server
+      // response = db_server response
       break;
     default:
       response = "ERROR\n";
@@ -169,10 +54,7 @@ std::string protocolGarrobo(const std::string &input) {
       break;
     }
   }
-  if (session) {
-    delete session;
-    session = 0;
-  }
+
   return response;
 }
 
@@ -181,10 +63,6 @@ static void signalr(int signal) {
             << std::endl;
   Socket &server = Socket::getInstance();
   server.signalHandler(signal);
-  Sqlite &database = Sqlite::getInstance();
-  database.signalHandler(signal);
-  FileSystem &fs = FileSystem::getInstance();
-  fs.signalHandler(signal);
   exit(0);
 }
 
