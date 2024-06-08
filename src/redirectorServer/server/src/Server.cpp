@@ -1,80 +1,82 @@
-// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolaños, Andres
-// Serrano>"
-// Adapted from <https://www.geeksforgeeks.org/socket-programming-in-cpp/>
-
 #include "Socket.hpp"
 #include "redirectorUtils.hpp"
+#include <iostream>
+#include <netinet/in.h>
+#include <string>
+#include <sys/socket.h>
+#include <unistd.h>
 
-Socket &server = Socket::getInstance();
+void handleClient(Socket &clientSocket) {
+  std::string message = clientSocket.receive();
 
-const std::unordered_map<std::string, int> relation = {{"AUTH", 1},
-                                                       {"REQUEST", 2}};
+  // TODO(any): Put db_server and auth_server ips and it's
+  std::string server1_ip = "127.0.0.1";
+  int server1_port = 12345;
+  std::string server2_ip = "127.0.0.1";
+  int server2_port = 54321;
 
-// * Data insertion is only available for laboratorian as well as
-// * insurance status is only available for patients.
-const std::unordered_map<std::string, int> requestTypeMap = {
-    {"USER_DATA", 1},     {"INSURANCE_STATUS", 2}, {"LAB_LIST", 3},
-    {"LAB_RESULT", 4},    {"PATIENT_LIST", 5},     {"PATIENT_DATA", 6},
-    {"DATA_INSERTION", 7}};
-
-std::string protocolGarrobo(const std::string &input) {
-  const std::vector<std::string> lines = splitString(input, "\n");
-  std::string response = "NOT_OK\n";
-  /*Each client message got:
-  <always>AUTH ...
-  <whenever clients wants if logged in(auth successful)>REQUEST ...
-  */
-  for (const std::string &line : lines) {
-
-    LOG("Line: "
-        << "|" << line << "|")
-    const std::vector<std::string> command = splitString(line, " ");
-    const std::string operation = command[0];
-
-    if (relation.find(operation) == relation.end()) {
-      ERROR(operation + " is an unknown operation!");
-      return "ERROR\n";
+  if (message.find("AUTH") == 0) {
+    std::string response1 = sendToServer(server1_ip, server1_port, message);
+    if (response1 == "OK\n") {
+      std::string response2 = sendToServer(server2_ip, server2_port, message);
+      clientSocket.send(response2);
+    } else {
+      clientSocket.send("NOT_OK\n");
     }
-
-    switch (relation.find(operation)->second) {
-    case 1: { // AUTH
-      LOG("Operation: AUTH\n")
-      // TODO(any): send it to auth_server
-      // response = auth_servers response
-      break;
+  } else if (message.find("REQUEST") == 0) {
+    std::string response1 = sendToServer(server1_ip, server1_port, message);
+    if (response1 == "OK\n") {
+      std::string response2 = sendToServer(server2_ip, server2_port, message);
+      clientSocket.send(response2);
+    } else {
+      clientSocket.send("NOT_OK\n");
     }
-    case 2: // REQUEST
-      LOG("Operation: REQUEST")
-      // TODO(any): send it to db_server
-      // response = db_server response
-      break;
-    default:
-      response = "ERROR\n";
-      ERROR(operation + " is an unknown operation!");
-      break;
-    }
+  } else {
+    clientSocket.send("INVALID_COMMAND\n");
   }
-
-  return response;
-}
-
-static void signalr(int signal) {
-  std::cout << "Received signal " << signal << ". Releasing resources..."
-            << std::endl;
-  Socket &server = Socket::getInstance();
-  server.signalHandler(signal);
-  exit(0);
 }
 
 int main() {
-  std::signal(SIGINT, signalr);
-  server.bind();
-  server.listen(5);
-  while (true) {
-    server.accept();
-    std::string request = server.receive(server.getClientFileDescriptor());
-    std::string response = protocolGarrobo(request);
-    server.send(server.getClientFileDescriptor(), response);
+  int server_fd, new_socket;
+  struct sockaddr_in address;
+  int opt = 1;
+  int addrlen = sizeof(address);
+
+  if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    perror("socket failed");
+    exit(EXIT_FAILURE);
   }
+
+  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt,
+                 sizeof(opt))) {
+    perror("setsockopt");
+    exit(EXIT_FAILURE);
+  }
+
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = INADDR_ANY;
+  address.sin_port = htons(8080);
+
+  if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+    perror("bind failed");
+    exit(EXIT_FAILURE);
+  }
+
+  if (listen(server_fd, 3) < 0) {
+    perror("listen");
+    exit(EXIT_FAILURE);
+  }
+
+  while (true) {
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
+                             (socklen_t *)&addrlen)) < 0) {
+      perror("accept");
+      exit(EXIT_FAILURE);
+    }
+
+    Socket clientSocket("127.0.0.1", new_socket);
+    handleClient(clientSocket);
+  }
+
   return 0;
 }

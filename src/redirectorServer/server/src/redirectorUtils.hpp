@@ -3,12 +3,14 @@
 #ifndef REDIRECTORUTILS_HPP
 #define REDIRECTORUTILS_HPP
 
+#include "Socket.hpp"
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -66,4 +68,15 @@ std::vector<std::string> splitString(const std::string &input,
   return tokens;
 }
 
+std::string sendToServer(const std::string &serverIp, int serverPort,
+                         const std::string &message) {
+  Socket socket(serverIp, serverPort);
+  if (!socket.connect()) {
+    return "ERROR";
+  }
+  socket.send(message);
+  std::string response = socket.receive();
+  socket.close();
+  return response;
+}
 #endif // REDIRECTORUTILS_HPP

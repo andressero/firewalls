@@ -1,113 +1,45 @@
-// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
-// Serrano>"
 #include "Socket.hpp"
-#include "redirectorUtils.hpp"
+#include <arpa/inet.h>
+#include <cstring>
+#include <iostream>
+#include <unistd.h>
 
-Socket::Socket(short port = 8080, std::string address = "0.0.0.0") {
-  this->serverFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+Socket::Socket(const std::string &ip, int port)
+    : ip(ip), port(port), sockfd(-1) {}
 
-  // specifying the address
-  // Server address as attribute
-  /*
-   */
-  this->serverAddress.sin_family = AF_INET;
-  this->serverAddress.sin_port = htons(port);
-  this->serverAddress.sin_addr.s_addr = INADDR_ANY;
-
-  if (address == "0.0.0.0") {
-    this->serverAddress.sin_addr.s_addr = INADDR_ANY;
-  } else {
-    this->serverAddress.sin_addr.s_addr = inet_addr(address.c_str());
+bool Socket::connect() {
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  if (sockfd < 0) {
+    std::cerr << "Error creating socket\n";
+    return false;
   }
 
-  struct timeval timeout;
-  timeout.tv_sec = 2;
-  timeout.tv_usec = 0;
-
-  if (setsockopt(this->serverFileDescriptor, SOL_SOCKET, SO_RCVTIMEO, &timeout,
-                 sizeof(timeout)) < 0) {
-    ERROR("setsockopt failed\n");
+  struct sockaddr_in serverAddr;
+  memset(&serverAddr, 0, sizeof(serverAddr));
+  serverAddr.sin_family = AF_INET;
+  serverAddr.sin_port = htons(port);
+  if (inet_pton(AF_INET, ip.c_str(), &serverAddr.sin_addr) <= 0) {
+    std::cerr << "Invalid address or address not supported\n";
+    return false;
   }
-  if (setsockopt(this->serverFileDescriptor, SOL_SOCKET, SO_SNDTIMEO, &timeout,
-                 sizeof(timeout)) < 0) {
-    ERROR("setsockopt failed\n");
+
+  if (::connect(sockfd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) <
+      0) {
+    std::cerr << "Connection Failed\n";
+    return false;
   }
+
+  return true;
 }
 
-Socket::~Socket() { ::close(this->serverFileDescriptor); }
-
-int Socket::bind() {
-  int bindStatus = 0;
-  while (true) {
-    bindStatus = ::bind(this->serverFileDescriptor,
-                        (struct sockaddr *)&this->serverAddress,
-                        sizeof(this->serverAddress));
-    if (bindStatus == -1) {
-      ERROR("Error binding socket");
-    } else {
-      break;
-    }
-    std::cout << "Waiting for 5 seconds..." << std::endl;
-
-    // Wait for 5 seconds
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-  }
-  return bindStatus;
+void Socket::send(const std::string &message) {
+  ::send(sockfd, message.c_str(), message.size(), 0);
 }
 
-int Socket::listen(int requests) {
-  int listenStatus =
-      ::listen(this->serverFileDescriptor,
-               requests); // the 5 means the amount of request it'll allow
-  if (listenStatus == -1) {
-    ERROR("Error listening on socket");
-  }
-  return listenStatus;
+std::string Socket::receive() {
+  char buffer[1024] = {0};
+  int valread = read(sockfd, buffer, 1024);
+  return std::string(buffer, valread);
 }
 
-int Socket::accept() {
-  this->clientFileDescriptor =
-      ::accept(this->serverFileDescriptor, nullptr, nullptr);
-  if (this->clientFileDescriptor == -1) {
-    ERROR("Error accepting connection");
-  }
-  return this->clientFileDescriptor;
-}
-
-int Socket::connect(sockaddr_in address) {
-  int connectStatus = ::connect(this->serverFileDescriptor,
-                                (struct sockaddr *)&address, sizeof(address));
-  if (connectStatus == -1) {
-    ERROR("Error connecting to server");
-  }
-  return connectStatus;
-}
-
-int Socket::send(int toFileDescriptor, std::string message) {
-  int sendStatus = ::send(toFileDescriptor, message.c_str(), message.size(), 0);
-  if (sendStatus == -1) {
-    ERROR("Error sending message");
-  }
-  return sendStatus;
-}
-
-std::string Socket::receive(int fromFileDescriptor) {
-  const int MAX_BUFFER_SIZE = 1024;
-  char *buffer = new char[MAX_BUFFER_SIZE];
-  memset(buffer, 0, MAX_BUFFER_SIZE); // fill buffer with 0s (null-terminator
-  recv(fromFileDescriptor, buffer, MAX_BUFFER_SIZE, 0);
-  std::string message(buffer);
-  return message;
-}
-
-int Socket::close() { return ::close(this->serverFileDescriptor); }
-
-int Socket::getServerFileDescriptor() { return this->serverFileDescriptor; }
-
-int Socket::getClientFileDescriptor() { return this->clientFileDescriptor; }
-
-std::string Socket::getIPAddress() {
-  return inet_ntoa(this->serverAddress.sin_addr);
-}
-
-sockaddr_in Socket::getServerAddress() { return this->serverAddress; }
+void Socket::close() { ::close(sockfd); }
