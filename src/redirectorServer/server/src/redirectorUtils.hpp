@@ -42,18 +42,17 @@
     std::cerr << "\033[1;32m"                                                  \
               << "LOG: " << message << "\033[0m" << std::endl;
 
-#define LOG_TO_FILE(message, filename)                                         \
+#define FILELOG(message)                                                       \
   do {                                                                         \
-    std::ofstream file(filename, std::ios_base::app);                          \
+    std::ofstream file("log-redirector_server.txt", std::ios_base::app);       \
     if (file.is_open()) {                                                      \
       file << message << std::endl;                                            \
       file.close();                                                            \
     } else {                                                                   \
-      std::cerr << "Unable to open file " << filename << std::endl;            \
+      std::cerr << "Unable to open file "                                      \
+                << "log-redirector_server.txt" << std::endl;                   \
     }                                                                          \
   } while (0)
-
-#define LOG_TO_DEFAULT_FILE(message) LOG _TO_FILE(message, "log.txt")
 
 std::vector<std::string> splitString(const std::string &input,
                                      const std::string &delimiter) {
@@ -68,15 +67,4 @@ std::vector<std::string> splitString(const std::string &input,
   return tokens;
 }
 
-std::string sendToServer(const std::string &serverIp, int serverPort,
-                         const std::string &message) {
-  Socket socket(serverIp, serverPort);
-  if (!socket.connect()) {
-    return "ERROR";
-  }
-  socket.send(message);
-  std::string response = socket.receive();
-  socket.close();
-  return response;
-}
 #endif // REDIRECTORUTILS_HPP

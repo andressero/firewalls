@@ -1,81 +1,86 @@
 #include "Socket.hpp"
 #include "redirectorUtils.hpp"
-#include <iostream>
-#include <netinet/in.h>
-#include <string>
-#include <sys/socket.h>
-#include <unistd.h>
 
-void handleClient(Socket &clientSocket) {
-  std::string message = clientSocket.receive();
+// Handle client connection and protocol logic
+std::string protocolGarrobo(Socket client_socket, Socket &auth_server_socket,
+                            Socket &db_server_socket) {
+  std::string clientRequest;
+  client_socket.recv(clientRequest);
+  LOG("Received client request: " + clientRequest);
+  FILELOG("Received client request: " + clientRequest);
+  std::string auth_response;
+  std::string response;
 
-  // TODO(any): Put db_server and auth_server ips and it's
-  std::string server1_ip = "127.0.0.1";
-  int server1_port = 12345;
-  std::string server2_ip = "127.0.0.1";
-  int server2_port = 54321;
+  const std::vector<std::string> lines = splitString(clientRequest, "\n");
 
-  if (message.find("AUTH") == 0) {
-    std::string response1 = sendToServer(server1_ip, server1_port, message);
-    if (response1 == "OK\n") {
-      std::string response2 = sendToServer(server2_ip, server2_port, message);
-      clientSocket.send(response2);
-    } else {
-      clientSocket.send("NOT_OK\n");
+  for (const std::string &line : lines) {
+    const std::vector<std::string> command = splitString(line, " ");
+
+    if (command[0] == "AUTH") {
+      auth_server_socket.send(line);
+      LOG("AUTH line sent to auth_server");
+      FILELOG("AUTH line sent to auth_server");
+      auth_server_socket.recv(auth_response);
+      LOG("Response from auth_server: " + auth_response);
+      FILELOG("Response from auth_server: " + auth_response);
+      response = auth_response;
     }
-  } else if (message.find("REQUEST") == 0) {
-    std::string response1 = sendToServer(server1_ip, server1_port, message);
-    if (response1 == "OK\n") {
-      std::string response2 = sendToServer(server2_ip, server2_port, message);
-      clientSocket.send(response2);
+    // Once the auth response it's been received it determines whether or not it
+    // can handle a subsequent request
+    else if (command[0] == "REQUEST" && auth_response == "OK\n") {
+      db_server_socket.send(line);
+      LOG("REQUEST line sent to db_server");
+      FILELOG("REQUEST line sent to db_server");
+      std::string db_response;
+      db_server_socket.recv(db_response);
+      LOG("Response from db_server: " + db_response);
+      FILELOG("Response from db_server: " + db_response);
+      if (db_response != "NOT_OK\n") {
+        response = db_response;
+      }
     } else {
-      clientSocket.send("NOT_OK\n");
+      LOG("Received unknown request type");
+      FILELOG("Received unknown request type");
+      response = "NOT_OK\n";
+      break;
     }
-  } else {
-    clientSocket.send("INVALID_COMMAND\n");
   }
+  return response;
 }
 
 int main() {
-  int server_fd, new_socket;
-  struct sockaddr_in address;
-  int opt = 1;
-  int addrlen = sizeof(address);
+  Socket server_socket, auth_server_socket, db_server_socket;
 
-  if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-    perror("socket failed");
-    exit(EXIT_FAILURE);
+  // Set up the server socket
+  if (!server_socket.create() || !server_socket.bind(3000) ||
+      !server_socket.listen()) {
+    ERROR("Failed to setup server");
+    return 1;
   }
 
-  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt,
-                 sizeof(opt))) {
-    perror("setsockopt");
-    exit(EXIT_FAILURE);
+  // Connect to the auth server
+  if (!auth_server_socket.create() ||
+      !auth_server_socket.connect("127.0.0.1", 4000)) {
+    ERROR("Failed to connect to auth server");
+    return 1;
   }
 
-  address.sin_family = AF_INET;
-  address.sin_addr.s_addr = INADDR_ANY;
-  address.sin_port = htons(8080);
-
-  if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-    perror("bind failed");
-    exit(EXIT_FAILURE);
+  // Connect to the db server
+  if (!db_server_socket.create() ||
+      !db_server_socket.connect("127.0.0.1", 5000)) {
+    ERROR("Failed to connect to db server");
+    return 1;
   }
 
-  if (listen(server_fd, 3) < 0) {
-    perror("listen");
-    exit(EXIT_FAILURE);
-  }
-
+  // Main server loop
   while (true) {
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
-                             (socklen_t *)&addrlen)) < 0) {
-      perror("accept");
-      exit(EXIT_FAILURE);
+    Socket client_socket;
+    std::string response;
+    if (server_socket.accept(client_socket)) {
+      response =
+          protocolGarrobo(client_socket, auth_server_socket, db_server_socket);
     }
-
-    Socket clientSocket("127.0.0.1", new_socket);
-    handleClient(clientSocket);
+    client_socket.send(response);
   }
 
   return 0;
