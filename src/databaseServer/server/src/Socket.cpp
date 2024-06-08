@@ -21,18 +21,18 @@ Socket::Socket(short port = 8080, std::string address = "0.0.0.0") {
   }
 
 
-  struct timeval timeout;      
-  timeout.tv_sec = 2;
-  timeout.tv_usec = 0;
+  // struct timeval timeout;      
+  // timeout.tv_sec = 2;
+  // timeout.tv_usec = 0;
 
-  if (setsockopt (this->serverFileDescriptor, SOL_SOCKET, SO_RCVTIMEO, &timeout,
-              sizeof(timeout)) < 0) {
-    ERROR("setsockopt failed\n");
-  }
-  if (setsockopt (this->serverFileDescriptor, SOL_SOCKET, SO_SNDTIMEO, &timeout,
-              sizeof(timeout)) < 0) {
-    ERROR("setsockopt failed\n");
-  }
+  // if (setsockopt (this->serverFileDescriptor, SOL_SOCKET, SO_RCVTIMEO, &timeout,
+  //             sizeof(timeout)) < 0) {
+  //   ERROR("setsockopt failed\n");
+  // }
+  // if (setsockopt (this->serverFileDescriptor, SOL_SOCKET, SO_SNDTIMEO, &timeout,
+  //             sizeof(timeout)) < 0) {
+  //   ERROR("setsockopt failed\n");
+  // }
 }
 
 Socket::~Socket() {

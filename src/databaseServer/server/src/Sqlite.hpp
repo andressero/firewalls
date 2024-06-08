@@ -16,7 +16,7 @@ private:
     }
 
   Sqlite() : db(0) {
-    this->open(std::string("../data/data.db"));
+    this->open(std::string("../../data.db"));
   }
 
   ~Sqlite() {
@@ -24,7 +24,10 @@ private:
   }
 
   void open(std::string filepath) {
-    sqlite3_open(filepath.c_str(), &this->db);
+    int status = sqlite3_open(filepath.c_str(), &this->db);
+    if(status == SQLITE_OK) {
+      LOG("Database open")
+    }
   }
   
   void close() {
