@@ -2,37 +2,100 @@
 // Serrano>"
 // Adapted from <https://www.geeksforgeeks.org/socket-programming-in-cpp/>
 
-#include "Session.hpp"
+#include "Database.hpp"
 #include "Socket.hpp"
-#include "Sqlite.hpp"
+#include "dbServerUtils.hpp"
+#include <iostream>
+#include <sstream>
 
 Socket &server = Socket::getInstance();
-Sqlite &database = Sqlite::getInstance();
+Database &database = Database::getInstance("../../medical_data.db");
 
-// TODO(any): Remove INICIO and QUIT as both are unnecessary.
-const std::unordered_map<std::string, int> relation = {
-    {"INICIO", 1}, {"LOGIN", 2}, {"REQUEST", 3}, {"LOGOUT", 4}, {"QUIT", 5}};
+std::string userDataRequest(const std::string &userId) {
+  std::string userData = "";
+
+  std::ostringstream oss;
+  // Data obtained successfully
+  if (database.executeQuery("SELECT * FROM users WHERE patientID = '" + userId +
+                                "'",
+                            Database::defaultCallback, &oss)) {
+    userData = oss.str();
+  }
+  return userData;
+}
+
+std::string insuranceStatusRequest(const std::string &userId) {
+  std::string insuranceStatus = "";
+
+  std::ostringstream oss;
+  // Data obtained successfully
+  if (database.executeQuery("SELECT isInsured FROM users WHERE patientID = '" +
+                                userId + "'",
+                            Database::defaultCallback, &oss)) {
+    insuranceStatus = oss.str();
+  }
+  return insuranceStatus;
+}
+
+std::string labListRequest(const std::string &userId) {
+  std::string labList = "";
+
+  std::ostringstream oss;
+  // Data obtained successfully
+  if (database.executeQuery(
+          "SELECT labDate, isPending FROM lab_results WHERE patientID = '" +
+              userId + "'",
+          Database::defaultCallback, &oss)) {
+    labList = oss.str();
+  }
+  return labList;
+}
+
+std::string labResultRequest(const std::string &labDate,
+                             const std::string &userId) {
+  std::string labResult = "";
+
+  std::ostringstream oss;
+  // Results from a certain lab exam
+  if (database.executeQuery(
+          "SELECT forms FROM lab_results WHERE patientID = '" + userId + "'" +
+              " AND labDate = '" + labDate + "'",
+          Database::defaultCallback, &oss)) {
+    labResult = oss.str();
+  }
+  return labResult;
+}
+
+std::string patientsListRequest(const std::string &specialistId) {
+  std::string patientsList = "";
+
+  std::ostringstream oss;
+  // Data obtained successfully
+  if (database.executeQuery(
+          "SELECT patientsList FROM 'assignations' WHERE specialistName = '" +
+              specialistId + "'",
+          Database::defaultCallback, &oss)) {
+    patientsList = oss.str();
+  }
+  return patientsList;
+}
+
+bool labResultInsertionRequest(const std::string &data) {
+  return database.executeQuery("INSERT INTO lab_results(patientID, labDate, "
+                               "isPending, forms) VALUES('" +
+                                   data + ")",
+                               Database::defaultCallback);
+}
 
 // * Data insertion is only available for laboratorian as well as
 // * insurance status is only available for patients.
 const std::unordered_map<std::string, int> requestTypeMap = {
     {"USER_DATA", 1},     {"INSURANCE_STATUS", 2}, {"LAB_RESULT", 3},
-    {"LAB_LIST", 4},    {"PATIENT_DATA", 5},     {"PATIENT_LIST", 6},
+    {"LAB_LIST", 4},      {"PATIENT_DATA", 5},     {"PATIENT_LIST", 6},
     {"DATA_INSERTION", 7}};
 
-void getRequestResponse(std::string &response,
-                        const std::vector<std::string> &command,
-                        Session *session) {
-  if (!session) {
-    LOG("No session object, NOT LOGGED IN YET")
-    response = "ERROR\n";
-    return;
-  }
-  if (!session->getLogStatus()) {
-    LOG("NOT LOGGED IN YET")
-    response = "ERROR\n";
-    return;
-  }
+void getRequestResponse(const std::vector<std::string> &command,
+                        std::string &response) {
   const std::string requestType_ = command[1];
   if (requestTypeMap.find(requestType_) == requestTypeMap.end()) {
     ERROR(requestType_ + " is an unknown request type")
@@ -40,37 +103,37 @@ void getRequestResponse(std::string &response,
     return;
   }
 
-
   switch (requestTypeMap.find(requestType_)->second) {
   case 1: { // USER_DATA
     LOG("Request Type: USER_DATA")
-    const std::string userData = session->userDataRequest();
+    // SELECT * FROM users WHERE patientID = '123456789'
+    const std::string userData = userDataRequest(/*userID*/ command[2]);
     LOG("userData is" + userData)
     response += "OK\n" + userData + "\n";
     break;
   }
   case 2: { // INSURANCE_STATUS
     LOG("Request Type: INSURANCE_STATUS")
-    const std::string insuranceStatus = session->insuranceStatusRequest();
+    // SELECT isInsured FROM users WHERE patientID = '123456789'
+    const std::string insuranceStatus =
+        insuranceStatusRequest(/*userID*/ command[2]);
     LOG("insuranceStatus is " + insuranceStatus)
     response += "OK\n" + insuranceStatus + "\n";
     break;
   }
   case 3: { // LAB_LIST
+    // SELECT labDate, isPending FROM lab_results WHERE patientID = '123456789'
     LOG("Request Type: LAB_LIST")
-    const std::vector<LabResult> labList = session->labListRequest();
-    response = "";
-    for (const LabResult &i : labList) {
-      LOG(i.toString())
-      response += i.toString() + "\t";
-    }
-    response += "\n";
+    const std::string labList = labListRequest(/*userID*/ command[2]);
     break;
   }
   case 4: { // LAB_RESULT
+    // SELECT forms FROM lab_results WHERE patientID = '123456789' AND labDate =
+    // '31-07-2025'
     LOG("Request Type: LAB_RESULT")
-    const std::string labResultID = command[2];
-    const LabResult labResult = session->labResultRequest(labResultID);
+    const std::string labResultDate = command[2];
+    const std::string labResult =
+        labResultRequest(labResultDate, command[3] /*userID*/);
     LOG("labResult is " << labResult.toString())
     if (labResult.empty()) {
       response = "ERROR\n";
@@ -81,17 +144,22 @@ void getRequestResponse(std::string &response,
   }
   case 5: { // PATIENT_LIST
     /*c(L): REQUEST PATIENT_LIST*/
+    // SELECT patientsList FROM 'assignations' WHERE specialistName = 'L12345'
     // TODO(any): Implement this request
     break;
   }
   case 6: { // PATIENT_DATA
     /*c(L): REQUEST PATIENT_DATA <patientID>*/
+    // SELECT * FROM users WHERE patientID = '123456789'
     // TODO(any): Implement this request
     break;
   }
   case 7: { // DATA_INSERTION
     /*c(L): REQUEST DATA_INSERTION <dataToInsert>*/
-    // TODO(any): Implement this request
+    // INSERT INTO lab_results(patientID, labDate, isPending, forms)
+    // VALUES('666', 'hoy', 'No', 'BlahBlah')
+    //  TODO(any): Implement this request
+    // data to insert MUST have this format: '666', 'hoy', 'No', 'BlahBlah'
     break;
   }
   default:
@@ -102,160 +170,15 @@ void getRequestResponse(std::string &response,
   return;
 }
 
-// TODO(any): Remove INICIO and QUIT as both are unnecessary.
-/*
 std::string protocolGarrobo(const std::string &input) {
-  const std::vector<std::string> lines = splitString(input, "\n");
-  std::string response = "ERROR\n";
-  Session *session = 0;
-
-  // TODO(any): Separate requests.
-  for (const std::string &line : lines) {
-
-    LOG("Line: " << "|" << line << "|")
-    const std::vector<std::string> command = splitString(line, " ");
-    const std::string operation = command[0];
-
-    if (relation.find(operation) == relation.end()) {
-      ERROR(operation + " is an unknown operation!");
-      return "ERROR\n";
-    }
-
-    switch (relation.find(operation)->second) {
-      case 1: // REQUEST
-        LOG("Operation: REQUEST")
-        getRequestResponse(response, command, session);
-        break;
-      case 2: // INSERT
-        LOG("Operation: INSERT")
-        getInsertResponse();
-      default:
-        response = "ERROR\n";
-        ERROR(operation + " is an unknown operation!");
-        break;
-      }
+  std::string response = "NOT_OK\n";
+  const std::vector<std::string> command = splitString(input, " ");
+  if (command[0] != "REQUEST") {
+    LOG("Received unknown command");
+    FILELOG("Received unknown command");
+    return response;
   }
-  if (session) {
-    delete session;
-    session = 0;
-  }
-  return response;
-}
-*/
-
-Session* createSession(const std::string& request) {
-  const std::vector<std::string> command = splitString(request, " ");
-
-  if (command[0] == "CONNECTION") {
-    return new Session(command[1], ""/*command[2]*/);
-  }
-  return nullptr;
-}
-
-std::string protocolGarrobo(const std::string& input) {
-  const std::vector<std::string> requests = splitString(input, "\n");
-  std::string response = "";
-  Session* session = nullptr;
-  if (requests.size() > 0) {
-    session = createSession(requests[0]);
-  } else {
-    return "ERROR\n";
-  }
-
-  if (session == nullptr) {
-    return "ERROR\n";
-  }
-
-  for (size_t i = 1; i < requests.size(); ++i) {
-    const std::string& request = requests[i];
-    const std::vector<std::string> command = splitString(request, " ");
-
-    // command[0] == REQUEST always
-    const std::string operation = command[1];
-
-    if (requestTypeMap.find(operation) == relation.end()) {
-      ERROR(operation + " is an unknown operation!")
-      return response;
-    }
-
-    int requestNumber = requestTypeMap.find(operation)->second;
-
-    switch (requestNumber) {
-      case 1:{ // USER_DATA
-        LOG("Operation: REQUEST USER_DATA")
-        std::string userData = session->userDataRequest();
-        LOG("userData is" + userData)
-        response += "OK\n" + userData + "\n";
-        break;
-      }
-      case 2: { // INSURANCE_STATUS
-        LOG("Request Type: INSURANCE_STATUS")
-        const std::string insuranceStatus = session->insuranceStatusRequest();
-        LOG("insuranceStatus is " + insuranceStatus)
-        response += "OK\n" + insuranceStatus + "\n";
-        break;
-      }
-      case 3: { // LAB_RESULT
-        LOG("Request Type: LAB_RESULT")
-        const std::string labResultID = command[2];
-        const LabResult labResult = session->labResultRequest(labResultID);
-        LOG("labResult is " << labResult.toString())
-        if (labResult.empty()) {
-          response = "ERROR\n";
-        } else {
-          response += "OK\n" + labResult.toString() + "\n";
-        }
-        break;
-      }
-      case 4: { // LAB_LIST
-        LOG("Request Type: LAB_LIST")
-        const std::vector<LabResult> labList = session->labListRequest();
-        response = "";
-        for (const LabResult &i : labList) {
-          LOG(i.toString())
-          response += i.toString() + "\t";
-        }
-        response += "\n";
-        break;
-      }
-      case 5: { // PATIENT_DATA
-      // TODO(any): finish patient data request
-      /*
-        LOG("Request Type: PATIENT_DATA")
-        const std::string patientID = command[2];
-        const std::string patientData = session->patientDataRequest(patientID);
-        LOG("patientData is " + patientData)
-        response += "OK\n" + patientData + "\n";
-      */
-        break;
-      }
-      case 6: { // PATIENT_LIST
-      // TODO(any): finish patient list request
-        /*
-        LOG("Request Type: PATIENT_LIST")
-        const std::vector<std::string> patientList = session->patientListRequest();
-        */
-        break;
-      }
-      case 7: { // DATA_INSERTION
-      // TODO(any): finish data insertion request
-      /*
-        LOG("Request Type: DATA_INSERTION")
-        if (session->dataInsertion() == OK) {
-          response += "OK\n";
-        } else {
-          response = "ERROR\n";
-        }
-      */
-        break;
-      }
-    default:
-      response = "ERROR\n";
-      ERROR(operation + " is an unknown request type")
-      break;
-    }
-
-  }
+  getRequestResponse(command, response);
   return response;
 }
 

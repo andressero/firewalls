@@ -6,22 +6,23 @@
 #include "Definitions.hpp"
 
 class Socket {
- private:
+private:
   int serverFileDescriptor;
   int clientFileDescriptor;
 
   sockaddr_in serverAddress;
   sockaddr_in clientAddress;
-  Socket(const Socket&) = delete;
-  Socket& operator=(const Socket&) = delete;
+  Socket(const Socket &) = delete;
+  Socket &operator=(const Socket &) = delete;
 
- public:
+public:
   Socket(short port, std::string address);
-  Socket(int fileDescriptor/*, sockaddr_in address*/);
+  Socket(int fileDescriptor /*, sockaddr_in address*/);
   ~Socket();
 
-  static Socket& getInstance() {
-    static Socket instance(8080, "0.0.0.0"); // Guaranteed to be initialized only once
+  static Socket &getInstance() {
+    static Socket instance(8080,
+                           "0.0.0.0"); // Guaranteed to be initialized only once
     return instance;
   }
 
@@ -41,11 +42,11 @@ class Socket {
 
   // Signal handler function
   static void signalHandler(int signal) {
-    std::cout << "Socket received signal " << signal << ". Releasing resources..." << std::endl;
-    Socket& instance = Socket::getInstance();
+    std::cout << "Socket received signal " << signal
+              << ". Releasing resources..." << std::endl;
+    Socket &instance = Socket::getInstance();
     instance.close();
   }
-
 };
 
 #endif
