@@ -1,3 +1,6 @@
+// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos,
+// Andres Serrano>"
+
 #ifndef DATABASE_HPP
 #define DATABASE_HPP
 
@@ -14,6 +17,8 @@ public:
                     int (*callback)(void *, int, char **,
                                     char **) = defaultCallback,
                     void *data = nullptr);
+  void close();
+  static void signalHandler(int signal, const std::string dbName);
 
   ~Database();
   static int defaultCallback(void *data, int argc, char **argv,
@@ -67,6 +72,16 @@ int Database::defaultCallback(void *data, int argc, char **argv,
   }
   *oss << "\n";
   return 0;
+}
+
+void Database::close() { sqlite3_close(db); }
+
+// Signal handler function
+void Database::signalHandler(int signal, const std::string dbName) {
+  std::cout << "Database received signal " << signal
+            << ". Releasing resources..." << std::endl;
+  Database &instance = Database::getInstance(dbName);
+  instance.close();
 }
 
 #endif // DATABASE_HPP

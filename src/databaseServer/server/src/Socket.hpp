@@ -3,7 +3,7 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
-#include "Definitions.hpp"
+#include "dbServerUtils.hpp"
 
 class Socket {
 private:

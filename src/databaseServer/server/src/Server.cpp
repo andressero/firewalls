@@ -81,6 +81,14 @@ std::string patientsListRequest(const std::string &specialistId) {
 }
 
 bool labResultInsertionRequest(const std::string &data) {
+  std::string userID = extractUserID(data);
+  if (!checkInsertionFormat(data) || userID.empty()) {
+    return false;
+  }
+  if (!database.executeQuery(
+          "SELECT patientID FROM 'users' WHERE patientID = '" + userID + "'")) {
+    return false;
+  }
   return database.executeQuery("INSERT INTO lab_results(patientID, labDate, "
                                "isPending, forms) VALUES('" +
                                    data + ")",
@@ -104,62 +112,69 @@ void getRequestResponse(const std::vector<std::string> &command,
   }
 
   switch (requestTypeMap.find(requestType_)->second) {
-  case 1: { // USER_DATA
+  case 1: { // c: REQUEST USER_DATA <userID>
     LOG("Request Type: USER_DATA")
-    // SELECT * FROM users WHERE patientID = '123456789'
+    FILELOG("Request Type: USER_DATA");
     const std::string userData = userDataRequest(/*userID*/ command[2]);
-    LOG("userData is" + userData)
-    response += "OK\n" + userData + "\n";
+    LOG("Requested user data:" + userData)
+    FILELOG("Requested user data:" + userData);
+    response = "OK\n" + userData + "\n";
     break;
   }
-  case 2: { // INSURANCE_STATUS
-    LOG("Request Type: INSURANCE_STATUS")
-    // SELECT isInsured FROM users WHERE patientID = '123456789'
+  case 2: { // c: REQUEST INSURANCE_STATUS <userID>
+    LOG("Request Type: INSURANCE_STATUS");
+    FILELOG("Request Type: INSURANCE_STATUS");
     const std::string insuranceStatus =
         insuranceStatusRequest(/*userID*/ command[2]);
-    LOG("insuranceStatus is " + insuranceStatus)
-    response += "OK\n" + insuranceStatus + "\n";
+    LOG("insuranceStatus is " + insuranceStatus);
+    FILELOG("insuranceStatus is " + insuranceStatus);
+    response = "OK\n" + insuranceStatus + "\n";
     break;
   }
-  case 3: { // LAB_LIST
-    // SELECT labDate, isPending FROM lab_results WHERE patientID = '123456789'
-    LOG("Request Type: LAB_LIST")
+  case 3: { // c: REQUEST LAB_LIST <userID>
+    LOG("Request Type: LAB_LIST");
+    FILELOG("Request Type: LAB_LIST");
     const std::string labList = labListRequest(/*userID*/ command[2]);
+    response = "OK\n" + labList + "\n";
     break;
   }
-  case 4: { // LAB_RESULT
-    // SELECT forms FROM lab_results WHERE patientID = '123456789' AND labDate =
-    // '31-07-2025'
-    LOG("Request Type: LAB_RESULT")
-    const std::string labResultDate = command[2];
+  case 4: { // c: LAB_RESULT <labDate> <userID>
+    LOG("Request Type: LAB_RESULT");
+    FILELOG("Request Type: LAB_RESULT");
     const std::string labResult =
-        labResultRequest(labResultDate, command[3] /*userID*/);
-    LOG("labResult is " << labResult.toString())
-    if (labResult.empty()) {
-      response = "ERROR\n";
+        labResultRequest(command[2] /*labDate*/, command[3] /*userID*/);
+    LOG("labResult is " << labResult);
+    FILELOG("labResult is " << labResult);
+    response = "OK\n" + labResult + "\n";
+    break;
+  }
+  case 5: { // c: REQUEST PATIENT_LIST <specialistID>
+    LOG("Request Type: LAB_LIST");
+    FILELOG("Request Type: LAB_LIST");
+    const std::string patientsList =
+        patientsListRequest(/*specialistID*/ command[2]);
+    response = "OK\n" + patientsList + "\n";
+    break;
+  }
+  case 6: { // c: REQUEST PATIENT_DATA <patientID>
+    LOG("Request Type: PATIENT_DATA")
+    FILELOG("Request Type: PATIENT_DATA");
+    const std::string patientData = userDataRequest(/*patientID*/ command[2]);
+    LOG("Requested patient data:" + patientData)
+    FILELOG("Requested patient data:" + patientData);
+    response = "OK\n" + patientData + "\n";
+    break;
+  }
+  case 7: { // c: REQUEST DATA_INSERTION <dataToInsert>
+    // data to insert MUST have this format: '777', 'hoy', 'No', 'BlahBlah'.
+    // WITH THE SINGLE QUOTES INCLUDED
+    LOG("Request type: DATA_INSERTION");
+    FILELOG("Request type: DATA_INSERTION");
+    if (labResultInsertionRequest(command[2])) {
+      response = "OK\n";
     } else {
-      response += "OK\n" + labResult.toString() + "\n";
+      response = "NOT_OK\n”";
     }
-    break;
-  }
-  case 5: { // PATIENT_LIST
-    /*c(L): REQUEST PATIENT_LIST*/
-    // SELECT patientsList FROM 'assignations' WHERE specialistName = 'L12345'
-    // TODO(any): Implement this request
-    break;
-  }
-  case 6: { // PATIENT_DATA
-    /*c(L): REQUEST PATIENT_DATA <patientID>*/
-    // SELECT * FROM users WHERE patientID = '123456789'
-    // TODO(any): Implement this request
-    break;
-  }
-  case 7: { // DATA_INSERTION
-    /*c(L): REQUEST DATA_INSERTION <dataToInsert>*/
-    // INSERT INTO lab_results(patientID, labDate, isPending, forms)
-    // VALUES('666', 'hoy', 'No', 'BlahBlah')
-    //  TODO(any): Implement this request
-    // data to insert MUST have this format: '666', 'hoy', 'No', 'BlahBlah'
     break;
   }
   default:
@@ -187,8 +202,8 @@ static void signalr(int signal) {
             << std::endl;
   Socket &server = Socket::getInstance();
   server.signalHandler(signal);
-  Sqlite &database = Sqlite::getInstance();
-  database.signalHandler(signal);
+  Database &database = Database::getInstance("../../medical_data.db");
+  database.signalHandler(signal, "../../medical_data.db");
   exit(0);
 }
 

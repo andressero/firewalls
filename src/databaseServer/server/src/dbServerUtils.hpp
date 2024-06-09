@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <iostream>
 #include <netinet/in.h>
+#include <regex>
 #include <sqlite3.h>
 #include <sstream>
 #include <string>
@@ -75,6 +76,53 @@ std::vector<std::string> splitString(const std::string &input,
   }
 
   return tokens;
+}
+
+bool isAllDigits(const std::string &str) {
+  for (char c : str) {
+    if (!std::isdigit(c)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::string extractUserID(const std::string &input) {
+  // Check if the string starts with a single quote
+  if (input[0] != '\'') {
+    return "";
+  }
+
+  // Find the position of the next single quote after the first one
+  size_t endPos = input.find('\'', 1);
+  if (endPos == std::string::npos) {
+    return "";
+  }
+
+  // Extract the substring between the first and second single quotes
+  std::string userID = input.substr(1, endPos - 1);
+
+  // Check if the extracted userID is either 9 or 12 digits long and all
+  // characters are digits
+  if ((userID.length() == 9 || userID.length() == 12) && isAllDigits(userID)) {
+    return userID;
+  }
+
+  return "";
+}
+
+/**
+ * @brief Checks whether or not the data that intending to be inserted has the
+ * correct format.
+ *
+ * @param input Data that's intending to be inserted.
+ * @return true if the format is correct.
+ * @return false otherwise.
+ */
+bool checkInsertionFormat(const std::string &input) {
+  std::regex pattern(
+      R"(^'(\d{9}|\d{12})',\s*'\d{2}-\d{2}-\d{4}',\s*'(Yes|No)',\s*'.*'$)");
+  return std::regex_match(input, pattern);
 }
 
 #endif
