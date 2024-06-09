@@ -3,7 +3,7 @@
 
 #include "Socket.hpp"
 
-Socket::Socket(short port = 5003, std::string address = "127.0.0.1") {
+Socket::Socket(short port = 5003, std::string address = "0.0.0.0") {
   this->serverFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
   // specifying the address
@@ -19,7 +19,13 @@ Socket::Socket(short port = 5003, std::string address = "127.0.0.1") {
   } else {
     this->serverAddress.sin_addr.s_addr = inet_addr(address.c_str());
   }
+  int opt = 1;
+  if (setsockopt(this->serverFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &opt,
+                 sizeof(opt)) < 0) {
+    ERROR("Error setting reusable address");
+  }
 
+  /*
   struct timeval timeout;
   timeout.tv_sec = 2;
   timeout.tv_usec = 0;
@@ -32,6 +38,7 @@ Socket::Socket(short port = 5003, std::string address = "127.0.0.1") {
                  sizeof(timeout)) < 0) {
     ERROR("setsockopt failed\n");
   }
+  */
 }
 
 Socket::~Socket() { ::close(this->serverFileDescriptor); }

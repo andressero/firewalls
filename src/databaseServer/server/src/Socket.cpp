@@ -20,6 +20,11 @@ Socket::Socket(short port = 5001, std::string address = "127.0.0.1") {
   } else {
     this->serverAddress.sin_addr.s_addr = inet_addr(address.c_str());
   }
+  int opt = 1;
+  if (setsockopt(this->serverFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &opt,
+                 sizeof(opt)) < 0) {
+    ERROR("Error setting reusable address");
+  }
 
   // struct timeval timeout;
   // timeout.tv_sec = 2;

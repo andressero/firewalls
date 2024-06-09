@@ -111,8 +111,10 @@ int main() {
   while (true) {
     server.accept();
     std::string request = server.receive(server.getClientFileDescriptor());
-    std::string response = protocolGarrobo(request);
-    server.send(server.getClientFileDescriptor(), response);
+    if (!request.empty()) {
+      std::string response = protocolGarrobo(request);
+      server.send(server.getClientFileDescriptor(), response);
+    }
   }
   return 0;
 }

@@ -405,8 +405,6 @@ void FileSystem::fillWithFile(std::string filename) {
     this->change2WriteMode(newUser.getName());
     this->write(newUser.getName(), line, line.size());
     this->close(newUser.getName());
-    /*
-     */
     ++i;
   }
   file.close();
