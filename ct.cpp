@@ -4,53 +4,48 @@
 #include <string.h>
 #include <unistd.h>
 
-#define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5002
+#define PORT 3000
 #define BUFFER_SIZE 1024
 
-void error_handling(char *message) {
-  perror(message);
-  exit(1);
-}
-
 int main() {
-  int sock;
-  struct sockaddr_in server_addr;
-  char message[BUFFER_SIZE];
-  int str_len;
+  int sock = 0, valread;
+  struct sockaddr_in serv_addr;
+  char *hello =
+      "AUTH 123456789 "
+      "b50adfab92b3e54af123e99c980d4cea9221047e307ebc1e1f9cb9549790a219\n";
+  char buffer[BUFFER_SIZE] = {0};
 
   // Crear socket
-  sock = socket(PF_INET, SOCK_STREAM, 0);
-  if (sock == -1)
-    error_handling("socket() error");
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    printf("\n Socket creation error \n");
+    return -1;
+  }
 
-  // Configurar dirección del servidor
-  memset(&server_addr, 0, sizeof(server_addr));
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
-  server_addr.sin_port = htons(SERVER_PORT);
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(PORT);
 
-  // Conectar al servidor
-  if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
-    error_handling("connect() error");
+  // Convertir direcciones IPv4 e IPv6 de texto a binario
+  if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
+    printf("\nInvalid address/ Address not supported \n");
+    return -1;
+  }
 
-  // Leer mensaje del usuario
-  printf("Ingrese el mensaje al servidor: ");
-  fgets(message, BUFFER_SIZE, stdin);
+  // Conectarse al servidor
+  if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    printf("\nConnection Failed \n");
+    return -1;
+  }
 
   // Enviar mensaje al servidor
-  if (write(sock, message, strlen(message)) == -1)
-    error_handling("write() error");
+  send(sock, hello, strlen(hello), 0);
+  printf("Message sent\n");
 
   // Leer respuesta del servidor
-  str_len = read(sock, message, BUFFER_SIZE - 1);
-  if (str_len == -1)
-    error_handling("read() error");
-
-  message[str_len] = 0;
-  printf("Mensaje del servidor: %s\n", message);
+  valread = read(sock, buffer, BUFFER_SIZE);
+  printf("Server response: %s\n", buffer);
 
   // Cerrar el socket
   close(sock);
+
   return 0;
 }

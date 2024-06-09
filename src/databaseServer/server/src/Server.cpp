@@ -209,13 +209,23 @@ static void signalr(int signal) {
 
 int main() {
   std::signal(SIGINT, signalr);
-  server.bind();
-  server.listen(5);
+  if (!server.create()) {
+    ERROR("Unable to create server socket");
+  } else if (!server.bind(5000, "127.0.0.1")) {
+    ERROR("Unable to setup server")
+  } else if (!server.listen()) {
+    ERROR("Couldn't listen")
+  }
   while (true) {
-    server.accept();
-    std::string request = server.receive(server.getClientFileDescriptor());
-    std::string response = protocolGarrobo(request);
-    server.send(server.getClientFileDescriptor(), response);
+    int clientSocket;
+    if (server.accept(clientSocket)) {
+      std::string clientRequest;
+      server.receive(clientSocket, clientRequest);
+      if (!clientRequest.empty()) {
+        std::string response = protocolGarrobo(clientRequest);
+        server.send(clientSocket, response);
+      }
+    }
   }
   return 0;
 }

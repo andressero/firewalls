@@ -1,55 +1,62 @@
-// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos, Andres
-// Serrano>"
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
+#include <arpa/inet.h>
+#include <csignal>
+#include <cstring>
 #include <iostream>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
+#include <unistd.h>
 
 class Socket {
-private:
-  int serverFileDescriptor;
-  int clientFileDescriptor;
-
-  sockaddr_in serverAddress;
-  sockaddr_in clientAddress;
-  Socket(const Socket &) = delete;
-  Socket &operator=(const Socket &) = delete;
-
 public:
-  Socket(short port, std::string address);
-  Socket(int fileDescriptor /*, sockaddr_in address*/);
-  ~Socket();
-
   static Socket &getInstance() {
-    static Socket instance(8080,
-                           "0.0.0.0"); // Guaranteed to be initialized only once
+    static Socket instance;
     return instance;
   }
 
-  int bind();
-  int listen(int requests);
-  int accept();
-  int connect(sockaddr_in address);
-  int send(int fileDescriptor, std::string message);
-  std::string receive(int fileDescriptor);
-  int close();
+  // Delete copy constructor and assignment operator to ensure singleton
+  Socket(const Socket &) = delete;
+  Socket &operator=(const Socket &) = delete;
 
-  int getServerFileDescriptor();
-  int getClientFileDescriptor();
-  sockaddr_in getServerAddress();
+  // Create a socket
+  bool create();
 
-  std::string getIPAddress();
+  // Bind the socket to a port
+  bool bind(const int port, const std::string &address);
+
+  // Listen for incoming connections
+  bool listen() const;
+
+  // Accept a new connection and return a reference to the Singleton instance
+  bool accept(int &new_sock) const;
+
+  // Connect to a remote server
+  bool connect(const std::string &host, const int port);
+
+  // Send a message
+  bool send(const int sock, const std::string &message) const;
+
+  // Receive a message
+  int receive(const int sock, std::string &message) const;
+
+  // Set socket to non-blocking mode
+  void set_non_blocking(const bool);
 
   // Signal handler function
-  static void signalHandler(int signal) {
-    std::cout << "Socket received signal " << signal
-              << ". Releasing resources..." << std::endl;
-    Socket &instance = Socket::getInstance();
-    instance.close();
-  }
+  static void signalHandler(int signal);
+
+private:
+  int m_sock;
+  sockaddr_in m_addr;
+
+  Socket();
+  ~Socket();
+
+  // Check if socket is valid
+  bool is_valid() const;
 };
 
 #endif
