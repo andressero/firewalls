@@ -3,7 +3,10 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
-#include "dbServerUtils.hpp"
+#include <iostream>
+#include <netinet/in.h>
+#include <string>
+#include <sys/socket.h>
 
 class Socket {
 private:

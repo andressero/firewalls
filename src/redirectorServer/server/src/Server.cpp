@@ -52,7 +52,7 @@ int main() {
   Socket server_socket, auth_server_socket, db_server_socket;
 
   // Set up the server socket
-  if (!server_socket.create() || !server_socket.bind(3000) ||
+  if (!server_socket.create() || !server_socket.bind(5002, "127.0.0.1") ||
       !server_socket.listen()) {
     ERROR("Failed to setup server");
     FILELOG("Failed to setup server");

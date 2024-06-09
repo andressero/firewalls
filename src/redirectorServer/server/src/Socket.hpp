@@ -21,7 +21,7 @@ public:
   bool create();
 
   // Bind the socket to a port
-  bool bind(const int port);
+  bool bind(const int port, const std::string address);
 
   // Listen for incoming connections
   bool listen() const;

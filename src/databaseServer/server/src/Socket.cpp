@@ -2,8 +2,9 @@
 // Serrano>"
 
 #include "Socket.hpp"
+#include "dbServerUtils.hpp"
 
-Socket::Socket(short port = 8080, std::string address = "0.0.0.0") {
+Socket::Socket(short port = 5001, std::string address = "127.0.0.1") {
   this->serverFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
   // specifying the address

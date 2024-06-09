@@ -14,12 +14,10 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <netinet/in.h>
 #include <regex>
 #include <sqlite3.h>
 #include <sstream>
 #include <string>
-#include <sys/socket.h>
 #include <thread> // For std::this_thread::sleep_for
 #include <unistd.h>
 #include <unordered_map>
@@ -65,8 +63,8 @@
     }                                                                          \
   } while (0)
 
-std::vector<std::string> splitString(const std::string &input,
-                                     const std::string &delimiter) {
+inline std::vector<std::string> splitString(const std::string &input,
+                                            const std::string &delimiter) {
   std::vector<std::string> tokens;
   std::istringstream iss(input);
   std::string token;
@@ -78,7 +76,7 @@ std::vector<std::string> splitString(const std::string &input,
   return tokens;
 }
 
-bool isAllDigits(const std::string &str) {
+inline bool isAllDigits(const std::string &str) {
   for (char c : str) {
     if (!std::isdigit(c)) {
       return false;
@@ -87,7 +85,7 @@ bool isAllDigits(const std::string &str) {
   return true;
 }
 
-std::string extractUserID(const std::string &input) {
+inline std::string extractUserID(const std::string &input) {
   // Check if the string starts with a single quote
   if (input[0] != '\'') {
     return "";
@@ -119,7 +117,7 @@ std::string extractUserID(const std::string &input) {
  * @return true if the format is correct.
  * @return false otherwise.
  */
-bool checkInsertionFormat(const std::string &input) {
+inline bool checkInsertionFormat(const std::string &input) {
   std::regex pattern(
       R"(^'(\d{9}|\d{12})',\s*'\d{2}-\d{2}-\d{4}',\s*'(Yes|No)',\s*'.*'$)");
   return std::regex_match(input, pattern);

@@ -18,13 +18,13 @@ bool Socket::create() {
   return is_valid();
 }
 
-bool Socket::bind(const int port) {
+bool Socket::bind(const int port, const std::string address) {
   if (!is_valid()) {
     return false;
   }
 
   m_addr.sin_family = AF_INET;
-  m_addr.sin_addr.s_addr = INADDR_ANY;
+  m_addr.sin_addr.s_addr = inet_addr(address.c_str());
   m_addr.sin_port = htons(port);
 
   int bind_return = ::bind(m_sock, (struct sockaddr *)&m_addr, sizeof(m_addr));

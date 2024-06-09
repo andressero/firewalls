@@ -54,8 +54,8 @@
     }                                                                          \
   } while (0)
 
-std::vector<std::string> splitString(const std::string &input,
-                                     const std::string &delimiter) {
+inline std::vector<std::string> splitString(const std::string &input,
+                                            const std::string &delimiter) {
   std::vector<std::string> tokens;
   std::istringstream iss(input);
   std::string token;
