@@ -1,0 +1,99 @@
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request type: DATA_INSERTION
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Request Type: USER_DATA
+Requested user data:123456789Jack ThomasMalejack@example.com1012345678B-NoKim Thomas1018765432No
+
+Request Type: USER_DATA
+Requested user data:123456789Jack ThomasMalejack@example.com1012345678B-No--Kim Thomas1018765432No
+
+Request Type: USER_DATA
+Requested user data:123456789Jack ThomasMalejack@example.com1012345678B-No--Kim Thomas1018765432No
+
+Request Type: INSURANCE_STATUS
+insuranceStatus is 
+Request Type: INSURANCE_STATUS
+insuranceStatus is No
+
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_RESULT
+labResult is 
+Request Type: LAB_RESULT
+labResult is Categoría: Química Clínica, Resultados: {'Glucosa': 92.11, 'Colesterol Total': 219.74, 'Triglicéridos': 79.66, 'Urea': 39.54, 'Creatinina': 0.99, 'Otros': 'N/A'}, Observaciones: Todos los resultados están dentro de los rangos normales.
+
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+Request Type: LAB_LIST
+labResult is 31-07-2025Yes
+
+Request Type: PATIENT_DATA
+Requested patient data:D12345 Jose Jose Male jj@example.com7772375677 A+ Yes - - Cristian Jose7778765432 Yes
+
+Request Type: PATIENT_LIST
+Patient List is : 567890123,456789012,345678901,234567890,123456789
+

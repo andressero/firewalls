@@ -8,6 +8,7 @@
 #include <sqlite3.h>
 #include <sstream>
 #include <string>
+#include "dbServerUtils.hpp"
 
 class Database {
 public:
@@ -16,7 +17,7 @@ public:
   bool executeQuery(const std::string &query,
                     int (*callback)(void *, int, char **,
                                     char **) = defaultCallback,
-                    void *data = nullptr);
+                    void *data = 0);
   void close();
   static void signalHandler(int signal, const std::string dbName);
 
@@ -42,22 +43,22 @@ bool Database::executeQuery(const std::string &query,
                             int (*callback)(void *, int, char **, char **),
                             void *data) {
   char *zErrMsg = 0;
-  int rc = sqlite3_exec(db, query.c_str(), callback, data, &zErrMsg);
+  int rc = sqlite3_exec(this->db, query.c_str(), callback, data, &zErrMsg);
   if (rc != SQLITE_OK) {
-    std::cerr << "SQL error: " << zErrMsg << std::endl;
+    ERROR("SQL Error: " + std::string(zErrMsg))
     sqlite3_free(zErrMsg);
     return false;
   } else {
-    std::cout << "Query executed successfully" << std::endl;
+    LOG("Query executed successfully")
     return true;
   }
-}
+} 
 
 Database::~Database() { sqlite3_close(db); }
 
 Database::Database(const std::string &dbName) {
   int rc = sqlite3_open(dbName.c_str(), &db);
-  if (rc) {
+  if (rc != SQLITE_OK) {
     std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
   } else {
     std::cout << "Opened database successfully" << std::endl;
@@ -66,11 +67,18 @@ Database::Database(const std::string &dbName) {
 
 int Database::defaultCallback(void *data, int argc, char **argv,
                               char **azColName) {
-  std::ostringstream *oss = static_cast<std::ostringstream *>(data);
+  std::string *str = reinterpret_cast<std::string *>(data);
+  LOG("Default callback: argc = " + std::to_string(argc))
+
+
   for (int i = 0; i < argc; i++) {
-    *oss << azColName[i] << ": " << (argv[i] ? argv[i] : "NULL") << "\n";
+    // LOG("Línea " + std::to_string(i) + ": " + std::string(argv[i]))
+    if (argv[i]) {
+      *str += std::string(argv[i]);
+    }
   }
-  *oss << "\n";
+  LOG("Default callback: str = " + *str)
+  *str += "\n";
   return 0;
 }
 

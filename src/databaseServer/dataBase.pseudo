@@ -1,0 +1,69 @@
+singleton Sqlite sqlite
+singleton Server server
+
+
+
+int procedure dataBaseServer() do
+  while(true) do
+    int intermediateServer = server.accept()
+    string request = server.receive()
+    array commands = request.split()
+    string response = protocolGarrobo(commands)
+    server.send(response)
+  end
+end
+
+string procedure protocolGarrobo(array commands) do
+  string response
+  switch(commands[0]) do
+    case "REQUEST":
+      response = getRequestResponse(commands)
+      break
+  end
+  return response
+end
+
+string procedure getRequestResponse(array commands) do
+  string response 
+  switch(commands[1]) do
+    case "USER_DATA":
+      response = userDataRequest(commands)
+      break
+
+    case "INSURANCE_STATUS":
+      response = insuranceStatusRequest(commands)
+      break
+
+    case "LAB_RESULT":
+      response = labResultRequest(commands)
+      break
+
+    case "LAB_LIST":
+      response = labListRequest(commands)
+      break
+  end
+  return response
+end
+
+string procedure userDataRequest(array commands) do
+  sqliteStatement = "SELECT * FROM 'userData' WHERE patientID = " + commands[2]
+  string response = sqlite.exec(sqliteStatement, getUserData)
+  return response
+end
+
+string procedure insuranceStatusRequest(array commands) do
+  sqliteStatement = "SELECT * FROM 'userData' WHERE patientID = " + commands[2]
+  string response = sqlite.exec(sqliteStatement, getUserData)
+  return response.split()[11]
+end
+
+
+CONNECTION USER
+REQUEST USER_DATA
+REQUEST INSURANCE_STATUS
+REQUEST LAB_LIST
+REQUEST LAB_RESULT <labResultID>
+REQUEST PATIENT_LIST
+REQUEST PATIENT_DATA <patientID>
+REQUEST DATA_INSERTION <dataToInsert>
+
