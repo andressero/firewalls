@@ -6,7 +6,7 @@
 #include "FileSystem.hpp"
 #include "SHA256.hpp"
 
-std::string sha256ToString(const BYTE *hash) {
+inline std::string sha256ToString(const BYTE *hash) {
   std::string answer(2 * SHA256_BLOCK_SIZE, '0');
   for (size_t i = 0; i < SHA256_BLOCK_SIZE; ++i) {
     char temp[3] = {0};
@@ -17,7 +17,7 @@ std::string sha256ToString(const BYTE *hash) {
   return answer;
 }
 
-std::string sha256Hash(std::string &strInput) {
+inline std::string sha256Hash(std::string &strInput) {
   const BYTE *input = reinterpret_cast<const BYTE *>(strInput.data());
 
   BYTE hash[SHA256_BLOCK_SIZE];

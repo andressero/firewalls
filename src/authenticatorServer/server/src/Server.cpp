@@ -119,9 +119,12 @@ int main() {
     if (server.accept(clientSocket)) {
       std::string clientRequest;
       server.receive(clientSocket, clientRequest);
+      LOG("Auth received: " + clientRequest);
       if (!clientRequest.empty()) {
         std::string response = protocolGarrobo(clientRequest);
+        LOG("Auth response: " + response)
         server.send(clientSocket, response);
+        ::close(clientSocket);
       }
     }
   }

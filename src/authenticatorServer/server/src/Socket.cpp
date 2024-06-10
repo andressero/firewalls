@@ -1,5 +1,8 @@
 #include "Socket.hpp"
 #include <fcntl.h>
+#include <chrono>
+#include <thread>
+#include "authUtils.hpp"
 
 Socket::Socket() : m_sock(-1) { memset(&m_addr, 0, sizeof(m_addr)); }
 
@@ -23,8 +26,12 @@ bool Socket::bind(const int port, const std::string &address) {
   m_addr.sin_addr.s_addr = inet_addr(address.c_str());
   m_addr.sin_port = htons(port);
 
-  int bind_return = ::bind(m_sock, (struct sockaddr *)&m_addr, sizeof(m_addr));
-  return bind_return != -1;
+  while (::bind(m_sock, (struct sockaddr *)&m_addr, sizeof(m_addr)) == -1) {
+    ERROR("Attempting to bind in 5 seconds")
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+  }
+  LOG("Binding successful")
+  return true;
 }
 
 bool Socket::listen() const { return ::listen(m_sock, SOMAXCONN) != -1; }
