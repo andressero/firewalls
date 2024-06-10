@@ -4,6 +4,8 @@
 #include "Socket.hpp"
 #include "redirectorUtils.hpp"
 #include <fcntl.h>
+#include <thread>
+#include <chrono>
 
 Socket::Socket() : m_sock(-1) { memset(&m_addr, 0, sizeof(m_addr)); }
 
@@ -27,8 +29,12 @@ bool Socket::bind(const int port, const std::string address) {
   m_addr.sin_addr.s_addr = inet_addr(address.c_str());
   m_addr.sin_port = htons(port);
 
-  int bind_return = ::bind(m_sock, (struct sockaddr *)&m_addr, sizeof(m_addr));
-  return bind_return != -1;
+  
+  while (::bind(m_sock, (struct sockaddr *)&m_addr, sizeof(m_addr)) == -1) {
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+  }
+  LOG("Binding successful")
+  return true /*bind_return != -1*/;
 }
 
 bool Socket::listen() const {
@@ -37,7 +43,7 @@ bool Socket::listen() const {
     return listenSuccessful;
   }
 
-  int listen_return = ::listen(m_sock, 5);
+  int listen_return = ::listen(m_sock, SOMAXCONN);
   listenSuccessful = listen_return != -1;
   if (!listenSuccessful) {
     ERROR("Unable to start listening");

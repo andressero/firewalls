@@ -17,6 +17,9 @@ std::string protocolGarrobo(Socket client_socket, Socket &auth_server_socket,
     const std::vector<std::string> command = splitString(line, " ");
 
     if (command[0] == "AUTH") {
+      auth_server_socket.create();
+      auth_server_socket.connect("127.0.0.1", 4000);
+      // auth_server_socket.listen();
       auth_server_socket.send(line);
       LOG("AUTH line sent to auth_server");
       FILELOG("AUTH line sent to auth_server");
@@ -28,6 +31,9 @@ std::string protocolGarrobo(Socket client_socket, Socket &auth_server_socket,
     // Once the auth response it's been received it determines whether or not it
     // can handle a subsequent request
     else if (command[0] == "REQUEST" && auth_response == "OK\n") {
+      db_server_socket.create();
+      db_server_socket.connect("127.0.0.1", 5000);
+      // db_server_socket.listen();
       db_server_socket.send(line);
       LOG("REQUEST line sent to db_server");
       FILELOG("REQUEST line sent to db_server");
@@ -60,21 +66,19 @@ int main() {
     return 1;
   }
 
-  // Connect to the auth server
-  if (!auth_server_socket.create() ||
-      !auth_server_socket.connect("127.0.0.1", 4000)) {
-    ERROR("Failed to connect to auth server");
-    FILELOG("Failed to connect to auth server");
-    return 1;
-  }
+  // // Connect to the auth server
+  // if (!auth_server_socket.create() /*|| !auth_server_socket.connect("127.0.0.1", 4000)*/) {
+  //   ERROR("Failed to connect to auth server");
+  //   FILELOG("Failed to connect to auth server");
+  //   return 1;
+  // }
 
-  // Connect to the db server
-  if (!db_server_socket.create() ||
-      !db_server_socket.connect("127.0.0.1", 5000)) {
-    ERROR("Failed to connect to db server");
-    FILELOG("Failed to connect to db server");
-    return 1;
-  }
+  // // Connect to the db server
+  // if (!db_server_socket.create() /*|| !db_server_socket.connect("127.0.0.1", 5000)*/) {
+  //   ERROR("Failed to connect to db server");
+  //   FILELOG("Failed to connect to db server");
+  //   return 1;
+  // }
 
   // Main server loop
   while (true) {
@@ -89,6 +93,7 @@ int main() {
     client_socket.send(response);
     LOG("Response sent to client");
     FILELOG("Response sent to client");
+    client_socket.~Socket();
   }
 
   return 0;

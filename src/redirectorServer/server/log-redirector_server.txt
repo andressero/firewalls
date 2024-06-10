@@ -1,0 +1,1155 @@
+Listening...
+Failed to connect to db server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 b50adfab92b3e54af123e99c980d4cea9221047e307ebc1e1f9cb9549790a219
+
+AUTH line sent to auth_server
+Response from auth_server: NOT_OK
+
+Response sent to client
+Listening...
+Failed to connect to auth server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION "'123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas'"
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION "'123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas'"
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION "'123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' "
+AUTH line sent to auth_server
+Listening...
+Failed to connect to auth server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Failed to connect to auth server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: 
+Response sent to client
+Accepted connection from client
+Received client request: 
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789', '07-07-2003', 'No', 'Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789','07-07-2003','No','Recomiendo dormir 8 horas' 
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION '123456789','07-07-2003','No','Recomiendo_dormir_8_horas' 
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Failed to connect to auth server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: NOT_OK
+”
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Listening...
+Failed to connect to auth server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_8_horas
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Recomiendo_dormir_16_horas
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Ninguna
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No hello_world
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 Yes Pablo
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 Yes Pablo
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No hello_world
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Quesadita
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No Quesadita
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No hello_world
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No hello_world
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No hello_world
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST1
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST2
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST2
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST3
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST3
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST3
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST3
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST3
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST44
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST44
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST44
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST44
+AUTH line sent to auth_server
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST44
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST5
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST5
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST5
+AUTH line sent to auth_server
+Response from auth_server: 
+Received unordered or unknown request type
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST5
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST6
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No TEST7
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No A1
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No A1
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No A2
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No A3
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST DATA_INSERTION 123456789 07-07-2003 No A4
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: OK
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+Unable to start listening
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+Unable to start listening
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: 
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+123456789Jack ThomasMalejack@example.com1012345678B-NoKim Thomas1018765432No
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+123456789Jack ThomasMalejack@example.com1012345678B-No--Kim Thomas1018765432No
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST USER_DATA 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+123456789Jack ThomasMalejack@example.com1012345678B-No--Kim Thomas1018765432No
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST INSURANCE_STATUS 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST INSURANCE_STATUS 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+No
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_RESULT 21-02-2020 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_RESULT 21-02-2020 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_RESULT 21-02-2020 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_RESULT 31-07-2025 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+Categoría: Química Clínica, Resultados: {'Glucosa': 92.11, 'Colesterol Total': 219.74, 'Triglicéridos': 79.66, 'Urea': 39.54, 'Creatinina': 0.99, 'Otros': 'N/A'}, Observaciones: Todos los resultados están dentro de los rangos normales.
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH L12345 b2fe8b46929bfa4c65fee9d5d43a2423799b18e360782e9abc27bd420877243e
+REQUEST LAB_LIST L12345
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH L12345 b2fe8b46929bfa4c65fee9d5d43a2423799b18e360782e9abc27bd420877243e
+REQUEST LAB_LIST 345678901
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+01-02-2022No
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST LAB_LIST 123456789
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+31-07-2025Yes
+
+
+Response sent to client
+Accepted connection from client
+Received client request: AUTH D12345 dcc549f296e6c723e071afafff4e59fee0b7e08bbfae3093978ec68ccf9c2975
+REQUEST PATIENT_LIST D12345
+AUTH line sent to auth_server
+Response from auth_server: NOT_OK
+
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH D12345 dcc549f296e6c723e071afafff4e59fee0b7e08bbfae3093978ec68ccf9c2975
+REQUEST PATIENT_LIST D12345
+AUTH line sent to auth_server
+Response from auth_server: NOT_OK
+
+Received unordered or unknown request type
+Response sent to client
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST PATIENT_LIST D12345
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+D12345 Jose Jose Male jj@example.com7772375677 A+ Yes - - Cristian Jose7778765432 Yes
+
+
+Response sent to client
+Listening...
+Accepted connection from client
+Received client request: AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac
+REQUEST PATIENT_LIST D12345
+AUTH line sent to auth_server
+Response from auth_server: OK
+
+REQUEST line sent to db_server
+Response from db_server: OK
+567890123,456789012,345678901,234567890,123456789
+
+
+Response sent to client
