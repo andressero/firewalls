@@ -30,15 +30,18 @@ void patientInsuranceMenu::on_consultButton_clicked()
     if (id.size() > 0) {
         Request& request = Request::getInstance();
         // TODO(any): make server accept any id
-        std::string status = request.requestInsuranceStatus(id);
+        const std::vector<std::string> responseLines = request.splitString(request.requestInsuranceStatus(id), "\n");
 
-        //qInfo() << status << "\n";
-        if (status == "OK\nOK\n1\n") {
+        const std::string& status = responseLines[1];
+
+        if (status == "Yes") {
             insurancePositive* positiveInsurance = new insurancePositive(this);
             positiveInsurance->show();
-        } else if(status == "OK\nOK\n0\n") {
+        } else if(status == "No") {
             insuranceNegative* negativeInsurance = new insuranceNegative(this);
             negativeInsurance->show();
+        } else {
+            // say id not found
         }
     }
 }

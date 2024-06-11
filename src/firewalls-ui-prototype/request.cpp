@@ -32,6 +32,18 @@ std::string Request::requestUserData() {
     return parsedAnswer;
 }
 
+std::string Request::requestPatientData(const std::string& patientID) {
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n" +\
+                                "REQUEST USER_DATA " + patientID + "\n";
+
+    socket.send(request);
+    std::string answer = socket.receive();
+    std::string parsedAnswer = this->parse(answer);
+
+    return parsedAnswer;
+}
+
 std::string Request::requestInsuranceStatus(const std::string& id) {
     ClientSocket socket(3000, "127.0.0.1");
     const std::string request = "AUTH " + this->username + " " + this->hash + "\n" + \
@@ -74,4 +86,26 @@ void Request::setUsername(const std::string& username) {
 
 void Request::setHash(const std::string& hash) {
     this->hash = hash;
+}
+
+std::string Request::requestPatientList() {
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n" +\
+                                "REQUEST PATIENT_LIST " + this->username + "\n";
+
+    socket.send(request);
+    const std::string answer = socket.receive();
+    const std::string parsedAnswer = this->parse(answer);
+    return parsedAnswer;
+}
+
+bool Request::requestDataInsertion(const std::string& data) {
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n" +\
+                                "REQUEST DATA_INSERTION " + data + "\n";
+
+    socket.send(request);
+    const std::string answer = socket.receive();
+    const std::string parsedAnswer = this->parse(answer);
+    return true;
 }

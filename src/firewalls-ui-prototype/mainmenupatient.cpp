@@ -15,9 +15,25 @@ mainMenuPatient::~mainMenuPatient()
     delete ui;
 }
 
+void mainMenuPatient::setMainMenuUsername(const std::string &username) {
+    this->ui->label->setText(QString(username.c_str()));
+}
+
 void mainMenuPatient::on_laboratoryButton_clicked()
 {
+    Request &request = Request::getInstance();
+    std::string labList;
+    const std::vector<std::string> responseLines = request.splitString(request.requestLabList(), "\n");
+    // for (size_t i = 1; i < responseLines.size(); ++i) {
+    //     labList += responseLines[i];
+    // }
+
+    // if (responseLines[0].find("NOT_OK") != std::string::npos) {
+    //     return;
+    // }
+
     patientLabMenu* labMenu = new patientLabMenu(this);
+    labMenu->updateLabList(responseLines);
     labMenu->show();
 }
 
@@ -32,7 +48,7 @@ void mainMenuPatient::on_personalDataButton_clicked()
 {
     Request &request = Request::getInstance();
     std::string personalData;
-    std::vector<std::string> responseLines = request.splitString(request.requestUserData(), "\n");
+    const std::vector<std::string> responseLines = request.splitString(request.requestUserData(), "\n");
     for (size_t i = 1; i < responseLines.size(); ++i) {
         personalData += responseLines[i];
     }

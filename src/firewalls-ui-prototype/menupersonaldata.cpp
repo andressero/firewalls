@@ -21,4 +21,6 @@ void menuPersonalData::on_backButton_clicked()
 
 void menuPersonalData::updatePersonalData(const std::string& personalData) {
     this->ui->textBrowser->setText(QString(personalData.c_str()));
+    // this->ui->label->setText(QString(personalData.c_str()));
+
 }

@@ -14,6 +14,8 @@ SOURCES += \
     filesystem.cpp \
     insurancenegative.cpp \
     insurancepositive.cpp \
+    lablistwindow.cpp \
+    labresultinsertion.cpp \
     main.cpp \
     loginwindow.cpp \
     mainmenudoctor.cpp \
@@ -35,6 +37,8 @@ HEADERS += \
     filesystem.h \
     insurancenegative.h \
     insurancepositive.h \
+    lablistwindow.h \
+    labresultinsertion.h \
     loginwindow.h \
     mainmenudoctor.h \
     mainmenulaboratory.h \
@@ -52,6 +56,8 @@ HEADERS += \
 FORMS += \
     insurancenegative.ui \
     insurancepositive.ui \
+    lablistwindow.ui \
+    labresultinsertion.ui \
     loginwindow.ui \
     mainmenudoctor.ui \
     mainmenulaboratory.ui \

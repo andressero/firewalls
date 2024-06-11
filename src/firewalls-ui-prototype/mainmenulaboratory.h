@@ -16,6 +16,7 @@ class mainMenuLaboratory : public QWidget
 public:
     explicit mainMenuLaboratory(QWidget *parent = nullptr);
     ~mainMenuLaboratory();
+    void setMainMenuUsername(const std::string& username);
 
 private slots:
     void on_logoutButton_clicked();

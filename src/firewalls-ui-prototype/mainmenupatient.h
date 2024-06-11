@@ -17,6 +17,7 @@ class mainMenuPatient : public QWidget
 public:
     explicit mainMenuPatient(QWidget *parent = nullptr);
     ~mainMenuPatient();
+    void setMainMenuUsername(const std::string& username);
 
 private slots:
     void on_laboratoryButton_clicked();

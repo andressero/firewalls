@@ -1,30 +1,29 @@
-#ifndef PATIENTLABMENU_H
-#define PATIENTLABMENU_H
+#ifndef LABLISTWINDOW_H
+#define LABLISTWINDOW_H
 
 #include <QWidget>
 #include <QListWidgetItem>
 
 namespace Ui {
-class patientLabMenu;
+class labListWindow;
 }
 
-class patientLabMenu : public QWidget
+class labListWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit patientLabMenu(QWidget *parent = nullptr);
-    ~patientLabMenu();
+    explicit labListWindow(QWidget *parent = nullptr);
+    ~labListWindow();
     void updateLabList(const std::vector<std::string>& labList);
 
 private slots:
-
     void on_backButton_clicked();
 
     void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
 
 private:
-    Ui::patientLabMenu *ui;
+    Ui::labListWindow *ui;
 };
 
-#endif // PATIENTLABMENU_H
+#endif // LABLISTWINDOW_H

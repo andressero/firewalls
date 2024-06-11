@@ -43,6 +43,7 @@ void LoginWindow::on_loginButton_clicked()
     if (laboratoristID.match(username).hasMatch()) {
         if (validateLogin(username.toStdString(), password.toStdString())) {
             mainMenuLaboratory* laboratoryMenu = new mainMenuLaboratory(this);
+            laboratoryMenu->setMainMenuUsername(username.toStdString());
             laboratoryMenu->show();
         } else {
             ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
@@ -54,6 +55,7 @@ void LoginWindow::on_loginButton_clicked()
         if (validateLogin(username.toStdString(), password.toStdString())) {
             qInfo() << "LoginWindow: Successful login\n";
             mainMenuPatient* patientMenu = new mainMenuPatient(this);
+            patientMenu->setMainMenuUsername(username.toStdString());
             patientMenu->show();
         } else {
             ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
