@@ -23,9 +23,9 @@ public:
 
     std::string requestLogin();
     std::string requestUserData();
-    std::string requestInsuranceStatus(/*std::string id*/);
+    std::string requestInsuranceStatus(const std::string& id);
     std::string requestLabList();
-    std::string requestLabResult(int resultNumber);
+    std::string requestLabResult(const std::string& labDate);
 
     void setUsername(const std::string& username);
     void setHash(const std::string& hash);

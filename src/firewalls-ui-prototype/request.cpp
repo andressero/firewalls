@@ -12,8 +12,8 @@ std::string Request::parse(std::string message) {
 }
 
 std::string Request::requestLogin() {
-    ClientSocket socket(8080, "127.0.0.1");
-    std::string request = "INICIO\nLOGIN " + this->username + " " + this->hash;
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n";
     socket.send(request);
     std::string answer = socket.receive();
     std::string parsedAnswer = this->parse(answer);
@@ -21,9 +21,9 @@ std::string Request::requestLogin() {
 }
 
 std::string Request::requestUserData() {
-    ClientSocket socket(8080, "127.0.0.1");
-    std::string request = "INICIO\nLOGIN " + this->username + " " + this->hash;
-    request.append("\nREQUEST USER_DATA");
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n" +\
+    "REQUEST USER_DATA\n";
 
     socket.send(request);
     std::string answer = socket.receive();
@@ -32,10 +32,10 @@ std::string Request::requestUserData() {
     return parsedAnswer;
 }
 
-std::string Request::requestInsuranceStatus(/*std::string id*/) {
-    ClientSocket socket(8080, "127.0.0.1");
-    std::string request = "INICIO\nLOGIN " + this->username + " " + this->hash;
-    request.append("\nREQUEST INSURANCE_STATUS "/* + id*/);
+std::string Request::requestInsuranceStatus(const std::string& id) {
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n" + \
+    "REQUEST INSURANCE_STATUS " + id + "\n";
 
     socket.send(request);
     std::string answer = socket.receive();
@@ -45,9 +45,9 @@ std::string Request::requestInsuranceStatus(/*std::string id*/) {
 }
 
 std::string Request::requestLabList() {
-    ClientSocket socket(8080, "127.0.0.1");
-    std::string request = "INICIO\nLOGIN " + this->username + " " + this->hash;
-    request.append("\nREQUEST LAB_LIST");
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n" +\
+    "REQUEST LAB_LIST " + this->username + "\n";
 
     socket.send(request);
     std::string answer = socket.receive();
@@ -56,10 +56,10 @@ std::string Request::requestLabList() {
     return parsedAnswer;
 }
 
-std::string Request::requestLabResult(int resultNumber) {
-    ClientSocket socket(8080, "127.0.0.1");
-    std::string request = "INICIO\nLOGIN " + this->username + " " + this->hash;
-    request.append("\nREQUEST LAB_RESULT " + std::to_string(resultNumber));
+std::string Request::requestLabResult(const std::string& labDate) {
+    ClientSocket socket(3000, "127.0.0.1");
+    const std::string request = "AUTH " + this->username + " " + this->hash + "\n" +\
+    "REQUEST LAB_RESULT " + labDate + " " + this->username + "\n";
 
     socket.send(request);
     std::string answer = socket.receive();
