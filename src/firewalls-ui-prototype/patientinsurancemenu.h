@@ -15,6 +15,7 @@ class patientInsuranceMenu : public QWidget
 public:
     explicit patientInsuranceMenu(QWidget *parent = nullptr);
     ~patientInsuranceMenu();
+    std::string getIDText();
 
 private slots:
     void on_backButton_clicked();

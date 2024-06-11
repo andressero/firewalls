@@ -23,7 +23,7 @@ std::string Request::requestLogin() {
 std::string Request::requestUserData() {
     ClientSocket socket(3000, "127.0.0.1");
     const std::string request = "AUTH " + this->username + " " + this->hash + "\n" +\
-    "REQUEST USER_DATA\n";
+                                "REQUEST USER_DATA " + this->username + "\n";
 
     socket.send(request);
     std::string answer = socket.receive();

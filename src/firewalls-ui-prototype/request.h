@@ -31,7 +31,6 @@ public:
 
     void setUsername(const std::string& username);
     void setHash(const std::string& hash);
-
     std::vector<std::string> splitString(const std::string &input,
                                          const std::string &delimiter) {
         std::vector<std::string> tokens;

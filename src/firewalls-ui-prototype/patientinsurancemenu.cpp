@@ -43,3 +43,7 @@ void patientInsuranceMenu::on_consultButton_clicked()
     }
 }
 
+std::string patientInsuranceMenu::getIDText(){
+    return this->ui->idLine->text().toStdString();
+}
+

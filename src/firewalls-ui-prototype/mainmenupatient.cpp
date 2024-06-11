@@ -31,15 +31,19 @@ void mainMenuPatient::on_logoutButton_clicked()
 void mainMenuPatient::on_personalDataButton_clicked()
 {
     Request &request = Request::getInstance();
-    std::string personalData = request.requestUserData();
-
-    if (personalData == "ERROR\n") {
-        // send error and don't create the window
+    std::string personalData;
+    std::vector<std::string> responseLines = request.splitString(request.requestUserData(), "\n");
+    for (size_t i = 1; i < responseLines.size(); ++i) {
+        personalData += responseLines[i];
     }
 
+    if (responseLines[0].find("NOT_OK") != std::string::npos) {
+        return;
+    }
     menuPersonalData* personalDataMenu = new menuPersonalData(this);
     personalDataMenu->updatePersonalData(personalData);
     personalDataMenu->show();
+    return;
 }
 
 
