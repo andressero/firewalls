@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <sstream>
 #include <string>
 #include "clientsocket.h"
 #include "sha256.h"
@@ -43,12 +44,14 @@ bool validateLogin(std::string username, std::string password) {
     request.setUsername(username);
     request.setHash(hash);
 
-    std::string answer = request.requestLogin();
+    const std::string isOk = request.splitString( request.requestLogin(), "\n" )[0];
 
-    if(answer == "ERROR\n") {
+    if (isOk.find("NOT_OK") != std::string::npos) {
         return false;
+    } else if (isOk.find("OK") != std::string::npos) {
+        return true;
     }
-    return true;
+    return false;
 }
 
 #endif // USERVALIDATION_H

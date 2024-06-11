@@ -2,6 +2,8 @@
 #define REQUEST_H
 
 #include <string>
+#include <vector>
+#include <sstream>
 
 // Use sockets
 // In charge of parsing data
@@ -30,6 +32,18 @@ public:
     void setUsername(const std::string& username);
     void setHash(const std::string& hash);
 
-};
+    std::vector<std::string> splitString(const std::string &input,
+                                         const std::string &delimiter) {
+        std::vector<std::string> tokens;
+        std::istringstream iss(input);
+        std::string token;
 
+        while (std::getline(iss, token, delimiter[0])) {
+            tokens.push_back(token);
+        }
+
+        return tokens;
+    }
+
+};
 #endif // REQUEST_H

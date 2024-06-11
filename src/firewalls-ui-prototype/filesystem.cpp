@@ -191,7 +191,7 @@ bool FileSystem::write(const std::string name, std::string &buffer,
         return false;
     }
 
-    qInfo() << "Write: Writing" << buffer << "\n";
+    //qInfo() << "Write: Writing" << buffer << "\n";
 
     // Get file
     FileProperties &file = this->directory[this->search(name)];
