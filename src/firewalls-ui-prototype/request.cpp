@@ -11,6 +11,18 @@ std::string Request::parse(std::string message) {
     return message;
 }
 
+std::string Request::removeServerConfirmationResponse(const std::string &receivedResponse){
+    std::string result = receivedResponse;
+    const std::string okStr = "OK\n";
+
+    size_t pos = 0;
+    while ((pos = result.find(okStr, pos)) != std::string::npos) {
+        result.erase(pos, okStr.length());
+    }
+
+    return result;
+}
+
 std::string Request::requestLogin() {
     ClientSocket socket(3000, "127.0.0.1");
     const std::string request = "AUTH " + this->username + " " + this->hash + "\n";
@@ -75,7 +87,8 @@ std::string Request::requestLabResult(const std::string& labDate) {
 
     socket.send(request);
     std::string answer = socket.receive();
-    std::string parsedAnswer = this->parse(answer);
+    std::string processedAnswer= removeServerConfirmationResponse(answer);
+    std::string parsedAnswer = this->parse(processedAnswer);
 
     return parsedAnswer;
 }

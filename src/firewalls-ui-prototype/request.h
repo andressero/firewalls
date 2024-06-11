@@ -22,7 +22,7 @@ public:
         static Request instance;
         return instance;
     }
-
+    std::string removeServerConfirmationResponse(const std::string &receivedResponse);
     std::string requestLogin();
     std::string requestUserData();
     std::string requestPatientData(const std::string& patientID);
@@ -31,6 +31,7 @@ public:
     std::string requestLabResult(const std::string& labDate);
     std::string requestPatientList();
     bool requestDataInsertion(const std::string& data);
+
 
 
     void setUsername(const std::string& username);

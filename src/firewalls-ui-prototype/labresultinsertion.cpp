@@ -49,11 +49,6 @@ void LabResultInsertion::on_addButton_clicked()
 
     Request& request = Request::getInstance();
     request.requestDataInsertion(result);
-    // if (request.requestDataInsertion(result)) {
-
-    // } else {
-
-    // }
 
 }
 

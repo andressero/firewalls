@@ -10,8 +10,6 @@ CONFIG += c++17
 
 SOURCES += \
     clientsocket.cpp \
-    fileproperties.cpp \
-    filesystem.cpp \
     insurancenegative.cpp \
     insurancepositive.cpp \
     lablistwindow.cpp \
@@ -32,9 +30,6 @@ SOURCES += \
 
 HEADERS += \
     clientsocket.h \
-    definitions.h \
-    fileproperties.h \
-    filesystem.h \
     insurancenegative.h \
     insurancepositive.h \
     lablistwindow.h \

@@ -1,12 +1,8 @@
 #if 1
 #include "loginwindow.h"
 #include <QApplication>
-#include "filesystem.h"
 #include <QDir>
 #include <QDebug>
-
-void loadUsers(FileSystem& fs, const std::string& usersFilename,
-               const std::string& filePath);
 
 int main(int argc, char *argv[])
 {
@@ -16,23 +12,6 @@ int main(int argc, char *argv[])
     w.show();
     return a.exec();
 }
-
-void loadUsers(FileSystem& fs, const std::string& usersFilename,
-               const std::string& filePath) {
-
-    FILE* file = fopen(filePath.c_str(), "r");
-    if (file) {
-        std::ifstream file(filePath, std::ifstream::in);
-        std::string line;
-        std::cout << line;
-        // std::getline(file, line);
-        while(std::getline(file, line)) {
-            line.append("\n");
-            fs.write(usersFilename, line, line.size());
-        }
-    }
-}
-
 #endif
 
 #if 0
