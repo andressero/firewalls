@@ -18,7 +18,7 @@ std::string userDataRequest(const std::string &userId) {
   // std::ostringstream oss;
   // Data obtained successfully
   std::string sqlStatement = "SELECT * FROM users WHERE patientID = '" + userId + "'";
-  if (database.executeQuery(sqlStatement, Database::defaultCallback, (void*)&userData)) {
+  if (database.executeQuery(sqlStatement, Database::spacesCallback, (void*)&userData)) {
     // userData = oss.str();
   }
   return userData;
@@ -30,7 +30,7 @@ std::string insuranceStatusRequest(const std::string &userId) {
   // Data obtained successfully
   if (database.executeQuery("SELECT isInsured FROM users WHERE patientID = '" +
                                 userId + "'",
-                            Database::defaultCallback, (void*)&insuranceStatus)) {
+                            Database::enterCallback, (void*)&insuranceStatus)) {
     // insuranceStatus = oss.str();
   }
   return insuranceStatus;
@@ -43,7 +43,7 @@ std::string labListRequest(const std::string &userId) {
   if (database.executeQuery(
           "SELECT labDate, isPending FROM lab_results WHERE patientID = '" +
               userId + "'",
-          Database::defaultCallback, (void*)&labList)) {
+          Database::spacesCallback, (void*)&labList)) {
     // labList = oss.str();
   }
   return labList;
@@ -57,7 +57,7 @@ std::string labResultRequest(const std::string &labDate,
   if (database.executeQuery(
           "SELECT forms FROM lab_results WHERE patientID = '" + userId + "'" +
               " AND labDate = '" + labDate + "'",
-          Database::defaultCallback, (void*)&labResult)) {
+          Database::enterCallback, (void*)&labResult)) {
     // labResult = oss.str();
   }
   return labResult;
@@ -70,7 +70,7 @@ std::string patientsListRequest(const std::string &specialistId) {
   if (database.executeQuery(
           "SELECT patientsList FROM 'assignations' WHERE specialistName = '" +
               specialistId + "'",
-          Database::defaultCallback, (void*)&patientsList)) {
+          Database::enterCallback, (void*)&patientsList)) {
     // patientsList = oss.str();
   }
   return patientsList;
@@ -84,28 +84,34 @@ bool labResultInsertionRequest(const std::vector<std::string> &data) {
   //   LOG("INSERTION REQUEST: Regex failed")
   //   return false;
   // }
-  const std::string firstQuery = "SELECT patientID FROM 'users' WHERE patientID = '" + data[2] + "'";
+
+  // TODO[any]: Figure out later. This query duplicates data[2]
+  const std::string patientID = data[2];
+  const std::string firstQuery = "SELECT patientID FROM 'users' WHERE patientID = '" + patientID + "'";
   
-  if (!database.executeQuery(firstQuery, Database::defaultCallback, (void*)&data[2])) {
+  if (!database.executeQuery(firstQuery, Database::enterCallback, (void*)&patientID)) {
     LOG("INSERTION REQUEST: User is not in the database")
     return false;
   }
   LOG("First Query: " + firstQuery)
 
+  LOG("Antes del insert: " + data[2])
   const std::string query = "INSERT INTO lab_results(patientID, labDate, \
       isPending, forms) VALUES('" + data[2] + "', '" + data[3] + "', '" + data[4] + "', '" + data[5] +"')";
 
-  bool result = database.executeQuery("BEGIN TRANSACTION", Database::defaultCallback, (void*)&data[2]);
+  bool result = database.executeQuery("BEGIN TRANSACTION", Database::enterCallback, (void*)&data[2]);
   if(result) {
     LOG("TRANSACTION began successfully")
   } else {
     ERROR("TRANSACTION didn't began successfully")
   }
 
-  result = database.executeQuery(query, Database::defaultCallback, (void*)&data[2]);
+  result = database.executeQuery(query, Database::enterCallback, (void*)&data[2]);
   LOG("Second Query: " + query)
 
-  result = database.executeQuery("COMMIT", Database::defaultCallback, (void*)&data[2]);
+  result = database.executeQuery("COMMIT", Database::enterCallback, (void*)&data[2]);
+
+  LOG("Después del insert: " + data[2])
 
   if(result) {
     LOG("COMMIT successfully execute")

@@ -16,14 +16,17 @@ public:
 
   bool executeQuery(const std::string &query,
                     int (*callback)(void *, int, char **,
-                                    char **) = defaultCallback,
+                                    char **) = enterCallback,
                     void *data = 0);
   void close();
   static void signalHandler(int signal, const std::string dbName);
 
   ~Database();
-  static int defaultCallback(void *data, int argc, char **argv,
+  static int enterCallback(void *data, int argc, char **argv,
                              char **azColName);
+
+  static int spacesCallback(void *data, int argc, char **argv,
+                             char **azColName);                             
 
 private:
   sqlite3 *db;
@@ -65,7 +68,7 @@ Database::Database(const std::string &dbName) {
   }
 }
 
-int Database::defaultCallback(void *data, int argc, char **argv,
+int Database::enterCallback(void *data, int argc, char **argv,
                               char **azColName) {
   std::string *str = reinterpret_cast<std::string *>(data);
   LOG("Default callback: argc = " + std::to_string(argc))
@@ -74,7 +77,24 @@ int Database::defaultCallback(void *data, int argc, char **argv,
   for (int i = 0; i < argc; i++) {
     // LOG("Línea " + std::to_string(i) + ": " + std::string(argv[i]))
     if (argv[i]) {
-      *str += std::string(argv[i]);
+      *str += std::string(argv[i]) + "\n";
+    }
+  }
+  LOG("Default callback: str = " + *str)
+  *str += "\n";
+  return 0;
+}
+
+int Database::spacesCallback(void *data, int argc, char **argv,
+                              char **azColName) {
+  std::string *str = reinterpret_cast<std::string *>(data);
+  LOG("Default callback: argc = " + std::to_string(argc))
+
+
+  for (int i = 0; i < argc; i++) {
+    // LOG("Línea " + std::to_string(i) + ": " + std::string(argv[i]))
+    if (argv[i]) {
+      *str += std::string(argv[i]) + " ";
     }
   }
   LOG("Default callback: str = " + *str)
