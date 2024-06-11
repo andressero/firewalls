@@ -2,6 +2,8 @@
 #include "redirectorUtils.hpp"
 #include <algorithm>
 
+std::string authServerIP = "10.1.35.23",dbServerIP = "10.1.35.24";
+
 // Taken from https://stackoverflow.com/a/217605
 // trim from end (in place)
 inline void rtrim(std::string &s) {
@@ -27,13 +29,26 @@ std::string protocolGarrobo(Socket& client_socket, Socket &auth_server_socket,
     const std::vector<std::string> command = splitString(line, " ");
 
     if (command[0] == "AUTH") {
-      auth_server_socket.create();
-      auth_server_socket.connect("127.0.0.1", 4000);
+      if(!auth_server_socket.create()){
+        ERROR("Unable to create auth server socket");
+        return "";
+      }
+      if(!auth_server_socket.connect(authServerIP, 4000)){
+        ERROR("Unable to connect to auth server");
+        return "";
+      }
+      LOG("Connected successfully with Auth server");
       // auth_server_socket.listen();
-      auth_server_socket.send(line);
+      if(!auth_server_socket.send(line)) {
+        ERROR("Failed to send AUTH request to Auth server");
+        return "";
+      }
       LOG("AUTH line sent to auth_server");
       FILELOG("AUTH line sent to auth_server");
-      auth_server_socket.recv(auth_response);
+      if(!auth_server_socket.recv(auth_response)) {
+        ERROR("Failed to receive auth response");
+        return "";
+      }
       LOG("Response from auth_server: " + auth_response);
       FILELOG("Response from auth_server: " + auth_response);
       response = auth_response;
@@ -41,14 +56,25 @@ std::string protocolGarrobo(Socket& client_socket, Socket &auth_server_socket,
     // Once the auth response it's been received it determines whether or not it
     // can handle a subsequent request
     else if (command[0] == "REQUEST" && auth_response == "OK\n") {
-      db_server_socket.create();
-      db_server_socket.connect("127.0.0.1", 5000);
-      // db_server_socket.listen();
-      db_server_socket.send(line);
+      if(!db_server_socket.create()) {
+        ERROR("Unable to create db server socket");
+        return "";
+      }
+      if(!db_server_socket.connect(dbServerIP, 5000)) {
+        ERROR("Unable to connect to db server");
+        return "";
+      }
+      if(!db_server_socket.send(line)) {
+        ERROR("Failed to send REQUEST to DB server");
+        return "";
+      }
       LOG("REQUEST line sent to db_server");
       FILELOG("REQUEST line sent to db_server");
       std::string db_response;
-      db_server_socket.recv(db_response);
+      if(!db_server_socket.recv(db_response)) {
+        ERROR("Failed to receive db response");
+        return "";
+      }
       LOG("Response from db_server: " + db_response);
       FILELOG("Response from db_server: " + db_response);
       if (db_response != "NOT_OK\n") {
@@ -70,26 +96,12 @@ int main() {
   Socket server_socket, auth_server_socket, db_server_socket;
 
   // Set up the server socket
-  if (!server_socket.create() || !server_socket.bind(3000, "127.0.0.1") ||
+  if (!server_socket.create() || !server_socket.bind(3000, "0.0.0.0") ||
       !server_socket.listen()) {
     ERROR("Failed to setup server");
     FILELOG("Failed to setup server");
     return 1;
   }
-
-  // // Connect to the auth server
-  // if (!auth_server_socket.create() /*|| !auth_server_socket.connect("127.0.0.1", 4000)*/) {
-  //   ERROR("Failed to connect to auth server");
-  //   FILELOG("Failed to connect to auth server");
-  //   return 1;
-  // }
-
-  // // Connect to the db server
-  // if (!db_server_socket.create() /*|| !db_server_socket.connect("127.0.0.1", 5000)*/) {
-  //   ERROR("Failed to connect to db server");
-  //   FILELOG("Failed to connect to db server");
-  //   return 1;
-  // }
 
   // Main server loop
   while (true) {
@@ -99,13 +111,17 @@ int main() {
       FILELOG("Accepted connection from client");
       const std::string response = protocolGarrobo(client_socket, auth_server_socket, db_server_socket);
       LOG("Response sent to client: " << "|" << response << "|");
-      const bool send_return = client_socket.send(response);
-      if (!send_return) {
-        ERROR("Failed to send response to client");
-        FILELOG("Failed to send response to client");
+      if(response.empty()){
+        ERROR("Nothing to send to client");
       } else {
-        LOG("Response sent to client");
-        FILELOG("Response sent to client");
+        const bool send_return = client_socket.send(response);
+        if (!send_return) {
+          ERROR("Failed to send response to client");
+          FILELOG("Failed to send response to client");
+        } else {
+          LOG("Response sent to client");
+          FILELOG("Response sent to client");
+        }
       }
     }
     client_socket.~Socket();
