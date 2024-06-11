@@ -1,15 +1,25 @@
 #include "Socket.hpp"
 #include "redirectorUtils.hpp"
+#include <algorithm>
+
+// Taken from https://stackoverflow.com/a/217605
+// trim from end (in place)
+inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }).base(), s.end());
+}
 
 // Handle client connection and protocol logic
-std::string protocolGarrobo(Socket client_socket, Socket &auth_server_socket,
+std::string protocolGarrobo(Socket& client_socket, Socket &auth_server_socket,
                             Socket &db_server_socket) {
   std::string clientRequest;
+  std::string auth_response;
+  std::string response;
+
   client_socket.recv(clientRequest);
   LOG("Received client request: " + clientRequest);
   FILELOG("Received client request: " + clientRequest);
-  std::string auth_response;
-  std::string response;
 
   const std::vector<std::string> lines = splitString(clientRequest, "\n");
 
@@ -51,6 +61,7 @@ std::string protocolGarrobo(Socket client_socket, Socket &auth_server_socket,
       break;
     }
   }
+  ::rtrim(response);
   return response;
 }
 
@@ -83,16 +94,20 @@ int main() {
   // Main server loop
   while (true) {
     Socket client_socket;
-    std::string response;
     if (server_socket.accept(client_socket)) {
       LOG("Accepted connection from client");
       FILELOG("Accepted connection from client");
-      response =
-          protocolGarrobo(client_socket, auth_server_socket, db_server_socket);
+      const std::string response = protocolGarrobo(client_socket, auth_server_socket, db_server_socket);
+      LOG("Response sent to client: " << "|" << response << "|");
+      const bool send_return = client_socket.send(response);
+      if (!send_return) {
+        ERROR("Failed to send response to client");
+        FILELOG("Failed to send response to client");
+      } else {
+        LOG("Response sent to client");
+        FILELOG("Response sent to client");
+      }
     }
-    client_socket.send(response);
-    LOG("Response sent to client");
-    FILELOG("Response sent to client");
     client_socket.~Socket();
   }
 
