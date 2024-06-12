@@ -43,6 +43,7 @@ bool validateLogin(std::string username, std::string password) {
     Request& request = Request::getInstance();
     request.setUsername(username);
     request.setHash(hash);
+    request.setRedirectorServerIDAndPort("10.1.35.22", 3000);
 
     const std::string isOk = request.splitString( request.requestLogin(), "\n" )[0];
 

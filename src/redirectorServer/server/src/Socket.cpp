@@ -3,9 +3,9 @@
 
 #include "Socket.hpp"
 #include "redirectorUtils.hpp"
+#include <chrono>
 #include <fcntl.h>
 #include <thread>
-#include <chrono>
 
 Socket::Socket() : m_sock(-1) { memset(&m_addr, 0, sizeof(m_addr)); }
 
@@ -29,12 +29,12 @@ bool Socket::bind(const int port, const std::string address) {
   m_addr.sin_addr.s_addr = inet_addr(address.c_str());
   m_addr.sin_port = htons(port);
 
-  
   while (::bind(m_sock, (struct sockaddr *)&m_addr, sizeof(m_addr)) == -1) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
+    ERROR("Attempting to bind in 5 seconds")
   }
   LOG("Binding successful")
-  return true /*bind_return != -1*/;
+  return true;
 }
 
 bool Socket::listen() const {

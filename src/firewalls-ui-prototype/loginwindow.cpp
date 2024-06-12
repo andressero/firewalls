@@ -7,7 +7,6 @@ LoginWindow::LoginWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::CCSS_Garrobo)
 {
-    // this->fileSystem = fs;
     ui->setupUi(this);
 }
 
