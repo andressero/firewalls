@@ -1,51 +1,82 @@
 #include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstring>
+#include <iostream>
 #include <unistd.h>
 
-#define PORT 3000
+#define SERVER_PORT 3000
+#define SERVER_IP "192.168.100.68"
 #define BUFFER_SIZE 1024
 
+class ClientSocket {
+public:
+  ClientSocket(const std::string &ip, int port);
+  ~ClientSocket();
+
+  void connectToServer();
+  void sendData(const std::string &data);
+  std::string receiveData();
+
+private:
+  int socket_fd;
+  struct sockaddr_in server_address;
+};
+
+ClientSocket::ClientSocket(const std::string &ip, int port) {
+  // Create socket
+  socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (socket_fd < 0) {
+    perror("Failed to create socket");
+    exit(EXIT_FAILURE);
+  }
+
+  // Configure server address
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(port);
+  if (inet_pton(AF_INET, ip.c_str(), &server_address.sin_addr) <= 0) {
+    perror("Invalid address/Address not supported");
+    close(socket_fd);
+    exit(EXIT_FAILURE);
+  }
+}
+
+ClientSocket::~ClientSocket() { close(socket_fd); }
+
+void ClientSocket::connectToServer() {
+  if (connect(socket_fd, (struct sockaddr *)&server_address,
+              sizeof(server_address)) < 0) {
+    perror("Connection failed");
+    close(socket_fd);
+    exit(EXIT_FAILURE);
+  }
+  std::cout << "Connected to the server" << std::endl;
+}
+
+void ClientSocket::sendData(const std::string &data) {
+  send(socket_fd, data.c_str(), data.length(), 0);
+}
+
+std::string ClientSocket::receiveData() {
+  char buffer[BUFFER_SIZE];
+  int bytes_received = recv(socket_fd, buffer, BUFFER_SIZE, 0);
+  if (bytes_received < 0) {
+    perror("Failed to receive data");
+    return "";
+  } else {
+    buffer[bytes_received] = '\0';
+    return std::string(buffer);
+  }
+}
+
 int main() {
-  int sock = 0, valread;
-  struct sockaddr_in serv_addr;
-  char *hello =
-      "AUTH 123456789 "
-      "b50adfab92b3e54af123e99c980d4cea9221047e307ebc1e1f9cb9549790a219\n";
-  char buffer[BUFFER_SIZE] = {0};
+  ClientSocket client(SERVER_IP, SERVER_PORT);
 
-  // Crear socket
-  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-    printf("\n Socket creation error \n");
-    return -1;
-  }
+  client.connectToServer();
 
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(PORT);
+  std::string message = "AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac\nREQUEST USER_DATA 123456789\n";
+  client.sendData(message);
 
-  // Convertir direcciones IPv4 e IPv6 de texto a binario
-  if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
-    printf("\nInvalid address/ Address not supported \n");
-    return -1;
-  }
-
-  // Conectarse al servidor
-  if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-    printf("\nConnection Failed \n");
-    return -1;
-  }
-
-  // Enviar mensaje al servidor
-  send(sock, hello, strlen(hello), 0);
-  printf("Message sent\n");
-
-  // Leer respuesta del servidor
-  valread = read(sock, buffer, BUFFER_SIZE);
-  printf("Server response: %s\n", buffer);
-
-  // Cerrar el socket
-  close(sock);
+  std::string response = client.receiveData();
+  std::cout << "Received from server: " << response << std::endl;
 
   return 0;
 }
