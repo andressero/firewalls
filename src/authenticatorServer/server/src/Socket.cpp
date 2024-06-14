@@ -1,8 +1,8 @@
 #include "Socket.hpp"
-#include <fcntl.h>
-#include <chrono>
-#include <thread>
 #include "authUtils.hpp"
+#include <chrono>
+#include <fcntl.h>
+#include <thread>
 
 Socket::Socket() : m_sock(-1) { memset(&m_addr, 0, sizeof(m_addr)); }
 
@@ -30,7 +30,7 @@ bool Socket::bind(const int port, const std::string &address) {
     ERROR("Attempting to bind in 5 seconds")
     std::this_thread::sleep_for(std::chrono::seconds(5));
   }
-  LOG("Binding successful")
+  LOG("Binding successful. IP: " << address << ":" << port);
   return true;
 }
 

@@ -109,8 +109,6 @@ int main() {
     FILELOG("Couldn't listen");
     return 1;
   }
-  LOG("Listening...");
-  FILELOG("Listening...");
 
   // Main server loop
   while (true) {

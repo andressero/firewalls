@@ -33,7 +33,7 @@ bool Socket::bind(const int port, const std::string address) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
     ERROR("Attempting to bind in 5 seconds")
   }
-  LOG("Binding successful")
+  LOG("Binding successful. IP: " << address << ":" << port);
   return true;
 }
 

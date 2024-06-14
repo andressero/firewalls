@@ -1,3 +1,6 @@
+// Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolanos,
+// Andres Serrano>"
+
 #ifndef USERVALIDATION_H
 #define USERVALIDATION_H
 
@@ -43,7 +46,7 @@ bool validateLogin(std::string username, std::string password) {
     Request& request = Request::getInstance();
     request.setUsername(username);
     request.setHash(hash);
-    request.setRedirectorServerIDAndPort("10.1.35.22", 3000);
+    request.setRedirectorServerIDAndPort("192.168.100.68", 3000);
 
     const std::string isOk = request.splitString( request.requestLogin(), "\n" )[0];
 

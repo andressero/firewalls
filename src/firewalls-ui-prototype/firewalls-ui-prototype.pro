@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,7 +25,6 @@ SOURCES += \
     patientselectionmenu.cpp \
     request.cpp \
     sha256.cpp \
-    socket.cpp \
     userdata.cpp
 
 HEADERS += \
@@ -44,7 +43,6 @@ HEADERS += \
     patientselectionmenu.h \
     request.h \
     sha256.h \
-    socket.h \
     userdata.h \
     uservalidation.h
 
