@@ -9,6 +9,45 @@
 Socket &server = Socket::getInstance();
 FileSystem &fs = FileSystem::getInstance();
 
+struct configData {
+  const std::string ip;
+  unsigned short port;
+  configData(std::string ip, unsigned short port) : ip(ip), port(port) {}
+};
+
+struct configData connectServerFromFile(const std::string& fileName, const std::string& serverName, Socket& server) {
+    std::ifstream file(fileName);
+
+    if (!file.is_open()) {
+        ERROR("Couldn't open file")
+        return configData("", 0);
+    }
+
+    std::string name;
+    bool infoFound = false;
+    bool connected = false;
+    unsigned short port = 0;
+    std::string ip;
+
+    while (!infoFound && file.peek() != EOF) {
+        file >> name;
+        if (name == serverName) {
+            file >> port >> ip;
+
+            // if(!validIP(ip)){}
+            // if(!validPort(port)){}
+            infoFound = true;
+
+            // connected = server.bind(port, ip);
+            std::cout << "Port: " << port << "\nIP: " << ip << std::endl;
+            connected = true;
+        }
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    file.close();
+    return configData(ip, port);
+}
+
 /**
  * @brief Obtains the correct users hash and compares it with the processed
  * received hash.
