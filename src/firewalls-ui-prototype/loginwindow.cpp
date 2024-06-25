@@ -35,7 +35,7 @@ void LoginWindow::on_loginButton_clicked()
             mainMenuDoctor* doctorMenu = new mainMenuDoctor(this);
             doctorMenu->show();
         } else {
-            ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
+            ui->incorrectPasswordLabel->setText("Usuario o contraseña incorrecta");
         }
     }
 
@@ -45,7 +45,7 @@ void LoginWindow::on_loginButton_clicked()
             laboratoryMenu->setMainMenuUsername(username.toStdString());
             laboratoryMenu->show();
         } else {
-            ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
+            ui->incorrectPasswordLabel->setText("Usuario o contraseña incorrecta");
         }
     }
 
@@ -57,10 +57,9 @@ void LoginWindow::on_loginButton_clicked()
             patientMenu->setMainMenuUsername(username.toStdString());
             patientMenu->show();
         } else {
-            ui->incorrectPasswordLabel->setText("Contraseña incorrecta");
-            qInfo() << "LoginWindows: Unsuccessful login\n";
+            ui->incorrectPasswordLabel->setText("Usuario o contraseña incorrecta");
         }
     }
-
+    ui->incorrectPasswordLabel->setText("Usuario o contraseña incorrecta");
 }
 
