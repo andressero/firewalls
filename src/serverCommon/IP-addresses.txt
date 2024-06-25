@@ -1,0 +1,3 @@
+Redirector 3000 0.0.0.0 
+Authenticator 4000 10.1.35.23
+Database 5000 10.1.35.24
