@@ -5,6 +5,30 @@
 
 #include "FileSystem.hpp"
 #include "SHA256.hpp"
+// #include "../../../serverCommon/utils.hpp"
+
+inline bool validIP(const std::string& ip) {
+  std::stringstream ipStream(ip);
+  std::string ipValue;
+  bool valid = true;
+  int ipValueCount = 0;
+
+  while (std::getline(ipStream, ipValue, '.') && valid) {
+    std::stringstream ipValueStream(ipValue);
+    int ipNumber = -10;
+    ipValueStream >> ipNumber;
+    if (ipNumber < 0 || ipNumber > 255) {
+      valid = false;
+    }
+    ++ipValueCount;
+  }
+
+  if (ipValueCount != 4) {
+    valid = false;
+  }
+
+  return valid; 
+}
 
 typedef struct ConfigData {
  public:
@@ -31,8 +55,11 @@ inline ConfigData getServerData(const std::string& fileName, const std::string& 
         if (name == serverName) {
             file >> port >> ip;
 
-            // if(!validIP(ip)){}
-            // if(!validPort(port)){}
+            if (!validIP(ip)) {
+              file.close();
+              return ConfigData("", 0);
+            }
+
             infoFound = true;
             LOG("Port: " + std::to_string(port) + "\nIP: " + ip)
         }
