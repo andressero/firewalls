@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <limits>
 
 /**
  * @brief asserts that a certain condition is true, else it gives an error
@@ -65,6 +66,43 @@ inline std::vector<std::string> splitString(const std::string &input,
   }
 
   return tokens;
+}
+
+typedef struct ConfigData {
+ public:
+  const std::string ip;
+  unsigned short port;
+  ConfigData(std::string ip, unsigned short port) : ip(ip), port(port) {}
+} ConfigData;
+
+inline ConfigData getServerData(const std::string& fileName, const std::string& serverName) {
+    std::ifstream file(fileName);
+
+    if (!file.is_open()) {
+        ERROR("Couldn't open file")
+        return ConfigData("", 0);
+    }
+
+    std::string name;
+    bool infoFound = false;
+    unsigned short port = 0;
+    std::string ip;
+
+    while (!infoFound && file.peek() != EOF) {
+        file >> name;
+        if (name == serverName) {
+            file >> port >> ip;
+
+            // if(!validIP(ip)){}
+            // if(!validPort(port)){}
+            infoFound = true;
+            LOG("Port: " + std::to_string(port) + "\nIP: " + ip)
+        }
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    file.close();
+
+    return ConfigData(ip, port);
 }
 
 #endif // REDIRECTORUTILS_HPP
