@@ -1,29 +1,38 @@
 // Copyright [2024] <Andres Quesada, Pablo Cascante, Diego Bolaños, Andres
 // Serrano>
 
-#include "ClientSocket.hpp"
+#include "auditor.hpp"
 
-#define SERVER_PORT 3000
-#define SERVER_IP "192.168.100.68"
+// #define SERVER_PORT 3000
+// #define SERVER_IP "192.168.100.68"
 
 int main() {
-  ClientSocket client(SERVER_IP, SERVER_PORT);
+  ConfigData data = getServerData("../../serverCommon/IP-addresses.txt", "Redirector");
+  // ClientSocket client(SERVER_IP, SERVER_PORT);
+  ClientSocket client(data.ip, data.port);
 
-  client.connectToServer();
-  // TODO(any):create server health status request. admin has user 999999999, password admin
-  std::string message = "AUTH admin hash\nREQUEST USER_DATA admin";
-  if(client.sendData(message) < 0) {
-    ERROR("Unable to send.");
-    FILELOG("Error: Unable to send.");
-    return 1;
-  }
-  LOG("Sent successful.");
-  FILELOG("Sent successful.");
+  while (true) {
+    client.connectToServer(); //! indeciso si dentro o fuera del while
+    // TODO(any):create server health status request. admin has user 999999999, password admin
+    // TODO(any):add the admin user to the database so it can be tested
+    std::string message = "AUTH admin hash\nREQUEST USER_DATA admin";
+    if(client.sendData(message) < 0) {
+      ERROR("Unable to send.");
+      FILELOG("Error: Unable to send.");
+      return 1;
+    }
+    LOG("Sent successful.");
+    FILELOG("Sent successful.");
 
-  std::string response = client.receiveData();
-  if(response == "") {
-    LOG("");
-    FILELOG("");
+    // La intención es que no nos importe lo que diga, si no que diga algo
+    //Pero si solo mediante mensajes podemos saber si uno esta mal que asi sea 
+    std::string response = client.receiveData();
+    if(client.receiveData() == "") {
+      LOG("");
+      FILELOG("");
+    }
+
+    sleep(30); // Sleep for 30 seconds then 
   }
 
   return 0;
