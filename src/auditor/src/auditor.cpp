@@ -10,7 +10,7 @@ int main() {
   ClientSocket client(SERVER_IP, SERVER_PORT);
 
   client.connectToServer();
-  // TODO(any): Create admin user, create server health status request.
+  // TODO(any):create server health status request. admin has user 999999999, password admin
   std::string message = "AUTH admin hash\nREQUEST USER_DATA admin";
   if(client.sendData(message) < 0) {
     ERROR("Unable to send.");
