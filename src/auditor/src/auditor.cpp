@@ -15,7 +15,7 @@ int main() {
     client.connectToServer(); //! indeciso si dentro o fuera del while
     // TODO(any):create server health status request. admin has user 999999999, password admin
     // TODO(any):add the admin user to the database so it can be tested
-    std::string message = "AUTH admin hash\nREQUEST USER_DATA admin";
+    std::string message = "AUTH 999999999 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918\nREQUEST USER_DATA admin";
     if(client.sendData(message) < 0) {
       ERROR("Unable to send.");
       FILELOG("Error: Unable to send.");
