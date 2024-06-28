@@ -2,13 +2,14 @@
 // Serrano>
 
 #include "auditor.hpp"
+#include <time.h>
 
 int main() {
   ConfigData data = getServerData("../serverCommon/IP-addresses.txt", "Redirector");
   // ClientSocket client(SERVER_IP, SERVER_PORT);
-  ClientSocket client(data.ip, data.port);
   
   while (true) {
+    ClientSocket client(data.ip, data.port);
     client.connectToServer();
     std::string message = "AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac\nREQUEST USER_DATA 123456789\n";
     if(client.sendData(message) < 0) {
@@ -21,7 +22,8 @@ int main() {
 
     std::string response = client.receiveData();
     if(response  == "failed: auth " || response == "failed: db ") {
-      LOG(response);
+      // TODO(any): Time 
+      LOG(response + "time");
       FILELOG(response);
     }  else if(response.empty()) {
       LOG("No response from server redirector.");
@@ -31,7 +33,7 @@ int main() {
       FILELOG("Servers responding correctly");
     }
 
-    sleep(1); // Sleep for 30 seconds then 
+    sleep(5); // Sleep for 30 seconds then 
   }
 
   return 0;
