@@ -28,13 +28,13 @@ ClientSocket::~ClientSocket() { close(socket_fd); }
 void ClientSocket::connectToServer() {
   if (connect(socket_fd, (struct sockaddr *)&server_address,
               sizeof(server_address)) < 0) {
-    ERROR("Unable to connect to server.");
-    FILELOG("Error: Unable to connect to server");
+    ERROR("Unable to connect to server redirector.");
+    FILELOG("Error: Unable to connect to server redirector");
     close(socket_fd);
     exit(EXIT_FAILURE);
   }
-  LOG("Connection to server successful.");
-  FILELOG("Connection to server successful.");
+  LOG("Connection to server redirector successful.");
+  FILELOG("Connection to server redirector successful.");
 }
 
 int ClientSocket::sendData(const std::string &data) {
@@ -45,7 +45,8 @@ std::string ClientSocket::receiveData() {
   char buffer[BUFFER_SIZE];
   int bytes_received = recv(socket_fd, buffer, BUFFER_SIZE, 0);
   if (bytes_received < 0) {
-    perror("Failed to receive data");
+    ERROR("Failed to receive.");
+    FILELOG("Error: Failed to receive.");
     return "";
   } else {
     buffer[bytes_received] = '\0';
