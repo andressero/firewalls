@@ -5,6 +5,7 @@
 #include "FileSystem.hpp"
 #include "Socket.hpp"
 #include "authUtils.hpp"
+#include "Blowfish.hpp"
 
 Socket &server = Socket::getInstance();
 FileSystem &fs = FileSystem::getInstance();
@@ -109,6 +110,16 @@ int main() {
   std::signal(SIGINT, signalr);
   ConfigData data = getServerData("../../serverCommon/IP-addresses.txt", serverName);
 
+  Blowfish cipher;
+  std::string key = getKey("Key.txt");
+
+  if (key.empty()) {
+    ERROR("Couldn't get key from file");
+    return -1;
+  }
+  LOG("Cipher key: " + key)
+  
+  cipher.setKey(key);
 
   if(!server.create()) {
     ERROR("Unable to create server socket");
@@ -118,18 +129,22 @@ int main() {
     return -1;
   } else if (!server.listen()) {
     ERROR("Couldn't listen")
-    return -1;;
+    return -1;
   } 
+
+
 
   while (true) {
     int clientSocket;
     if (server.accept(clientSocket)) {
       std::string clientRequest;
       server.receive(clientSocket, clientRequest);
+      cipher.decrypt(clientRequest, clientRequest);
       LOG("Auth received: " + clientRequest);
       if (!clientRequest.empty()) {
         std::string response = protocolGarrobo(clientRequest);
         LOG("Auth response: " + response)
+        cipher.encrypt(response, response);
         server.send(clientSocket, response);
         ::close(clientSocket);
       }

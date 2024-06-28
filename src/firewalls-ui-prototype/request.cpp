@@ -28,8 +28,11 @@ std::string Request::requestLogin() {
   ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
   const std::string request =
       "AUTH " + this->username + " " + this->hash + "\n";
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
   std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
   std::string parsedAnswer = this->parse(answer);
   return parsedAnswer;
 }
@@ -39,9 +42,11 @@ std::string Request::requestUserData() {
   const std::string request = "AUTH " + this->username + " " + this->hash +
                               "\n" + "REQUEST USER_DATA " + this->username +
                               "\n";
-
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
   std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
   std::string parsedAnswer = this->parse(answer);
 
   return parsedAnswer;
@@ -52,8 +57,11 @@ std::string Request::requestPatientData(const std::string &patientID) {
   const std::string request = "AUTH " + this->username + " " + this->hash +
                               "\n" + "REQUEST USER_DATA " + patientID + "\n";
 
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
   std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
   std::string parsedAnswer = this->parse(answer);
 
   return parsedAnswer;
@@ -64,9 +72,13 @@ std::string Request::requestInsuranceStatus(const std::string &id) {
   const std::string request = "AUTH " + this->username + " " + this->hash +
                               "\n" + "REQUEST INSURANCE_STATUS " + id + "\n";
 
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
   std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
   std::string parsedAnswer = this->parse(answer);
+
 
   return parsedAnswer;
 }
@@ -77,9 +89,13 @@ std::string Request::requestLabList() {
                               "\n" + "REQUEST LAB_LIST " + this->username +
                               "\n";
 
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
   std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
   std::string parsedAnswer = this->parse(answer);
+
 
   return parsedAnswer;
 }
@@ -90,8 +106,11 @@ std::string Request::requestLabResult(const std::string &labDate) {
                               "\n" + "REQUEST LAB_RESULT " + labDate + " " +
                               this->username + "\n";
 
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
   std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
   std::string processedAnswer = removeServerConfirmationResponse(answer);
   std::string parsedAnswer = this->parse(processedAnswer);
 
@@ -116,9 +135,13 @@ std::string Request::requestPatientList() {
                               "\n" + "REQUEST PATIENT_LIST " + this->username +
                               "\n";
 
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
-  const std::string answer = socket.receive();
-  const std::string parsedAnswer = this->parse(answer);
+  std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
+  std::string parsedAnswer = this->parse(answer);
+
   return parsedAnswer;
 }
 
@@ -127,8 +150,12 @@ bool Request::requestDataInsertion(const std::string &data) {
   const std::string request = "AUTH " + this->username + " " + this->hash +
                               "\n" + "REQUEST DATA_INSERTION " + data + "\n";
 
+  std::string requestCopy = request;
+  this->cipher.encrypt(requestCopy, requestCopy);
   socket.send(request);
-  const std::string answer = socket.receive();
-  const std::string parsedAnswer = this->parse(answer);
+  std::string answer = socket.receive();
+  this->cipher.decrypt(answer, answer);
+  std::string parsedAnswer = this->parse(answer);
+
   return true;
 }
