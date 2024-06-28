@@ -79,6 +79,7 @@ contains(ANDROID_TARGET_ARCH,x86_64) {
 }
 
 DISTFILES += \
+    Key.txt \
     users.txt
     data.txt
 
