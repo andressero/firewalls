@@ -1,6 +1,9 @@
 #include "request.h"
 #include "clientsocket.h"
 
+#include <QFile>
+#include <QDir>
+
 std::string Request::parse(std::string message) {
   size_t messageSize = message.size();
   for (size_t i = 0; i < messageSize; ++i) {
@@ -9,6 +12,40 @@ std::string Request::parse(std::string message) {
     }
   }
   return message;
+}
+
+void Request::setup() {
+    bool statusOK = true;
+    std::string key = getKey("../../Key.txt");
+    ConfigData data = getServerData("../../../serverCommon/IP-addresses.txt", "Redirector");
+
+    this->cipher.setKey(key);
+    this->setRedirectorServerIDAndPort(data.ip, data.port);
+
+    qInfo() << "Read key: " + key + "\n";
+    qInfo() << "Read ip " + data.ip + " \n";
+    qInfo() << "Read port: " + std::to_string(data.port) + "\n";
+
+    if (key.empty()) {
+        qInfo() << "Key is empty or couldn't be read\n";
+        statusOK = false;
+    }
+
+    if (!validIP(data.ip)) {
+        qInfo() << "Invalid IP " + data.ip + "\n";
+        statusOK = false;
+    }
+
+    if (data.port == 0 || data.port == 65535) {
+        qInfo() << "Possibly invalid port " + std::to_string(data.port) + "\n";
+    }
+
+    this->ready = statusOK;
+    return;
+}
+
+bool Request::isReady() {
+    return this->ready;
 }
 
 std::string
@@ -30,7 +67,7 @@ std::string Request::requestLogin() {
       "AUTH " + this->username + " " + this->hash + "\n";
   std::string requestCopy = request;
   this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
+  socket.send(requestCopy);
   std::string answer = socket.receive();
   this->cipher.decrypt(answer, answer);
   std::string parsedAnswer = this->parse(answer);

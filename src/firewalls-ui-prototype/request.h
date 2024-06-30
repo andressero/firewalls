@@ -4,9 +4,74 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "blowfish.h"
 #include <fstream>
 #include <QDebug>
+#include "blowfish.h"
+
+class ClientSocket;
+
+inline bool validIP(const std::string& ip) {
+    std::stringstream ipStream(ip);
+    std::string ipValue;
+    bool valid = true;
+    int ipValueCount = 0;
+
+    while (std::getline(ipStream, ipValue, '.') && valid) {
+        std::stringstream ipValueStream(ipValue);
+        int ipNumber = -10;
+        ipValueStream >> ipNumber;
+        if (ipNumber < 0 || ipNumber > 255) {
+            valid = false;
+        }
+        ++ipValueCount;
+    }
+
+    if (ipValueCount != 4) {
+        valid = false;
+    }
+
+    return valid;
+}
+
+typedef struct ConfigData {
+public:
+    const std::string ip;
+    unsigned short port;
+    ConfigData(std::string ip, unsigned short port) : ip(ip), port(port) {}
+} ConfigData;
+
+inline ConfigData getServerData(const std::string& fileName, const std::string& serverName) {
+    std::ifstream file(fileName);
+
+    if (!file.is_open()) {
+        qInfo() << "Couldn't open file\n";
+        return ConfigData("", 0);
+    }
+
+    std::string name;
+    bool infoFound = false;
+    unsigned short port = 0;
+    std::string ip;
+
+    while (!infoFound && file.peek() != EOF) {
+        file >> name;
+        if (name == serverName) {
+            file >> port >> ip;
+
+            if (!validIP(ip)) {
+                file.close();
+                return ConfigData("", 0);
+            }
+
+            infoFound = true;
+        }
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    file.close();
+
+    return ConfigData(ip, port);
+}
+
 
 inline std::string getKey(const std::string& fileName) {
     std::ifstream file(fileName);
@@ -36,12 +101,13 @@ private:
   std::string redirectorServerIP;
   int redirectorServerPort;
   Blowfish cipher;
+  bool ready;
 
   std::string parse(std::string message);
-  Request() : redirectorServerIP("127.0.0.1") {
-      std::string key = getKey("Key.txt");
-      qInfo() << "Got key: " + key;
-      cipher.setKey(key);
+  void setup();
+
+  Request() {
+      this->setup();
   }
 
   Request(const Request &) = delete;
@@ -52,6 +118,7 @@ public:
     static Request instance;
     return instance;
   }
+  bool isReady();
   std::string
   removeServerConfirmationResponse(const std::string &receivedResponse);
   std::string requestLogin();
