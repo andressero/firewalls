@@ -62,96 +62,160 @@ Request::removeServerConfirmationResponse(const std::string &receivedResponse) {
 }
 
 std::string Request::requestLogin() {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request =
-      "AUTH " + this->username + " " + this->hash + "\n";
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(requestCopy);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string parsedAnswer = this->parse(answer);
-  return parsedAnswer;
+  if(this->ready) {
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request =
+        "AUTH " + this->username + " " + this->hash + "\n";
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(requestCopy);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string parsedAnswer = this->parse(answer);
+    return parsedAnswer;
+  } else {
+    return "";
+  }
 }
 
 std::string Request::requestUserData() {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request = "AUTH " + this->username + " " + this->hash +
-                              "\n" + "REQUEST USER_DATA " + this->username +
-                              "\n";
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string parsedAnswer = this->parse(answer);
-
-  return parsedAnswer;
+  if(this->ready){
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request = "AUTH " + this->username + " " + this->hash +
+                                "\n" + "REQUEST USER_DATA " + this->username +
+                                "\n";
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(request);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string parsedAnswer = this->parse(answer);
+    return parsedAnswer;
+  } else {
+    return "";
+  }
 }
 
 std::string Request::requestPatientData(const std::string &patientID) {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request = "AUTH " + this->username + " " + this->hash +
-                              "\n" + "REQUEST USER_DATA " + patientID + "\n";
+  if (this-ready) {
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request = "AUTH " + this->username + " " + this->hash +
+                                "\n" + "REQUEST USER_DATA " + patientID + "\n";
 
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string parsedAnswer = this->parse(answer);
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(request);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string parsedAnswer = this->parse(answer);
 
-  return parsedAnswer;
+    return parsedAnswer;
+  } else {
+    return "";
+  }
+
 }
 
 std::string Request::requestInsuranceStatus(const std::string &id) {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request = "AUTH " + this->username + " " + this->hash +
-                              "\n" + "REQUEST INSURANCE_STATUS " + id + "\n";
+  if (this->ready) {
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request = "AUTH " + this->username + " " + this->hash +
+                                "\n" + "REQUEST INSURANCE_STATUS " + id + "\n";
 
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string parsedAnswer = this->parse(answer);
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(request);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string parsedAnswer = this->parse(answer);
 
+    return parsedAnswer;
+  } else {
+    return "";
+  }
 
-  return parsedAnswer;
 }
 
 std::string Request::requestLabList() {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request = "AUTH " + this->username + " " + this->hash +
-                              "\n" + "REQUEST LAB_LIST " + this->username +
-                              "\n";
+  if(this->ready) {
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request = "AUTH " + this->username + " " + this->hash +
+                                "\n" + "REQUEST LAB_LIST " + this->username +
+                                "\n";
 
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string parsedAnswer = this->parse(answer);
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(request);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string parsedAnswer = this->parse(answer);
 
+    return parsedAnswer;
+  } else {
+    return "";
+  }
 
-  return parsedAnswer;
 }
 
 std::string Request::requestLabResult(const std::string &labDate) {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request = "AUTH " + this->username + " " + this->hash +
-                              "\n" + "REQUEST LAB_RESULT " + labDate + " " +
-                              this->username + "\n";
+  if(this->ready) {
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request = "AUTH " + this->username + " " + this->hash +
+                                "\n" + "REQUEST LAB_RESULT " + labDate + " " +
+                                this->username + "\n";
 
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string processedAnswer = removeServerConfirmationResponse(answer);
-  std::string parsedAnswer = this->parse(processedAnswer);
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(request);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string processedAnswer = removeServerConfirmationResponse(answer);
+    std::string parsedAnswer = this->parse(processedAnswer);
 
-  return parsedAnswer;
+    return parsedAnswer;
+  } else {
+    return "";
+  }
+}
+
+std::string Request::requestPatientList() {
+  if (this->ready) {
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request = "AUTH " + this->username + " " + this->hash +
+                                "\n" + "REQUEST PATIENT_LIST " + this->username +
+                                "\n";
+
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(request);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string parsedAnswer = this->parse(answer);
+
+    return parsedAnswer;
+  } else {
+    return "";
+  }
+}
+
+bool Request::requestDataInsertion(const std::string &data) {
+  if (this->ready) {
+    ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
+    const std::string request = "AUTH " + this->username + " " + this->hash +
+                                "\n" + "REQUEST DATA_INSERTION " + data + "\n";
+
+    std::string requestCopy = request;
+    this->cipher.encrypt(requestCopy, requestCopy);
+    socket.send(request);
+    std::string answer = socket.receive();
+    this->cipher.decrypt(answer, answer);
+    std::string parsedAnswer = this->parse(answer);
+
+    return true;
+  } else {
+    return "";
+  }
+
 }
 
 void Request::setUsername(const std::string &username) {
@@ -166,33 +230,4 @@ void Request::setRedirectorServerIDAndPort(
   this->redirectorServerPort = redirectorServerPort;
 }
 
-std::string Request::requestPatientList() {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request = "AUTH " + this->username + " " + this->hash +
-                              "\n" + "REQUEST PATIENT_LIST " + this->username +
-                              "\n";
 
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string parsedAnswer = this->parse(answer);
-
-  return parsedAnswer;
-}
-
-bool Request::requestDataInsertion(const std::string &data) {
-  ClientSocket socket(this->redirectorServerPort, this->redirectorServerIP);
-  const std::string request = "AUTH " + this->username + " " + this->hash +
-                              "\n" + "REQUEST DATA_INSERTION " + data + "\n";
-
-  std::string requestCopy = request;
-  this->cipher.encrypt(requestCopy, requestCopy);
-  socket.send(request);
-  std::string answer = socket.receive();
-  this->cipher.decrypt(answer, answer);
-  std::string parsedAnswer = this->parse(answer);
-
-  return true;
-}
