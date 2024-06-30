@@ -27,8 +27,9 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
   std::string response;
 
   client_socket.recv(clientRequest);
+  LOG("Received client request(CIPHERED): " + clientRequest);
   cipher.decrypt(clientRequest, clientRequest);
-  LOG("Received client request: " + clientRequest);
+  LOG("Received client request(DECIPHERED): " + clientRequest);
   FILELOG("Received client request: " + clientRequest);
 
   const std::vector<std::string> lines = splitString(clientRequest, "\n");
@@ -47,7 +48,11 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
       }
       LOG("Connected successfully with Auth server");
       // auth_server_socket.listen();
-      if (!auth_server_socket.send(line)) {
+      std::string cipheredLine = line;
+      LOG("Send to auth server(DECIPHERED): " + line)
+      cipher.encrypt(cipheredLine, line);
+      LOG("Send to auth server(CIPHERED): " + cipheredLine)
+      if (!auth_server_socket.send(cipheredLine)) {
         ERROR("Failed to send AUTH request to Auth server");
         return "failed: auth ";
       }
@@ -57,8 +62,9 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
         ERROR("Failed to receive auth response");
         return "failed: auth ";
       }
+      LOG("Response from auth_server(CIPHERED): " + auth_response);
       cipher.decrypt(auth_response, auth_response);
-      LOG("Response from auth_server: " + auth_response);
+      LOG("Response from auth_server(DECIPHERED): " + auth_response);
       FILELOG("Response from auth_server: " + auth_response);
       response = auth_response;
     }
@@ -73,7 +79,9 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
         ERROR("Unable to connect to db server");
         return "failed: db ";
       }
-      if (!db_server_socket.send(line)) {
+      std::string cipheredLine = line;
+      cipher.encrypt(cipheredLine, line);
+      if (!db_server_socket.send(cipheredLine)) {
         ERROR("Failed to send REQUEST to DB server");
         return "failed: db ";
       }
@@ -144,14 +152,14 @@ int main() {
       FILELOG("Accepted connection from client");
       const std::string response =
           protocolGarrobo(client_socket, auth_server_socket, db_server_socket, cipher);
-          std::string responseCopy = response;
       LOG("Response sent to client: "
           << "|" << response << "|");
       if (response.empty()) {
         ERROR("Nothing to send to client");
       } else {
-        cipher.encrypt(responseCopy, responseCopy);
-        const bool send_return = client_socket.send(responseCopy);
+        std::string cipheredResponse;
+        cipher.encrypt(cipheredResponse, response);
+        const bool send_return = client_socket.send(cipheredResponse);
         if (!send_return) {
           ERROR("Failed to send response to client");
           FILELOG("Failed to send response to client");

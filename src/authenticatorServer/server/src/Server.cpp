@@ -16,7 +16,7 @@
 // Singleton instances
 Socket &server = Socket::getInstance();
 FileSystem &fs = FileSystem::getInstance();
-const Blowfish &cipher = Blowfish::getInstance();
+Blowfish &cipher = Blowfish::getInstance();
 static const std::string serverName = "Authenticator";
 // TODO(any): Better name for this mutex
 std::mutex canAccessThreadStuff;
@@ -115,12 +115,14 @@ std::string protocolGarrobo(const std::string &input) {
 void handleClient(int clientSocket) {
   std::string clientRequest;
   server.receive(clientSocket, clientRequest);
+  LOG("Auth received(CIPHERED): " + clientRequest);
   cipher.decrypt(clientRequest, clientRequest);
-  LOG("Auth received: " + clientRequest);
+  LOG("Auth received(DECIPHERED): " + clientRequest);
   if (!clientRequest.empty()) {
     std::string response = protocolGarrobo(clientRequest);
-    LOG("Auth response: " + response)
+    LOG("Auth response(DECIPHERED): " + response)
     cipher.encrypt(response, response);
+    LOG("Auth response(CIPHERED): " + response)
     server.send(clientSocket, response);
   }
   ::close(clientSocket);
@@ -166,6 +168,9 @@ int main() {
     ERROR("Couldn't get key from file")
     return 1;
   }
+
+  LOG("Got key: " + key)
+  cipher.setKey(key);
 
   while (true) {
     {
