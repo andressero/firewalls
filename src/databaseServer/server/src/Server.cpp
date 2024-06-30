@@ -5,6 +5,7 @@
 #include "Database.hpp"
 #include "Socket.hpp"
 #include "dbServerUtils.hpp"
+#include "Blowfish.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -241,6 +242,17 @@ int main() {
   std::signal(SIGINT, signalr);
   ConfigData data = getServerData("../../serverCommon/IP-addresses.txt", serverName);
 
+  std::string key = getKey("Key.txt");
+  if (key.empty()) {
+    ERROR("Couldn't get key from file")
+    return -1;
+  }
+
+  LOG("Got key: " + key)
+
+  Blowfish cipher;
+  cipher.setKey(key);
+
   if (!server.create()) {
     ERROR("Unable to create server socket");
     return -1;
@@ -252,13 +264,16 @@ int main() {
     return -1;
   }
 
+
   while (true) {
     int clientSocket;
     if (server.accept(clientSocket)) {
       std::string clientRequest;
       server.receive(clientSocket, clientRequest);
+      cipher.decrypt(clientRequest, clientRequest);
       if (!clientRequest.empty()) {
         std::string response = protocolGarrobo(clientRequest);
+        cipher.encrypt(response, response);
         server.send(clientSocket, response);
         ::close(clientSocket);
       }

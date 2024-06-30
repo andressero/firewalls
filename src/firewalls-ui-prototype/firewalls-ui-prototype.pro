@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    blowfish.cpp \
     clientsocket.cpp \
     insurancenegative.cpp \
     insurancepositive.cpp \
@@ -28,6 +29,8 @@ SOURCES += \
     userdata.cpp
 
 HEADERS += \
+    base64.h \
+    blowfish.h \
     clientsocket.h \
     insurancenegative.h \
     insurancepositive.h \
@@ -76,6 +79,7 @@ contains(ANDROID_TARGET_ARCH,x86_64) {
 }
 
 DISTFILES += \
+    Key.txt \
     users.txt
     data.txt
 

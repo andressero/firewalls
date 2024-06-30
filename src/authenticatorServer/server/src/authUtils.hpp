@@ -5,7 +5,25 @@
 
 #include "FileSystem.hpp"
 #include "SHA256.hpp"
-// #include "../../../serverCommon/utils.hpp"
+
+inline std::string getKey(const std::string& fileName) {
+  std::ifstream file(fileName);
+
+  if (!file.is_open()) {
+    ERROR("Couldn't open key file")
+    return "";
+  }
+
+  std::string key;
+  file >> key;
+
+  if (key.empty()) {
+    ERROR("Key file is empty")
+    return "";
+  }
+
+  return key;
+}
 
 inline bool validIP(const std::string& ip) {
   std::stringstream ipStream(ip);

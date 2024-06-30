@@ -4,6 +4,28 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "blowfish.h"
+#include <fstream>
+#include <QDebug>
+
+inline std::string getKey(const std::string& fileName) {
+    std::ifstream file(fileName);
+
+    if (!file.is_open()) {
+        qInfo() << "Couldn't open key file\n";
+        return "";
+    }
+
+    std::string key;
+    file >> key;
+
+    if (key.empty()) {
+        qInfo() << "Key file is empty\n";
+        return "";
+    }
+
+    return key;
+}
 
 // Use sockets
 // In charge of parsing data
@@ -13,9 +35,15 @@ private:
   std::string hash;
   std::string redirectorServerIP;
   int redirectorServerPort;
+  Blowfish cipher;
 
   std::string parse(std::string message);
-  Request() : redirectorServerIP("127.0.0.1") {}
+  Request() : redirectorServerIP("127.0.0.1") {
+      std::string key = getKey("Key.txt");
+      qInfo() << "Got key: " + key;
+      cipher.setKey(key);
+  }
+
   Request(const Request &) = delete;
   Request &operator=(const Request &) = delete;
 

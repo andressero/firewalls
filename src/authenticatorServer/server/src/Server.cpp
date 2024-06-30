@@ -5,6 +5,7 @@
 #include "FileSystem.hpp"
 #include "Socket.hpp"
 #include "authUtils.hpp"
+#include "Blowfish.hpp"
 #include <condition_variable>
 #include <csignal>
 #include <iostream>
@@ -15,6 +16,7 @@
 // Singleton instances
 Socket &server = Socket::getInstance();
 FileSystem &fs = FileSystem::getInstance();
+const Blowfish &cipher = Blowfish::getInstance();
 static const std::string serverName = "Authenticator";
 // TODO(any): Better name for this mutex
 std::mutex canAccessThreadStuff;
@@ -113,10 +115,12 @@ std::string protocolGarrobo(const std::string &input) {
 void handleClient(int clientSocket) {
   std::string clientRequest;
   server.receive(clientSocket, clientRequest);
+  cipher.decrypt(clientRequest, clientRequest);
   LOG("Auth received: " + clientRequest);
   if (!clientRequest.empty()) {
     std::string response = protocolGarrobo(clientRequest);
     LOG("Auth response: " + response)
+    cipher.encrypt(response, response);
     server.send(clientSocket, response);
   }
   ::close(clientSocket);
@@ -132,6 +136,7 @@ void signalr(int signal) {
   // All threads close by signal
   cv.notify_all();
   server.signalHandler(signal);
+  FileSystem &fs = FileSystem::getInstance();
   fs.signalHandler(signal);
   for (std::thread &t : threads) {
     if (t.joinable()) {
@@ -146,6 +151,8 @@ int main() {
   ConfigData data =
       getServerData("../../serverCommon/IP-addresses.txt", serverName);
 
+  std::string key = getKey("Key.txt");
+
   if (!server.create()) {
     ERROR("Unable to create server socket");
     return 1;
@@ -154,6 +161,9 @@ int main() {
     return 1;
   } else if (!server.listen()) {
     ERROR("Couldn't listen")
+    return 1;
+  } else if (key.empty()) {
+    ERROR("Couldn't get key from file")
     return 1;
   }
 

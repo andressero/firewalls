@@ -1,5 +1,6 @@
 #include "Socket.hpp"
 #include "redirectorUtils.hpp"
+#include "Blowfish.hpp"
 #include <algorithm>
 
 static const std::string authServerIP = "127.0.0.1", dbServerIP = "127.0.0.1";
@@ -20,12 +21,13 @@ TODO(any): IP defined response for failure. Empty response for any client but
 the auditor, this type of client receives "failed: <server x>" responses instead.
 */
 std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
-                            Socket &db_server_socket) {
+                            Socket &db_server_socket, Blowfish& cipher) {
   std::string clientRequest;
   std::string auth_response;
   std::string response;
 
   client_socket.recv(clientRequest);
+  cipher.decrypt(clientRequest, clientRequest);
   LOG("Received client request: " + clientRequest);
   FILELOG("Received client request: " + clientRequest);
 
@@ -55,6 +57,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
         ERROR("Failed to receive auth response");
         return "failed: auth ";
       }
+      cipher.decrypt(auth_response, auth_response);
       LOG("Response from auth_server: " + auth_response);
       FILELOG("Response from auth_server: " + auth_response);
       response = auth_response;
@@ -81,6 +84,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
         ERROR("Failed to receive db response");
         return "failed: db ";
       }
+      cipher.decrypt(db_response, db_response);
       LOG("Response from db_server: " + db_response);
       FILELOG("Response from db_server: " + db_response);
       if (db_response != "NOT_OK\n") {
@@ -99,6 +103,17 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
 
 int main() {
   Socket server_socket, auth_server_socket, db_server_socket;
+
+  std::string key = getKey("Key.txt");
+
+  if (key.empty()) {
+    ERROR("Couldn't get key from file")
+    return -1;
+  }
+
+  LOG("Got key: " + key)
+  Blowfish cipher;
+  cipher.setKey(key);
 
   // Set up the server socket
   if (!server_socket.create()) {
@@ -128,13 +143,15 @@ int main() {
       LOG("Accepted connection from client");
       FILELOG("Accepted connection from client");
       const std::string response =
-          protocolGarrobo(client_socket, auth_server_socket, db_server_socket);
+          protocolGarrobo(client_socket, auth_server_socket, db_server_socket, cipher);
+          std::string responseCopy = response;
       LOG("Response sent to client: "
           << "|" << response << "|");
       if (response.empty()) {
         ERROR("Nothing to send to client");
       } else {
-        const bool send_return = client_socket.send(response);
+        cipher.encrypt(responseCopy, responseCopy);
+        const bool send_return = client_socket.send(responseCopy);
         if (!send_return) {
           ERROR("Failed to send response to client");
           FILELOG("Failed to send response to client");
