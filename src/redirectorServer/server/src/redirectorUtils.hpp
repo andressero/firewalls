@@ -151,4 +151,14 @@ inline ConfigData getServerData(const std::string& fileName, const std::string& 
     return ConfigData(ip, port);
 }
 
+inline std::string cleanString(const std::string& input) {
+    std::string result;
+    for (char ch : input) {
+        if (std::isprint(static_cast<unsigned char>(ch)) || ch == '\n') {
+            result += ch;
+        }
+    }
+    return result;
+}
+
 #endif // REDIRECTORUTILS_HPP

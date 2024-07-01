@@ -36,12 +36,12 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
   while ((zeroPosition = clientRequest.find_first_of('\000', zeroPosition)) != std::string::npos) {
     clientRequest.erase(zeroPosition, 1);
   }
-
-  const std::vector<std::string> lines = splitString(clientRequest, "\n");
+  const std::vector<std::string> lines = splitString(cleanString(clientRequest), "\n");
 
   for (const std::string &line : lines) {
-    const std::vector<std::string> command = splitString(line, " ");
-
+    std::cout << "Line " << line << std::endl;
+    const std::vector<std::string> command = splitString(cleanString(line), " ");
+    std::cout << "Command " << command[0] << std::endl;
     if (command[0] == "AUTH") {
       if (!auth_server_socket.create()) {
         ERROR("Unable to create auth server socket");
@@ -75,7 +75,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
     }
     // Once the auth response it's been received it determines whether or not it
     // can handle a subsequent request
-    else if (command[0] == "REQUEST" && auth_response == "OK\n") {
+    else if (command[0] == "REQUEST" && cleanString(auth_response) == "OK\n") {
       if (!db_server_socket.create()) {
         ERROR("Unable to create db server socket");
         return "failed: db ";

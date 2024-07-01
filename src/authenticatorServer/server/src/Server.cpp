@@ -103,8 +103,8 @@ std::string protocolGarrobo(const std::string &input) {
   LOG("AUTH command");
   FILELOG("AUTH command");
 
-  std::string user = command[1];
-  std::string hash = command[2];
+  std::string user = cleanString(command[1]);
+  std::string hash = cleanString(command[2]);
   if (tryAuth(user, hash)) {
     LOG("Authentication successful");
     FILELOG("Authentication successful");

@@ -110,4 +110,14 @@ inline std::string sha256Hash(std::string &strInput) {
   return sha256ToString(hash);
 }
 
+inline std::string cleanString(const std::string& input) {
+    std::string result;
+    for (char ch : input) {
+        if (std::isprint(static_cast<unsigned char>(ch))) {
+            result += ch;
+        }
+    }
+    return result;
+}
+
 #endif // AUTHUTILS_HPP

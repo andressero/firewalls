@@ -272,7 +272,7 @@ int main() {
       server.receive(clientSocket, clientRequest);
       cipher.decrypt(clientRequest, clientRequest);
       if (!clientRequest.empty()) {
-        std::string response = protocolGarrobo(clientRequest);
+        std::string response = protocolGarrobo(cleanString(clientRequest));
         cipher.encrypt(response, response);
         server.send(clientSocket, response);
         ::close(clientSocket);

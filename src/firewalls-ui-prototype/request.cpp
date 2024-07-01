@@ -86,7 +86,7 @@ std::string Request::requestUserData() {
                                 "\n";
     std::string requestCopy = request;
     this->cipher.encrypt(requestCopy, requestCopy);
-    socket.send(request);
+    socket.send(requestCopy);
     std::string answer = socket.receive();
     this->cipher.decrypt(answer, answer);
     std::string parsedAnswer = this->parse(answer);
@@ -104,7 +104,7 @@ std::string Request::requestPatientData(const std::string &patientID) {
 
     std::string requestCopy = request;
     this->cipher.encrypt(requestCopy, requestCopy);
-    socket.send(request);
+    socket.send(requestCopy);
     std::string answer = socket.receive();
     this->cipher.decrypt(answer, answer);
     std::string parsedAnswer = this->parse(answer);
@@ -124,7 +124,7 @@ std::string Request::requestInsuranceStatus(const std::string &id) {
 
     std::string requestCopy = request;
     this->cipher.encrypt(requestCopy, requestCopy);
-    socket.send(request);
+    socket.send(requestCopy);
     std::string answer = socket.receive();
     this->cipher.decrypt(answer, answer);
     std::string parsedAnswer = this->parse(answer);
@@ -145,7 +145,7 @@ std::string Request::requestLabList() {
 
     std::string requestCopy = request;
     this->cipher.encrypt(requestCopy, requestCopy);
-    socket.send(request);
+    socket.send(requestCopy);
     std::string answer = socket.receive();
     this->cipher.decrypt(answer, answer);
     std::string parsedAnswer = this->parse(answer);
@@ -166,7 +166,7 @@ std::string Request::requestLabResult(const std::string &labDate) {
 
     std::string requestCopy = request;
     this->cipher.encrypt(requestCopy, requestCopy);
-    socket.send(request);
+    socket.send(requestCopy);
     std::string answer = socket.receive();
     this->cipher.decrypt(answer, answer);
     std::string processedAnswer = removeServerConfirmationResponse(answer);
@@ -187,7 +187,7 @@ std::string Request::requestPatientList() {
 
     std::string requestCopy = request;
     this->cipher.encrypt(requestCopy, requestCopy);
-    socket.send(request);
+    socket.send(requestCopy);
     std::string answer = socket.receive();
     this->cipher.decrypt(answer, answer);
     std::string parsedAnswer = this->parse(answer);
@@ -206,7 +206,7 @@ bool Request::requestDataInsertion(const std::string &data) {
 
     std::string requestCopy = request;
     this->cipher.encrypt(requestCopy, requestCopy);
-    socket.send(request);
+    socket.send(requestCopy);
     std::string answer = socket.receive();
     this->cipher.decrypt(answer, answer);
     std::string parsedAnswer = this->parse(answer);
