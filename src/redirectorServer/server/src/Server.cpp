@@ -32,6 +32,11 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
   LOG("Received client request(DECIPHERED): " + clientRequest);
   FILELOG("Received client request: " + clientRequest);
 
+  size_t zeroPosition = 0;
+  while ((zeroPosition = clientRequest.find_first_of('\000', zeroPosition)) != std::string::npos) {
+    clientRequest.erase(zeroPosition, 1);
+  }
+
   const std::vector<std::string> lines = splitString(clientRequest, "\n");
 
   for (const std::string &line : lines) {
@@ -50,7 +55,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
       // auth_server_socket.listen();
       std::string cipheredLine = line;
       LOG("Send to auth server(DECIPHERED): " + line)
-      cipher.encrypt(cipheredLine, line);
+      cipher.encrypt(cipheredLine, cipheredLine);
       LOG("Send to auth server(CIPHERED): " + cipheredLine)
       if (!auth_server_socket.send(cipheredLine)) {
         ERROR("Failed to send AUTH request to Auth server");
@@ -80,7 +85,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
         return "failed: db ";
       }
       std::string cipheredLine = line;
-      cipher.encrypt(cipheredLine, line);
+      cipher.encrypt(cipheredLine, cipheredLine);
       if (!db_server_socket.send(cipheredLine)) {
         ERROR("Failed to send REQUEST to DB server");
         return "failed: db ";
