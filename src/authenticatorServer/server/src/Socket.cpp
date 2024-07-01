@@ -61,10 +61,10 @@ bool Socket::send(const int sock, const std::string &message) const {
 int Socket::receive(const int sock, std::string &message) const {
   char buf[1024];
   message.clear();
-  memset(buf, 0, sizeof(buf));
-  int status = ::recv(sock, buf, sizeof(buf), 0);
+  memset(buf, 0, 1024);
+  int status = ::recv(sock, buf, 1024, 0);
   if (status > 0) {
-    message = std::string(buf, status);
+    message = buf;
   }
   return status;
 }

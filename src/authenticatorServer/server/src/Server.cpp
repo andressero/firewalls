@@ -66,9 +66,14 @@ bool tryAuth(const std::string &user, const std::string &hash) {
   LOG("STORED HASH SIZE " + std::to_string(storedHash.size()))
   LOG("RECEIVED HASH SIZE " + std::to_string(hash.size()))
 
+
   // updated input is hash + salt
   std::string saltedRcvdHash = hash + fields[2];
   const std::string updatedRcvdHash = sha256Hash(saltedRcvdHash);
+
+  LOG(saltedRcvdHash + " = received hash + salt")
+  LOG(updatedRcvdHash  + " = received salted hash")
+  LOG(storedHash + " = stored hash")
 
   authSuccessful = storedHash == updatedRcvdHash;
   LOG("Successful Authentication: " + std::to_string(authSuccessful))
