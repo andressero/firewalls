@@ -2,17 +2,20 @@
 // Serrano>
 
 #include "auditor.hpp"
-#include <time.h>
+
+// TODO(any): Encrypt client messages.
 
 int main() {
-  ConfigData data = getServerData("../serverCommon/IP-addresses.txt", "Redirector");
-  // ClientSocket client(SERVER_IP, SERVER_PORT);
-  
+  ConfigData data =
+      getServerData("../serverCommon/IP-addresses.txt", "Redirector");
+
   while (true) {
     ClientSocket client(data.ip, data.port);
     client.connectToServer();
-    std::string message = "AUTH 123456789 18d404b76462a6b04b4e413c977734ae4923e2796a34cd1dd82b09f92d340bac\nREQUEST USER_DATA 123456789\n";
-    if(client.sendData(message) < 0) {
+    std::string message = "AUTH 999999999 "
+                          "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f"
+                          "6f2ab448a918\nREQUEST USER_DATA 999999999\n";
+    if (client.sendData(message) < 0) {
       ERROR("Unable to send. Redirector possibly failed");
       FILELOG("Error: Unable to send. Redirector possibly failed");
       return 1;
@@ -21,19 +24,19 @@ int main() {
     FILELOG("Sent successful.");
 
     std::string response = client.receiveData();
-    if(response  == "failed: auth " || response == "failed: db ") {
-      // TODO(any): Time 
-      LOG(response + "time");
+    if (response.find("auth server failed") == std::string::npos ||
+        response.find("db server failed") == std::string::npos) {
+      LOG(response);
       FILELOG(response);
-    }  else if(response.empty()) {
+    } else if (response.empty()) {
       LOG("No response from server redirector.");
       FILELOG("No response from server redirector.");
-    }else {
+    } else {
       LOG("Servers responding correctly");
       FILELOG("Servers responding correctly");
     }
 
-    sleep(5); // Sleep for 30 seconds then 
+    sleep(5); // Sleep for 10 seconds then
   }
 
   return 0;

@@ -1,6 +1,6 @@
+#include "Blowfish.hpp"
 #include "Socket.hpp"
 #include "redirectorUtils.hpp"
-#include "Blowfish.hpp"
 #include <algorithm>
 
 static const std::string authServerIP = "127.0.0.1", dbServerIP = "127.0.0.1";
@@ -16,12 +16,8 @@ inline void rtrim(std::string &s) {
 }
 
 // Handle client connection and protocol logic
-/*
-TODO(any): IP defined response for failure. Empty response for any client but 
-the auditor, this type of client receives "failed: <server x>" responses instead.
-*/
 std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
-                            Socket &db_server_socket, Blowfish& cipher) {
+                            Socket &db_server_socket, Blowfish &cipher) {
   std::string clientRequest;
   std::string auth_response;
   std::string response;
@@ -33,39 +29,53 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
   FILELOG("Received client request: " + clientRequest);
 
   size_t zeroPosition = 0;
-  while ((zeroPosition = clientRequest.find_first_of('\000', zeroPosition)) != std::string::npos) {
+  while ((zeroPosition = clientRequest.find_first_of('\000', zeroPosition)) !=
+         std::string::npos) {
     clientRequest.erase(zeroPosition, 1);
   }
-  const std::vector<std::string> lines = splitString(cleanString(clientRequest), "\n");
+  const std::vector<std::string> lines =
+      splitString(cleanString(clientRequest), "\n");
 
   for (const std::string &line : lines) {
-    std::cout << "Line " << line << std::endl;
-    const std::vector<std::string> command = splitString(cleanString(line), " ");
-    std::cout << "Command " << command[0] << std::endl;
+    const std::vector<std::string> command =
+        splitString(cleanString(line), " ");
     if (command[0] == "AUTH") {
       if (!auth_server_socket.create()) {
         ERROR("Unable to create auth server socket");
-        return "failed: auth ";
+        response = "";
+        break;
       }
       if (!auth_server_socket.connect(authServerIP, 4000)) {
         ERROR("Unable to connect to auth server");
-        return "failed: auth ";
+        response = "";
+        if (command[1] == "999999999") {
+          response =
+              "auth server failed: unable to connect - port might be down";
+        }
+        break;
       }
       LOG("Connected successfully with Auth server");
-      // auth_server_socket.listen();
       std::string cipheredLine = line;
       LOG("Send to auth server(DECIPHERED): " + line)
       cipher.encrypt(cipheredLine, cipheredLine);
       LOG("Send to auth server(CIPHERED): " + cipheredLine)
       if (!auth_server_socket.send(cipheredLine)) {
         ERROR("Failed to send AUTH request to Auth server");
-        return "failed: auth ";
+        response = "";
+        if (command[1] == "999999999") {
+          response = "auth server failed: unreachable";
+        }
+        break;
       }
       LOG("AUTH line sent to auth_server");
       FILELOG("AUTH line sent to auth_server");
       if (!auth_server_socket.recv(auth_response)) {
         ERROR("Failed to receive auth response");
-        return "failed: auth ";
+        response = "";
+        if (command[1] == "999999999") {
+          response = "auth server failed: unreachable";
+        }
+        break;
       }
       LOG("Response from auth_server(CIPHERED): " + auth_response);
       cipher.decrypt(auth_response, auth_response);
@@ -78,24 +88,37 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
     else if (command[0] == "REQUEST" && cleanString(auth_response) == "OK\n") {
       if (!db_server_socket.create()) {
         ERROR("Unable to create db server socket");
-        return "failed: db ";
+        response = "";
+        break;
       }
       if (!db_server_socket.connect(dbServerIP, 5000)) {
         ERROR("Unable to connect to db server");
-        return "failed: db ";
+        response = "";
+        if (command[1] == "999999999") {
+          response = "db server failed: unable to connect - port might be down";
+        }
+        break;
       }
       std::string cipheredLine = line;
       cipher.encrypt(cipheredLine, cipheredLine);
       if (!db_server_socket.send(cipheredLine)) {
         ERROR("Failed to send REQUEST to DB server");
-        return "failed: db ";
+        response = "";
+        if (command[1] == "999999999") {
+          response = "db server failed: unreachable";
+        }
+        break;
       }
       LOG("REQUEST line sent to db_server");
       FILELOG("REQUEST line sent to db_server");
       std::string db_response;
       if (!db_server_socket.recv(db_response)) {
         ERROR("Failed to receive db response");
-        return "failed: db ";
+        response = "";
+        if (command[1] == "999999999") {
+          response = "db server failed: unreachable";
+        }
+        break;
       }
       cipher.decrypt(db_response, db_response);
       LOG("Response from db_server: " + db_response);
@@ -135,7 +158,8 @@ int main() {
     return 1;
   }
   // It "can't" fail, cause it'll try again and again until it's able to bind.
-  ConfigData data = getServerData("../../serverCommon/IP-addresses.txt", serverName);
+  ConfigData data =
+      getServerData("../../serverCommon/IP-addresses.txt", serverName);
 
   if (!server_socket.bind(data.port, data.ip)) {
     ERROR("Couldn't bind");
@@ -155,8 +179,8 @@ int main() {
     if (server_socket.accept(client_socket)) {
       LOG("Accepted connection from client");
       FILELOG("Accepted connection from client");
-      const std::string response =
-          protocolGarrobo(client_socket, auth_server_socket, db_server_socket, cipher);
+      const std::string response = protocolGarrobo(
+          client_socket, auth_server_socket, db_server_socket, cipher);
       LOG("Response sent to client: "
           << "|" << response << "|");
       if (response.empty()) {
