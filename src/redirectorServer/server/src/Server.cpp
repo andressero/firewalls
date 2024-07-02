@@ -94,7 +94,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
       if (!db_server_socket.connect(dbServerIP, 5000)) {
         ERROR("Unable to connect to db server");
         response = "";
-        if (command[1] == "999999999") {
+        if (command[2] == "999999999") {
           response = "db server failed: unable to connect - port might be down";
         }
         break;
@@ -104,7 +104,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
       if (!db_server_socket.send(cipheredLine)) {
         ERROR("Failed to send REQUEST to DB server");
         response = "";
-        if (command[1] == "999999999") {
+        if (command[2] == "999999999") {
           response = "db server failed: unreachable";
         }
         break;
@@ -115,7 +115,7 @@ std::string protocolGarrobo(Socket &client_socket, Socket &auth_server_socket,
       if (!db_server_socket.recv(db_response)) {
         ERROR("Failed to receive db response");
         response = "";
-        if (command[1] == "999999999") {
+        if (command[2] == "999999999") {
           response = "db server failed: unreachable";
         }
         break;
