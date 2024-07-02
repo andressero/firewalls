@@ -25,6 +25,16 @@ inline std::string getKey(const std::string& fileName) {
   return key;
 }
 
+inline std::string cleanString(const std::string& input) {
+    std::string result;
+    for (char ch : input) {
+        if (std::isprint(static_cast<unsigned char>(ch)) || ch == '\n') {
+            result += ch;
+        }
+    }
+    return result;
+}
+
 int main() {
   ConfigData data =
       getServerData("../serverCommon/IP-addresses.txt", "Redirector");
@@ -56,6 +66,7 @@ int main() {
 
     std::string response = client.receiveData();
     cipher.decrypt(response, response);
+    response = cleanString(response);
     if (response.find("auth server failed") == std::string::npos ||
         response.find("db server failed") == std::string::npos) {
       LOG(response);
@@ -68,7 +79,7 @@ int main() {
       FILELOG("Servers responding correctly");
     }
 
-    sleep(5); // Sleep for 10 seconds then
+    sleep(10); // Sleep for 10 seconds then
   }
 
   return 0;
