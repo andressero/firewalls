@@ -8,6 +8,7 @@ CCSS Garrobo is a medical mobile application with patient, doctor and lab techni
 - [Installation 📥](#installation)
 - [Usage 📘](#usage)
 - [Features ✨](#features)
+- [User Cases 💼](#use-cases-)
 - [Dependencies 📦](#dependencies)
 - [Configuration ⚙️](#configuration)
 - [Screenshots 📸](#screenshots)
@@ -113,6 +114,11 @@ To run the application, you can either run it on a Desktop or Android device:
 - **Data Viewing**: Access personal data, laboratory tests, insurance status and medical information.
 - **Data Management**: Doctors and laboratorists can add and update laboratory test results.
 - **Patient Management**: View and select patient information.
+
+## Use Cases 💼
+![uc1](https://i.imgur.com/jVfnkgH.png)
+![uc2](https://i.imgur.com/5F8Dbhy.png)
+![uc3](https://i.imgur.com/xT4JeGj.png)
 
 ## Dependencies 📦
 The project relies on the following dependencies:
